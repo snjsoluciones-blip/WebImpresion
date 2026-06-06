@@ -5,28 +5,33 @@ import { motion } from "framer-motion";
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a]">
-      {/* CSS grid texture */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
-          `,
-          backgroundSize: "72px 72px",
-        }}
-      />
+      
+      {/* Video de fondo en bucle */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none z-0"
+      >
+        <source src="/videos/hero-bg.mp4" type="video/mp4" />
+        Tu navegador no soporta videos de fondo.
+      </video>
 
-      {/* Radial vignette */}
+      {/* Capa oscura encima del video para asegurar el contraste del texto */}
+      <div className="absolute inset-0 bg-black/60 pointer-events-none z-10" />
+
+      {/* Degradado radial original para mantener la estética premium */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute inset-0 pointer-events-none z-10"
         style={{
           background:
             "radial-gradient(ellipse 80% 60% at 50% 50%, transparent 0%, #0a0a0a 100%)",
         }}
       />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+      {/* Contenido (Subimos el z-index a 20 para que flote sobre el video) */}
+      <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
