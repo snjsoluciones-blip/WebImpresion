@@ -5,19 +5,19 @@ import Image from "next/image";
 
 const items = [
   {
-    src: "/images/bracket.PNG",
+    src: "/images/bracket.png",
     title: "Soporte Industrial",
     desc: "Bracket funcional para maquinaria pesada",
     category: "Industrial",
   },
   {
-    src: "/images/gear.PNG",
+    src: "/images/gear.png",
     title: "Engranaje de Precisión",
     desc: "Pieza de transmisión con tolerancias exactas",
     category: "Mecánica",
   },
   {
-    src: "/images/connector.PNG",
+    src: "/images/connector.png",
     title: "Conector Roscado",
     desc: "Acoplamiento con rosca de alta resistencia",
     category: "Conectores",
