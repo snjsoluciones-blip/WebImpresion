@@ -1,0 +1,16 @@
+{
+  "name": "SNJ Soluciones - Impresión 3D Industrial",
+  "short_name": "SNJ Soluciones",
+  "description": "Servicios de impresión 3D industrial y modelado 3D en Argentina",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

@@ -30,7 +30,6 @@ export default function ContactForm() {
     medidas: "",
     material: "PLA",
   });
-  const [fileName, setFileName] = useState<string>("");
   const [formValid, setFormValid] = useState(false);
 
   const handleChange = (
@@ -49,8 +48,6 @@ export default function ContactForm() {
   };
 
   const buildWhatsAppUrl = () => {
-    const archivos = fileName ? `📎 Archivo adjunto: ${fileName}` : "📎 Sin imagen de referencia";
-
     const msg = `Hola SNJ Soluciones! 👋 Quiero solicitar una pieza 3D.
 
 👤 Nombre: ${form.nombre.trim()}
@@ -61,7 +58,6 @@ export default function ContactForm() {
 📝 Descripción: ${form.descripcion.trim()}
 📐 Medidas: ${form.medidas.trim()}
 🧪 Material: ${form.material}
-${archivos}
 
 Quedo a disposición para coordinar. Gracias!`;
 
@@ -225,42 +221,6 @@ Quedo a disposición para coordinar. Gracias!`;
             </div>
           </div>
 
-          {/* File upload */}
-          <div>
-            <label className={labelBase}>Foto de referencia (opcional)</label>
-            <label
-              htmlFor="file-upload"
-              className="flex items-center gap-3 w-full bg-[#1a1a1a] border border-dashed border-white/[0.09] hover:border-white/[0.18] rounded-xl px-4 py-4 cursor-pointer transition-colors duration-200"
-            >
-              <svg
-                className="w-5 h-5 text-white/30 flex-shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                />
-              </svg>
-              <span className="text-sm text-white/35 truncate">
-                {fileName || "Subir imagen de referencia"}
-              </span>
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  setFileName(file ? file.name : "");
-                }}
-              />
-            </label>
-          </div>
-
           {/* WhatsApp button */}
           {formValid ? (
             <a
@@ -289,8 +249,11 @@ Quedo a disposición para coordinar. Gracias!`;
             </div>
           )}
 
-          <p className="text-center text-xs text-white/25">
+          <p className="text-xs text-white/40 text-center mt-2">
             Al hacer clic se abrirá WhatsApp con tu consulta pre-completada.
+          </p>
+          <p className="text-xs text-white/40 text-center">
+            📎 Si tenés una imagen de referencia, enviala directamente en el chat de WhatsApp una vez abierto.
           </p>
         </motion.div>
       </div>
