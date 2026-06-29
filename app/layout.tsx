@@ -44,10 +44,12 @@ export default function RootLayout({
   return (
     <html lang="es-AR">
       <head>
+        <link rel="icon" href="/images/snj-logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/images/snj-logo.png" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0a0a0a" />
         <meta name="geo.region" content="AR" />
-        <meta name="geo.placename" content="Buenos Aires, Argentina" />
+        <meta name="geo.placename" content="Pacheco, Buenos Aires, Argentina" />
         <meta name="language" content="Spanish" />
       </head>
       <body className={inter.className}>{children}</body>

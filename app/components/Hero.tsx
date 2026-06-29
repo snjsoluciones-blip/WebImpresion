@@ -58,7 +58,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.25, ease: "easeOut" }}
           className="mt-8 text-lg md:text-xl text-white/45 font-light max-w-xl mx-auto leading-relaxed"
         >
-          Fabricación de repuestos, matricería y series cortas en Don Torcuato. Alta precisión y resistencia para los desafíos de tu empresa.
+          Fabricación de repuestos, matricería y series cortas en Pacheco, Buenos Aires. Alta precisión y resistencia para los desafíos de tu empresa.
         </motion.p>
 
         <motion.div

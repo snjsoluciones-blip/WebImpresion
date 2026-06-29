@@ -5,9 +5,9 @@ import Image from "next/image";
 
 const items = [
   {
-    src: "/images/bracket.png",
-    title: "Soporte Industrial",
-    desc: "Bracket funcional para maquinaria pesada",
+    src: "/images/trofeo-nankang.jpeg",
+    title: "Trofeos Nankang",
+    desc: "Diseño y fabricación de trofeos personalizados para campeonatos de automovilismo",
     category: "Industrial",
   },
   {

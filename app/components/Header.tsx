@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const navLinks = [
   { label: "Servicios", href: "#servicios" },
@@ -30,8 +31,14 @@ export default function Header() {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="font-semibold text-white text-lg tracking-tight select-none">
-          SNJ Soluciones
+        <a href="#" className="flex items-center gap-2 select-none">
+          <Image
+            src="/images/snj-logo.png"
+            alt="SNJ Soluciones"
+            width={120}
+            height={40}
+            className="object-contain"
+          />
         </a>
 
         {/* Desktop nav */}
