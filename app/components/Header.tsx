@@ -35,9 +35,10 @@ export default function Header() {
           <Image
             src="/images/snj-logo.png"
             alt="SNJ Soluciones"
-            width={120}
-            height={40}
-            className="object-contain"
+            width={147}
+            height={69}
+            className="h-9 w-auto object-contain"
+            priority
           />
         </a>
 
