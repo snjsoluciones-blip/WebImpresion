@@ -19,9 +19,14 @@ const localBusinessJsonLd = {
   logo: "https://snjsoluciones.com.ar/icon.png",
   address: {
     "@type": "PostalAddress",
-    addressLocality: "Pacheco",
+    addressLocality: "General Pacheco",
     addressRegion: "Buenos Aires",
     addressCountry: "AR",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: -34.4522,
+    longitude: -58.6469,
   },
   areaServed: ["Pacheco", "Zona Norte GBA", "Buenos Aires", "CABA"],
   knowsAbout: [
@@ -36,23 +41,33 @@ const localBusinessJsonLd = {
 };
 
 export const metadata: Metadata = {
-  title: "Impresión 3D Industrial y Prototipado | SNJ Soluciones",
-  description: "Servicios de impresión 3D industrial, modelado 3D y fabricación de repuestos en Argentina. Soluciones rápidas y precisas para empresas y particulares.",
-  keywords: "impresión 3D, impresión 3D industrial, modelado 3D, prototipado rápido, impresión 3D Argentina, impresión 3D Buenos Aires, repuestos 3D, PLA, PETG, ABS",
+  metadataBase: new URL("https://snjsoluciones.com.ar"),
+  title: "Impresión 3D en Pacheco y Zona Norte | SNJ Soluciones",
+  description: "Impresión 3D industrial, modelado y prototipado en General Pacheco, Buenos Aires. Repuestos y piezas técnicas en PLA, PETG, ABS y TPU. Atendemos Tigre, zona norte del GBA y CABA. Presupuesto rápido por WhatsApp.",
+  keywords: "impresión 3D Pacheco, impresión 3D General Pacheco, impresión 3D Tigre, impresión 3D zona norte, impresión 3D, impresión 3D industrial, modelado 3D, prototipado rápido, impresión 3D Argentina, impresión 3D Buenos Aires, repuestos 3D, servicio de impresión 3D, PLA, PETG, ABS, TPU",
   authors: [{ name: "SNJ Soluciones" }],
   creator: "SNJ Soluciones",
   openGraph: {
-    title: "Impresión 3D Industrial | SNJ Soluciones",
-    description: "Impresiones 3D de alta calidad, modelado industrial y prototipado rápido en Argentina.",
+    title: "Impresión 3D en Pacheco y Zona Norte | SNJ Soluciones",
+    description: "Impresión 3D industrial, modelado y prototipado en General Pacheco, Buenos Aires. Presupuesto rápido por WhatsApp.",
     url: "https://snjsoluciones.com.ar",
     siteName: "SNJ Soluciones",
     locale: "es_AR",
     type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "SNJ Soluciones — Impresión 3D Industrial en Pacheco, Buenos Aires",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Impresión 3D Industrial | SNJ Soluciones",
-    description: "Impresiones 3D de alta calidad, modelado industrial y prototipado rápido en Argentina.",
+    title: "Impresión 3D en Pacheco y Zona Norte | SNJ Soluciones",
+    description: "Impresión 3D industrial, modelado y prototipado en General Pacheco, Buenos Aires. Presupuesto rápido por WhatsApp.",
+    images: ["/og.png"],
   },
   robots: {
     index: true,
