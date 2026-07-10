@@ -1,8 +1,39 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://snjsoluciones.com.ar/#negocio",
+  name: "SNJ Soluciones",
+  description:
+    "Servicios de impresión 3D industrial, modelado 3D y fabricación de repuestos y prototipos.",
+  url: "https://snjsoluciones.com.ar",
+  telephone: "+5491161256413",
+  email: "snjsoluciones@gmail.com",
+  image: "https://snjsoluciones.com.ar/icon.png",
+  logo: "https://snjsoluciones.com.ar/icon.png",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Pacheco",
+    addressRegion: "Buenos Aires",
+    addressCountry: "AR",
+  },
+  areaServed: ["Pacheco", "Zona Norte GBA", "Buenos Aires", "CABA"],
+  knowsAbout: [
+    "Impresión 3D",
+    "Modelado 3D",
+    "Prototipado rápido",
+    "PLA",
+    "PETG",
+    "ABS",
+    "TPU",
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Impresión 3D Industrial y Prototipado | SNJ Soluciones",
@@ -49,8 +80,15 @@ export default function RootLayout({
         <meta name="geo.region" content="AR" />
         <meta name="geo.placename" content="Pacheco, Buenos Aires, Argentina" />
         <meta name="language" content="Spanish" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
