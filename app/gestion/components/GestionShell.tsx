@@ -1,6 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { isSupabaseConfigured } from "../lib/supabaseClient";
 import { useAuth } from "../lib/auth";
 import { LocalAuthProvider } from "../lib/auth-local";
@@ -13,6 +15,7 @@ import Nav from "./Nav";
 
 function Inner({ children }: { children: ReactNode }) {
   const { usuario } = useAuth();
+  const pathname = usePathname();
 
   if (!usuario) return isSupabaseConfigured ? <LoginScreenSupabase /> : <LoginScreen />;
 
@@ -21,7 +24,15 @@ function Inner({ children }: { children: ReactNode }) {
   return (
     <Store>
       <Nav />
-      <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+      <motion.main
+        key={pathname}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="max-w-5xl mx-auto px-4 py-8"
+      >
+        {children}
+      </motion.main>
     </Store>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useStore, newId } from "../../lib/store";
 import { SOCIOS, Socio, Gasto, Ingreso, Tarea } from "../../lib/types";
@@ -12,6 +13,7 @@ import {
   estadoProyecto,
   formatCurrency,
 } from "../../lib/calc";
+import PrintLoader from "../../components/PrintLoader";
 
 export default function ProyectoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -30,6 +32,16 @@ export default function ProyectoDetalle() {
 
   const [tDesc, setTDesc] = useState("");
   const [tQuien, setTQuien] = useState<Socio>(SOCIOS[0]);
+
+  // IA: cargar gasto por texto libre
+  const [iaTexto, setIaTexto] = useState("");
+  const [iaLoading, setIaLoading] = useState(false);
+  const [iaError, setIaError] = useState("");
+
+  // IA: redactar mensaje al cliente
+  const [mensaje, setMensaje] = useState("");
+  const [mensajeLoading, setMensajeLoading] = useState(false);
+  const [mensajeError, setMensajeError] = useState("");
 
   if (!proyecto) {
     return (
@@ -128,6 +140,72 @@ export default function ProyectoDetalle() {
     router.push("/gestion");
   }
 
+  async function cargarGastoIA(e: React.FormEvent) {
+    e.preventDefault();
+    if (!iaTexto.trim()) return;
+    setIaError("");
+    setIaLoading(true);
+    try {
+      const res = await fetch("/api/gestion/gasto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto: iaTexto }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setIaError(data.error ?? "No se pudo interpretar.");
+        return;
+      }
+      const g = data.gasto;
+      const nuevo: Gasto = {
+        id: newId(),
+        producto: String(g.producto),
+        precio: Number(g.precio) || 0,
+        cantidad: Number(g.cantidad) || 1,
+        pagadoPor: (SOCIOS as readonly string[]).includes(g.pagadoPor) ? g.pagadoPor : SOCIOS[0],
+      };
+      updateProyecto(proyecto!.id, (p) => ({ ...p, gastos: [...p.gastos, nuevo] }));
+      setIaTexto("");
+    } catch {
+      setIaError("No se pudo conectar con la IA.");
+    } finally {
+      setIaLoading(false);
+    }
+  }
+
+  async function redactarMensaje() {
+    setMensajeError("");
+    setMensaje("");
+    setMensajeLoading(true);
+    try {
+      const res = await fetch("/api/gestion/mensaje", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: proyecto!.nombre,
+          cliente: proyecto!.cliente,
+          entregado: proyecto!.entregado,
+          pagado: proyecto!.pagado,
+          fecha: proyecto!.fecha,
+          ingresos: proyecto!.ingresos.map((i) => ({ producto: i.producto, cantidad: i.cantidad })),
+          total: totalIngresos(proyecto!),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMensajeError(data.error ?? "No se pudo generar.");
+        return;
+      }
+      setMensaje(data.mensaje);
+    } catch {
+      setMensajeError("No se pudo conectar con la IA.");
+    } finally {
+      setMensajeLoading(false);
+    }
+  }
+
+  const waMensaje = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+
   return (
     <div>
       <div className="flex items-start justify-between mb-6 gap-4">
@@ -153,6 +231,59 @@ export default function ProyectoDetalle() {
         <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400 whitespace-nowrap">
           Eliminar proyecto
         </button>
+      </div>
+
+      {/* Mensaje al cliente con IA */}
+      <div className="mb-6">
+        <button
+          onClick={redactarMensaje}
+          disabled={mensajeLoading}
+          className="px-4 py-2 rounded-full bg-white/10 text-white text-sm hover:bg-white/20 active:scale-95 transition disabled:opacity-50"
+        >
+          ✨ Redactar mensaje al cliente
+        </button>
+        {mensajeLoading && (
+          <div className="mt-3">
+            <PrintLoader label="Redactando el mensaje…" />
+          </div>
+        )}
+        {mensajeError && <p className="mt-2 text-sm text-red-400">{mensajeError}</p>}
+        {mensaje && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-3 border border-white/10 rounded-lg p-4 bg-white/[0.03]"
+          >
+            <textarea
+              value={mensaje}
+              onChange={(e) => setMensaje(e.target.value)}
+              rows={5}
+              className="w-full bg-transparent outline-none text-sm resize-none"
+            />
+            <div className="flex gap-2 mt-2">
+              <a
+                href={waMensaje}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 rounded-md text-sm bg-green-500/20 text-green-300 hover:bg-green-500/30"
+              >
+                Enviar por WhatsApp
+              </a>
+              <button
+                onClick={() => navigator.clipboard.writeText(mensaje)}
+                className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20"
+              >
+                Copiar
+              </button>
+              <button
+                onClick={() => setMensaje("")}
+                className="px-3 py-1.5 rounded-md text-sm text-white/50 hover:bg-white/10"
+              >
+                Descartar
+              </button>
+            </div>
+          </motion.div>
+        )}
       </div>
 
       {/* Datos generales */}
@@ -267,6 +398,35 @@ export default function ProyectoDetalle() {
             Agregar
           </button>
         </form>
+
+        {/* Cargar gasto por texto con IA */}
+        <div className="mt-4 pt-4 border-t border-white/10">
+          <p className="text-xs text-white/40 mb-2 flex items-center gap-1.5">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400" />
+            Cargar escribiendo (IA)
+          </p>
+          <form onSubmit={cargarGastoIA} className="flex flex-wrap gap-2">
+            <input
+              value={iaTexto}
+              onChange={(e) => setIaTexto(e.target.value)}
+              placeholder="Ej: compré 2 rollos de filamento negro a 20 mil, pagó Juan"
+              className="input flex-1 min-w-[220px]"
+            />
+            <button
+              type="submit"
+              disabled={iaLoading}
+              className="px-3 py-1.5 rounded-md bg-white/10 text-white text-sm hover:bg-white/20 disabled:opacity-50"
+            >
+              Cargar
+            </button>
+          </form>
+          {iaLoading && (
+            <div className="mt-2">
+              <PrintLoader label="Interpretando el gasto…" />
+            </div>
+          )}
+          {iaError && <p className="mt-2 text-sm text-red-400">{iaError}</p>}
+        </div>
       </Section>
 
       {/* Ingresos */}

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useStore, newId } from "./lib/store";
 import { estadoProyecto, ganancia, gananciaTotal, porCobrar, formatCurrency } from "./lib/calc";
 import { EstadoProyecto, Proyecto } from "./lib/types";
@@ -53,9 +54,9 @@ export default function Tablero() {
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-        <Metric label="Ganancia total" value={formatCurrency(gananciaTotal(proyectos))} />
-        <Metric label="Por cobrar" value={formatCurrency(porCobrar(proyectos))} accent="text-amber-300" />
-        <Metric label="Proyectos activos" value={String(activos)} />
+        <Metric label="Ganancia total" value={formatCurrency(gananciaTotal(proyectos))} index={0} />
+        <Metric label="Por cobrar" value={formatCurrency(porCobrar(proyectos))} accent="text-amber-300" index={1} />
+        <Metric label="Proyectos activos" value={String(activos)} index={2} />
       </div>
 
       <div className="flex items-center justify-between mb-4">
@@ -114,23 +115,29 @@ export default function Tablero() {
         {filtrados.length === 0 && (
           <p className="px-4 py-6 text-sm text-white/40">No hay proyectos en este filtro.</p>
         )}
-        {filtrados.map((p) => {
+        {filtrados.map((p, i) => {
           const estado = estadoProyecto(p);
           return (
-            <Link
+            <motion.div
               key={p.id}
-              href={`/gestion/proyectos/${p.id}`}
-              className="grid grid-cols-[2fr_1.3fr_1fr_1fr] gap-2 px-4 py-3 items-center border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.4), ease: "easeOut" }}
             >
-              <span className="font-medium">
-                {p.numero}. {p.nombre}
-              </span>
-              <span className="text-white/60 text-sm">{p.cliente || "—"}</span>
-              <span>
-                <span className={`text-xs px-2 py-1 rounded-full ${ESTADO_STYLE[estado]}`}>{estado}</span>
-              </span>
-              <span className="text-right">{formatCurrency(ganancia(p))}</span>
-            </Link>
+              <Link
+                href={`/gestion/proyectos/${p.id}`}
+                className="grid grid-cols-[2fr_1.3fr_1fr_1fr] gap-2 px-4 py-3 items-center border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition"
+              >
+                <span className="font-medium">
+                  {p.numero}. {p.nombre}
+                </span>
+                <span className="text-white/60 text-sm">{p.cliente || "—"}</span>
+                <span>
+                  <span className={`text-xs px-2 py-1 rounded-full ${ESTADO_STYLE[estado]}`}>{estado}</span>
+                </span>
+                <span className="text-right">{formatCurrency(ganancia(p))}</span>
+              </Link>
+            </motion.div>
           );
         })}
       </div>
@@ -138,11 +145,16 @@ export default function Tablero() {
   );
 }
 
-function Metric({ label, value, accent }: { label: string; value: string; accent?: string }) {
+function Metric({ label, value, accent, index }: { label: string; value: string; accent?: string; index: number }) {
   return (
-    <div className="rounded-lg bg-white/[0.04] p-4">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
+      className="rounded-lg bg-white/[0.04] p-4"
+    >
       <p className="text-xs text-white/50 mb-1">{label}</p>
       <p className={`text-2xl font-medium ${accent ?? ""}`}>{value}</p>
-    </div>
+    </motion.div>
   );
 }
