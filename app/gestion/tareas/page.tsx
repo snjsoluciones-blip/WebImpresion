@@ -35,7 +35,7 @@ export default function Tareas() {
   return (
     <div>
       <h1 className="text-xl font-medium mb-1">Tareas</h1>
-      <p className="text-sm text-white/50 mb-6">Lo que hay que hacer en cada proyecto, por socio.</p>
+      <p className="text-sm text-neutral-500 mb-6">Lo que hay que hacer en cada proyecto, por socio.</p>
 
       <div className="grid sm:grid-cols-3 gap-4">
         {SOCIOS.map((s) => {
@@ -43,9 +43,9 @@ export default function Tareas() {
           const pendientes = tareas.filter((t) => !t.hecha);
           const hechas = tareas.filter((t) => t.hecha);
           return (
-            <div key={s} className="border border-white/10 rounded-lg p-4">
+            <div key={s} className="g-card p-4">
               <p className="font-medium mb-3">{s}</p>
-              {tareas.length === 0 && <p className="text-sm text-white/30">Sin tareas asignadas.</p>}
+              {tareas.length === 0 && <p className="text-sm text-neutral-400">Sin tareas asignadas.</p>}
               <div className="space-y-2">
                 {[...pendientes, ...hechas].map((t) => (
                   <label key={t.tareaId} className="flex items-start gap-2 text-sm">
@@ -55,11 +55,11 @@ export default function Tareas() {
                       onChange={() => toggle(t.proyectoId, t.tareaId)}
                       className="mt-0.5"
                     />
-                    <span className={t.hecha ? "line-through text-white/30" : ""}>
+                    <span className={t.hecha ? "line-through text-neutral-400" : ""}>
                       {t.descripcion}
                       <Link
                         href={`/gestion/proyectos/${t.proyectoId}`}
-                        className="block text-xs text-white/40 hover:text-white/60"
+                        className="block text-xs text-neutral-400 hover:text-neutral-500"
                       >
                         {t.proyectoNombre}
                       </Link>

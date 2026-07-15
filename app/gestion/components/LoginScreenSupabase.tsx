@@ -40,44 +40,44 @@ export default function LoginScreenSupabase() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-slate-50">
       <form
         onSubmit={modo === "login" ? handleLogin : handleSignUp}
-        className="w-full max-w-sm border border-white/10 rounded-xl p-8 bg-white/[0.03]"
+        className="w-full max-w-sm g-card rounded-2xl p-8"
       >
         <h1 className="text-xl font-medium mb-1">SNJ Gestión</h1>
-        <p className="text-sm text-white/50 mb-6">
+        <p className="text-sm text-neutral-500 mb-6">
           {modo === "login" ? "Ingresá con tu cuenta" : "Creá tu cuenta"}
         </p>
 
-        <label className="block text-sm mb-1 text-white/70">Email</label>
+        <label className="block text-sm mb-1 text-neutral-600">Email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="nombre@email.com"
-          className="w-full mb-4 rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+          className="w-full mb-4 rounded-md bg-white border border-black/10 px-3 py-2 outline-none focus:border-violet-400"
         />
 
-        <label className="block text-sm mb-1 text-white/70">Contraseña</label>
+        <label className="block text-sm mb-1 text-neutral-600">Contraseña</label>
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
-          className="w-full mb-4 rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+          className="w-full mb-4 rounded-md bg-white border border-black/10 px-3 py-2 outline-none focus:border-violet-400"
         />
 
         {modo === "signup" && (
           <>
-            <label className="block text-sm mb-1 text-white/70">Sos</label>
+            <label className="block text-sm mb-1 text-neutral-600">Sos</label>
             <select
               value={socio}
               onChange={(e) => setSocio(e.target.value as Socio)}
-              className="w-full mb-2 rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+              className="w-full mb-2 rounded-md bg-white border border-black/10 px-3 py-2 outline-none focus:border-violet-400"
             >
               {SOCIOS.map((s) => (
-                <option key={s} value={s} className="bg-black">
+                <option key={s} value={s} className="bg-white text-neutral-800">
                   {s}
                 </option>
               ))}
@@ -85,13 +85,13 @@ export default function LoginScreenSupabase() {
           </>
         )}
 
-        {error && <p className="text-sm text-red-400 mb-2">{error}</p>}
-        {info && <p className="text-sm text-green-300 mb-2">{info}</p>}
+        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+        {info && <p className="text-sm text-emerald-600 mb-2">{info}</p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full mt-2 rounded-md bg-white text-black py-2 font-medium hover:bg-white/90 transition disabled:opacity-50"
+          className="w-full mt-2 rounded-md g-btn-primary py-2 font-medium transition disabled:opacity-50"
         >
           {loading ? "Un momento…" : modo === "login" ? "Entrar" : "Crear cuenta"}
         </button>
@@ -103,7 +103,7 @@ export default function LoginScreenSupabase() {
             setError("");
             setInfo("");
           }}
-          className="w-full mt-3 text-sm text-white/50 hover:text-white"
+          className="w-full mt-3 text-sm text-neutral-500 hover:text-neutral-800"
         >
           {modo === "login" ? "¿No tenés cuenta? Creala acá" : "¿Ya tenés cuenta? Entrá acá"}
         </button>

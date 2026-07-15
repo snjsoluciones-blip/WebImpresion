@@ -113,6 +113,12 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
     persist({ ...current, presupuestos: current.presupuestos.filter((p) => p.id !== id) });
   }
 
+  function applyBatch(mutator: (db: DB) => DB) {
+    const current = dbRef.current;
+    if (!current) return;
+    persist(mutator(current));
+  }
+
   if (!db) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white/40 text-sm">
@@ -123,7 +129,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <StoreContext.Provider
-      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto }}
+      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto, applyBatch }}
     >
       {children}
     </StoreContext.Provider>

@@ -53,11 +53,15 @@ export function LocalStoreProvider({ children }: { children: ReactNode }) {
     }));
   }
 
+  function applyBatch(mutator: (db: DB) => DB) {
+    setDb((prev) => mutator(prev));
+  }
+
   if (!loaded) return null;
 
   return (
     <StoreContext.Provider
-      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto }}
+      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto, applyBatch }}
     >
       {children}
     </StoreContext.Provider>

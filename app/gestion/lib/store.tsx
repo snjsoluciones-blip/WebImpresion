@@ -13,6 +13,7 @@ export interface StoreCtx {
   removeProyecto: (id: string) => void;
   addPresupuesto: (p: Presupuesto) => void;
   removePresupuesto: (id: string) => void;
+  applyBatch: (mutator: (db: DB) => DB) => void;
 }
 
 export const StoreContext = createContext<StoreCtx | null>(null);

@@ -64,14 +64,14 @@ export default function Presupuestos() {
         <h1 className="text-xl font-medium">Presupuestos</h1>
         <button
           onClick={() => setShowForm((v) => !v)}
-          className="px-3 py-1.5 rounded-md text-sm bg-white text-black hover:bg-white/90"
+          className="g-btn-primary px-4 py-1.5 text-sm"
         >
           + Nuevo presupuesto
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={crear} className="mb-6 p-4 border border-white/10 rounded-lg bg-white/[0.03]">
+        <form onSubmit={crear} className="g-card mb-6 p-4">
           <input
             autoFocus
             value={cliente}
@@ -105,7 +105,7 @@ export default function Presupuestos() {
                 <button
                   type="button"
                   onClick={() => removeRow(i)}
-                  className="text-white/30 hover:text-red-400 px-2"
+                  className="text-neutral-400 hover:text-red-500 px-2"
                 >
                   ✕
                 </button>
@@ -113,39 +113,39 @@ export default function Presupuestos() {
             ))}
           </div>
           <div className="flex items-center justify-between">
-            <button type="button" onClick={addRow} className="text-sm text-white/60 hover:text-white">
+            <button type="button" onClick={addRow} className="text-sm text-neutral-500 hover:text-neutral-800">
               + Agregar pieza
             </button>
-            <p className="text-sm text-white/50">
-              Total: <span className="text-white font-medium">{formatCurrency(total)}</span>
+            <p className="text-sm text-neutral-500">
+              Total: <span className="text-neutral-800 font-medium">{formatCurrency(total)}</span>
             </p>
           </div>
-          <button type="submit" className="mt-4 w-full py-2 rounded-md bg-white text-black text-sm font-medium">
+          <button type="submit" className="mt-4 w-full py-2 rounded-md bg-neutral-800 text-white text-sm font-medium">
             Guardar presupuesto
           </button>
         </form>
       )}
 
-      <div className="border border-white/10 rounded-lg overflow-hidden">
+      <div className="g-card overflow-hidden">
         {db.presupuestos.length === 0 && (
-          <p className="px-4 py-6 text-sm text-white/40">Todavía no hay presupuestos.</p>
+          <p className="px-4 py-6 text-sm text-neutral-400">Todavía no hay presupuestos.</p>
         )}
         {[...db.presupuestos].reverse().map((p) => (
           <div
             key={p.id}
-            className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0"
+            className="flex items-center justify-between px-4 py-3 border-b border-black/5 last:border-0"
           >
             <div>
               <Link href={`/gestion/presupuestos/${p.id}`} className="font-medium hover:underline">
                 {p.cliente}
               </Link>
-              <p className="text-xs text-white/40">{p.fecha}</p>
+              <p className="text-xs text-neutral-400">{p.fecha}</p>
             </div>
             <div className="flex items-center gap-4">
               <span>{formatCurrency(totalPresupuesto(p.items))}</span>
               <button
                 onClick={() => removePresupuesto(p.id)}
-                className="text-white/30 hover:text-red-400 text-sm"
+                className="text-neutral-400 hover:text-red-500 text-sm"
               >
                 Eliminar
               </button>

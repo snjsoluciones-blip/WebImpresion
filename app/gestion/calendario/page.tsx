@@ -53,7 +53,7 @@ export default function Calendario() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCursor(new Date(year, month - 1, 1))}
-            className="px-2 py-1 rounded-md hover:bg-white/10 text-sm"
+            className="px-2 py-1 rounded-md hover:bg-black/5 text-sm"
           >
             ←
           </button>
@@ -62,7 +62,7 @@ export default function Calendario() {
           </span>
           <button
             onClick={() => setCursor(new Date(year, month + 1, 1))}
-            className="px-2 py-1 rounded-md hover:bg-white/10 text-sm"
+            className="px-2 py-1 rounded-md hover:bg-black/5 text-sm"
           >
             →
           </button>
@@ -71,7 +71,7 @@ export default function Calendario() {
 
       <div className="grid grid-cols-7 gap-1 mb-8">
         {DIAS.map((d) => (
-          <div key={d} className="text-center text-xs text-white/40 pb-2">
+          <div key={d} className="text-center text-xs text-neutral-400 pb-2">
             {d}
           </div>
         ))}
@@ -84,15 +84,15 @@ export default function Calendario() {
             <div
               key={i}
               className={`min-h-[70px] rounded-md border p-1.5 text-xs ${
-                isToday ? "border-white/40" : "border-white/10"
+                isToday ? "border-violet-400 bg-violet-50" : "border-black/10"
               }`}
             >
-              <p className={`mb-1 ${isToday ? "text-white font-medium" : "text-white/50"}`}>{date.getDate()}</p>
+              <p className={`mb-1 ${isToday ? "text-violet-700 font-semibold" : "text-neutral-500"}`}>{date.getDate()}</p>
               {proyectosDelDia.map((p) => (
                 <Link
                   key={p.id}
                   href={`/gestion/proyectos/${p.id}`}
-                  className="block truncate rounded bg-white/10 px-1.5 py-0.5 mb-1 hover:bg-white/20"
+                  className="block truncate rounded bg-black/5 px-1.5 py-0.5 mb-1 hover:bg-black/10"
                   title={p.nombre}
                 >
                   {p.nombre}
@@ -103,21 +103,21 @@ export default function Calendario() {
         })}
       </div>
 
-      <h2 className="text-sm font-medium text-white/70 mb-3">Próximas fechas</h2>
-      <div className="border border-white/10 rounded-lg overflow-hidden">
+      <h2 className="text-sm font-medium text-neutral-600 mb-3">Próximas fechas</h2>
+      <div className="g-card overflow-hidden">
         {proximos.length === 0 && (
-          <p className="px-4 py-6 text-sm text-white/40">No hay proyectos con fecha cargada.</p>
+          <p className="px-4 py-6 text-sm text-neutral-400">No hay proyectos con fecha cargada.</p>
         )}
         {proximos.map((p) => (
           <Link
             key={p.id}
             href={`/gestion/proyectos/${p.id}`}
-            className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/[0.04]"
+            className="flex items-center justify-between px-4 py-3 border-b border-black/5 last:border-0 hover:bg-violet-50/60"
           >
             <span className="font-medium">
               {p.numero}. {p.nombre}
             </span>
-            <span className="text-sm text-white/50">{p.fecha}</span>
+            <span className="text-sm text-neutral-500">{p.fecha}</span>
           </Link>
         ))}
       </div>

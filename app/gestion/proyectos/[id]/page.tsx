@@ -33,11 +33,6 @@ export default function ProyectoDetalle() {
   const [tDesc, setTDesc] = useState("");
   const [tQuien, setTQuien] = useState<Socio>(SOCIOS[0]);
 
-  // IA: cargar gasto por texto libre
-  const [iaTexto, setIaTexto] = useState("");
-  const [iaLoading, setIaLoading] = useState(false);
-  const [iaError, setIaError] = useState("");
-
   // IA: redactar mensaje al cliente
   const [mensaje, setMensaje] = useState("");
   const [mensajeLoading, setMensajeLoading] = useState(false);
@@ -46,7 +41,7 @@ export default function ProyectoDetalle() {
   if (!proyecto) {
     return (
       <div>
-        <p className="text-white/60 mb-4">No se encontró el proyecto.</p>
+        <p className="text-neutral-500 mb-4">No se encontró el proyecto.</p>
         <button onClick={() => router.push("/gestion")} className="text-sm underline">
           Volver al tablero
         </button>
@@ -140,39 +135,6 @@ export default function ProyectoDetalle() {
     router.push("/gestion");
   }
 
-  async function cargarGastoIA(e: React.FormEvent) {
-    e.preventDefault();
-    if (!iaTexto.trim()) return;
-    setIaError("");
-    setIaLoading(true);
-    try {
-      const res = await fetch("/api/gestion/gasto", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texto: iaTexto }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setIaError(data.error ?? "No se pudo interpretar.");
-        return;
-      }
-      const g = data.gasto;
-      const nuevo: Gasto = {
-        id: newId(),
-        producto: String(g.producto),
-        precio: Number(g.precio) || 0,
-        cantidad: Number(g.cantidad) || 1,
-        pagadoPor: (SOCIOS as readonly string[]).includes(g.pagadoPor) ? g.pagadoPor : SOCIOS[0],
-      };
-      updateProyecto(proyecto!.id, (p) => ({ ...p, gastos: [...p.gastos, nuevo] }));
-      setIaTexto("");
-    } catch {
-      setIaError("No se pudo conectar con la IA.");
-    } finally {
-      setIaLoading(false);
-    }
-  }
-
   async function redactarMensaje() {
     setMensajeError("");
     setMensaje("");
@@ -210,25 +172,25 @@ export default function ProyectoDetalle() {
     <div>
       <div className="flex items-start justify-between mb-6 gap-4">
         <div className="flex-1">
-          <button onClick={() => router.push("/gestion")} className="text-sm text-white/50 hover:text-white mb-2">
+          <button onClick={() => router.push("/gestion")} className="text-sm text-neutral-500 hover:text-neutral-800 mb-2">
             ← Tablero
           </button>
           <div className="flex items-baseline gap-2">
-            <span className="text-white/40">{proyecto.numero}.</span>
+            <span className="text-neutral-400">{proyecto.numero}.</span>
             <input
               value={proyecto.nombre}
               onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, nombre: e.target.value }))}
-              className="text-xl font-medium bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 flex-1"
+              className="text-xl font-medium bg-transparent outline-none border-b border-transparent hover:border-black/20 focus:border-violet-400 flex-1"
             />
           </div>
           <input
             value={proyecto.cliente}
             onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, cliente: e.target.value }))}
             placeholder="Cliente"
-            className="text-sm text-white/50 bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 mt-1"
+            className="text-sm text-neutral-500 bg-transparent outline-none border-b border-transparent hover:border-black/20 focus:border-violet-400 mt-1"
           />
         </div>
-        <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400 whitespace-nowrap">
+        <button onClick={eliminarProyecto} className="text-sm text-red-500/80 hover:text-red-600 whitespace-nowrap">
           Eliminar proyecto
         </button>
       </div>
@@ -238,7 +200,7 @@ export default function ProyectoDetalle() {
         <button
           onClick={redactarMensaje}
           disabled={mensajeLoading}
-          className="px-4 py-2 rounded-full bg-white/10 text-white text-sm hover:bg-white/20 active:scale-95 transition disabled:opacity-50"
+          className="g-btn-primary px-4 py-2 text-sm disabled:opacity-50"
         >
           ✨ Redactar mensaje al cliente
         </button>
@@ -247,12 +209,12 @@ export default function ProyectoDetalle() {
             <PrintLoader label="Redactando el mensaje…" />
           </div>
         )}
-        {mensajeError && <p className="mt-2 text-sm text-red-400">{mensajeError}</p>}
+        {mensajeError && <p className="mt-2 text-sm text-red-500">{mensajeError}</p>}
         {mensaje && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-3 border border-white/10 rounded-lg p-4 bg-white/[0.03]"
+            className="mt-3 border border-black/10 rounded-lg p-4 bg-white"
           >
             <textarea
               value={mensaje}
@@ -265,19 +227,19 @@ export default function ProyectoDetalle() {
                 href={waMensaje}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3 py-1.5 rounded-md text-sm bg-green-500/20 text-green-300 hover:bg-green-500/30"
+                className="px-3 py-1.5 rounded-md text-sm bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
               >
                 Enviar por WhatsApp
               </a>
               <button
                 onClick={() => navigator.clipboard.writeText(mensaje)}
-                className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20"
+                className="px-3 py-1.5 rounded-md text-sm bg-black/5 hover:bg-black/10"
               >
                 Copiar
               </button>
               <button
                 onClick={() => setMensaje("")}
-                className="px-3 py-1.5 rounded-md text-sm text-white/50 hover:bg-white/10"
+                className="px-3 py-1.5 rounded-md text-sm text-neutral-500 hover:bg-black/5"
               >
                 Descartar
               </button>
@@ -306,7 +268,7 @@ export default function ProyectoDetalle() {
             Pagado
           </label>
           <div>
-            <label className="block text-xs text-white/40 mb-1">Para cuándo es</label>
+            <label className="block text-xs text-neutral-400 mb-1">Para cuándo es</label>
             <input
               type="date"
               value={proyecto.fecha}
@@ -315,8 +277,8 @@ export default function ProyectoDetalle() {
             />
           </div>
         </div>
-        <p className="mt-3 text-sm text-white/50">
-          Estado: <span className="text-white">{estadoProyecto(proyecto)}</span>
+        <p className="mt-3 text-sm text-neutral-500">
+          Estado: <span className="text-neutral-800 font-medium">{estadoProyecto(proyecto)}</span>
         </p>
       </Section>
 
@@ -325,7 +287,7 @@ export default function ProyectoDetalle() {
         {proyecto.gastos.length > 0 && (
           <table className="w-full text-sm mb-3">
             <thead>
-              <tr className="text-white/40 text-xs">
+              <tr className="text-neutral-400 text-xs">
                 <th className="text-left font-normal pb-2">Producto</th>
                 <th className="text-left font-normal pb-2">Precio</th>
                 <th className="text-left font-normal pb-2">Cant.</th>
@@ -335,7 +297,7 @@ export default function ProyectoDetalle() {
             </thead>
             <tbody>
               {proyecto.gastos.map((g) => (
-                <tr key={g.id} className="border-t border-white/5">
+                <tr key={g.id} className="border-t border-black/5">
                   <td className="py-1.5 pr-2">
                     <input
                       value={g.producto}
@@ -367,14 +329,14 @@ export default function ProyectoDetalle() {
                       className="input"
                     >
                       {SOCIOS.map((s) => (
-                        <option key={s} value={s} className="bg-black">
+                        <option key={s} value={s} className="bg-white text-neutral-800">
                           {s}
                         </option>
                       ))}
                     </select>
                   </td>
                   <td className="py-1.5">
-                    <button onClick={() => borrar("gastos", g.id)} className="text-white/30 hover:text-red-400">
+                    <button onClick={() => borrar("gastos", g.id)} className="text-neutral-300 hover:text-red-500">
                       ✕
                     </button>
                   </td>
@@ -389,44 +351,15 @@ export default function ProyectoDetalle() {
           <input value={gCant} onChange={(e) => setGCant(e.target.value)} placeholder="Cant." type="number" step="0.1" className="input w-20" />
           <select value={gQuien} onChange={(e) => setGQuien(e.target.value as Socio)} className="input w-28">
             {SOCIOS.map((s) => (
-              <option key={s} value={s} className="bg-black">
+              <option key={s} value={s} className="bg-white text-neutral-800">
                 {s}
               </option>
             ))}
           </select>
-          <button type="submit" className="px-3 py-1.5 rounded-md bg-white text-black text-sm">
+          <button type="submit" className="px-3 py-1.5 rounded-md bg-neutral-800 text-white text-sm">
             Agregar
           </button>
         </form>
-
-        {/* Cargar gasto por texto con IA */}
-        <div className="mt-4 pt-4 border-t border-white/10">
-          <p className="text-xs text-white/40 mb-2 flex items-center gap-1.5">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400" />
-            Cargar escribiendo (IA)
-          </p>
-          <form onSubmit={cargarGastoIA} className="flex flex-wrap gap-2">
-            <input
-              value={iaTexto}
-              onChange={(e) => setIaTexto(e.target.value)}
-              placeholder="Ej: compré 2 rollos de filamento negro a 20 mil, pagó Juan"
-              className="input flex-1 min-w-[220px]"
-            />
-            <button
-              type="submit"
-              disabled={iaLoading}
-              className="px-3 py-1.5 rounded-md bg-white/10 text-white text-sm hover:bg-white/20 disabled:opacity-50"
-            >
-              Cargar
-            </button>
-          </form>
-          {iaLoading && (
-            <div className="mt-2">
-              <PrintLoader label="Interpretando el gasto…" />
-            </div>
-          )}
-          {iaError && <p className="mt-2 text-sm text-red-400">{iaError}</p>}
-        </div>
       </Section>
 
       {/* Ingresos */}
@@ -434,7 +367,7 @@ export default function ProyectoDetalle() {
         {proyecto.ingresos.length > 0 && (
           <table className="w-full text-sm mb-3">
             <thead>
-              <tr className="text-white/40 text-xs">
+              <tr className="text-neutral-400 text-xs">
                 <th className="text-left font-normal pb-2">Producto</th>
                 <th className="text-left font-normal pb-2">Precio</th>
                 <th className="text-left font-normal pb-2">Cant.</th>
@@ -443,7 +376,7 @@ export default function ProyectoDetalle() {
             </thead>
             <tbody>
               {proyecto.ingresos.map((i) => (
-                <tr key={i.id} className="border-t border-white/5">
+                <tr key={i.id} className="border-t border-black/5">
                   <td className="py-1.5 pr-2">
                     <input
                       value={i.producto}
@@ -468,7 +401,7 @@ export default function ProyectoDetalle() {
                     />
                   </td>
                   <td className="py-1.5">
-                    <button onClick={() => borrar("ingresos", i.id)} className="text-white/30 hover:text-red-400">
+                    <button onClick={() => borrar("ingresos", i.id)} className="text-neutral-300 hover:text-red-500">
                       ✕
                     </button>
                   </td>
@@ -481,7 +414,7 @@ export default function ProyectoDetalle() {
           <input value={iProd} onChange={(e) => setIProd(e.target.value)} placeholder="Producto" className="input flex-1 min-w-[140px]" />
           <input value={iPrecio} onChange={(e) => setIPrecio(e.target.value)} placeholder="Precio" type="number" className="input w-28" />
           <input value={iCant} onChange={(e) => setICant(e.target.value)} placeholder="Cant." type="number" className="input w-20" />
-          <button type="submit" className="px-3 py-1.5 rounded-md bg-white text-black text-sm">
+          <button type="submit" className="px-3 py-1.5 rounded-md bg-neutral-800 text-white text-sm">
             Agregar
           </button>
         </form>
@@ -491,10 +424,10 @@ export default function ProyectoDetalle() {
       <Section title={`Ganancia: ${formatCurrency(ganancia(proyecto))}`}>
         <div className="grid grid-cols-3 gap-3">
           {SOCIOS.map((s) => (
-            <div key={s} className="border border-white/10 rounded-lg p-3">
+            <div key={s} className="border border-black/10 rounded-lg p-3">
               <p className="font-medium mb-2">{s}</p>
-              <p className="text-xs text-white/50">Puso {formatCurrency(reparto[s].puso)}</p>
-              <p className="text-sm text-green-300 mt-1">Cobra {formatCurrency(reparto[s].cobra)}</p>
+              <p className="text-xs text-neutral-500">Puso {formatCurrency(reparto[s].puso)}</p>
+              <p className="text-sm text-emerald-600 mt-1">Cobra {formatCurrency(reparto[s].cobra)}</p>
             </div>
           ))}
         </div>
@@ -509,7 +442,7 @@ export default function ProyectoDetalle() {
               <input
                 value={t.descripcion}
                 onChange={(e) => editarTarea(t.id, "descripcion", e.target.value)}
-                className={`input flex-1 ${t.hecha ? "line-through text-white/30" : ""}`}
+                className={`input flex-1 ${t.hecha ? "line-through text-neutral-300" : ""}`}
               />
               <select
                 value={t.asignadoA}
@@ -517,28 +450,28 @@ export default function ProyectoDetalle() {
                 className="input w-24"
               >
                 {SOCIOS.map((s) => (
-                  <option key={s} value={s} className="bg-black">
+                  <option key={s} value={s} className="bg-white text-neutral-800">
                     {s}
                   </option>
                 ))}
               </select>
-              <button onClick={() => borrar("tareas", t.id)} className="text-white/30 hover:text-red-400">
+              <button onClick={() => borrar("tareas", t.id)} className="text-neutral-300 hover:text-red-500">
                 ✕
               </button>
             </div>
           ))}
-          {proyecto.tareas.length === 0 && <p className="text-sm text-white/30">Sin tareas.</p>}
+          {proyecto.tareas.length === 0 && <p className="text-sm text-neutral-300">Sin tareas.</p>}
         </div>
         <form onSubmit={addTarea} className="flex flex-wrap gap-2">
           <input value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Tarea" className="input flex-1 min-w-[140px]" />
           <select value={tQuien} onChange={(e) => setTQuien(e.target.value as Socio)} className="input w-28">
             {SOCIOS.map((s) => (
-              <option key={s} value={s} className="bg-black">
+              <option key={s} value={s} className="bg-white text-neutral-800">
                 {s}
               </option>
             ))}
           </select>
-          <button type="submit" className="px-3 py-1.5 rounded-md bg-white text-black text-sm">
+          <button type="submit" className="px-3 py-1.5 rounded-md bg-neutral-800 text-white text-sm">
             Agregar
           </button>
         </form>
@@ -549,8 +482,8 @@ export default function ProyectoDetalle() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mb-6 border border-white/10 rounded-lg p-4">
-      <h2 className="text-sm font-medium text-white/70 mb-3">{title}</h2>
+    <div className="g-card mb-6 p-4">
+      <h2 className="text-sm font-medium text-neutral-700 mb-3">{title}</h2>
       {children}
     </div>
   );
