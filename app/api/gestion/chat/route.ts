@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
     "- Interpretá montos en jerga: '20 mil' o '20 lucas' = 20000.\n" +
     "- Para cargar algo en un proyecto, usá el nombre exacto de la lista de proyectos.\n" +
     "- Si te falta un dato clave (ej. a qué proyecto), preguntá en vez de inventar.\n" +
-    "- Después de hacer una acción, confirmá en una frase corta qué hiciste.\n\n" +
+    "- Después de hacer una acción, confirmá en una frase corta qué hiciste.\n" +
+    "- No uses formato markdown (nada de asteriscos ** ni #). Texto plano.\n\n" +
     (hoy ? `Fecha de hoy: ${hoy}.\n\n` : "") +
     "Estado actual de la app:\n" +
     resumen;
