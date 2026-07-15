@@ -13,7 +13,7 @@ export default function PresupuestoDetalle() {
   if (!presupuesto) {
     return (
       <div>
-        <p className="text-neutral-500 mb-4">No se encontró el presupuesto.</p>
+        <p className="text-white/60 mb-4">No se encontró el presupuesto.</p>
         <button onClick={() => router.push("/gestion/presupuestos")} className="text-sm underline">
           Volver
         </button>
@@ -40,7 +40,7 @@ export default function PresupuestoDetalle() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6 print:hidden">
-        <button onClick={() => router.push("/gestion/presupuestos")} className="text-sm text-neutral-500 hover:text-neutral-800">
+        <button onClick={() => router.push("/gestion/presupuestos")} className="text-sm text-white/50 hover:text-white">
           ← Presupuestos
         </button>
         <div className="flex gap-2">
@@ -48,20 +48,20 @@ export default function PresupuestoDetalle() {
             href={waLink}
             target="_blank"
             rel="noreferrer"
-            className="px-3 py-1.5 rounded-md text-sm bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+            className="px-3 py-1.5 rounded-md text-sm bg-green-500/20 text-green-300 hover:bg-green-500/30"
           >
             Enviar por WhatsApp
           </a>
           <button
             onClick={() => window.print()}
-            className="px-3 py-1.5 rounded-md text-sm bg-neutral-800 text-white hover:bg-neutral-700"
+            className="px-3 py-1.5 rounded-md text-sm bg-white text-black hover:bg-white/90"
           >
             Exportar PDF
           </button>
         </div>
       </div>
 
-      <div className="border border-black/10 rounded-lg p-8 bg-white text-black print:border-0 print:p-0">
+      <div className="border border-white/10 rounded-lg p-8 bg-white text-black print:border-0 print:p-0">
         <p className="text-lg font-medium">SNJ Soluciones</p>
         <p className="text-sm text-black/60 mb-6">www.snjsoluciones.com.ar</p>
 

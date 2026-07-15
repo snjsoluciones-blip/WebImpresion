@@ -24,20 +24,18 @@ function Inner({ children }: { children: ReactNode }) {
 
   return (
     <Store>
-      <div className="gestion-root">
-        {/* Deja lugar al panel de chat fijo en pantallas grandes */}
-        <div className="lg:pr-[360px]">
-          <Nav />
-          <motion.main
-            key={pathname}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="max-w-5xl mx-auto px-4 py-8"
-          >
-            {children}
-          </motion.main>
-        </div>
+      {/* Deja lugar al panel de chat fijo en pantallas grandes */}
+      <div className="lg:pr-[360px] min-h-screen">
+        <Nav />
+        <motion.main
+          key={pathname}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="max-w-5xl mx-auto px-4 py-8"
+        >
+          {children}
+        </motion.main>
       </div>
       <ChatPanel />
     </Store>

@@ -133,12 +133,13 @@ export function resumenParaIA(db: DB, usuario: Socio): string {
   for (const s of SOCIOS) {
     lineas.push(`  ${s}: puso ${formatCurrency(g[s].puso)}, le toca cobrar ${formatCurrency(g[s].cobra)}.`);
   }
-  lineas.push("PROYECTOS:");
+  lineas.push('PROYECTOS (la "fecha" es para cuándo hay que tenerlo listo/entregar):');
   for (const p of db.proyectos) {
     const rep = repartoProyecto(p);
     const repTxt = SOCIOS.map((s) => `${s} cobra ${formatCurrency(rep[s].cobra)}`).join(", ");
+    const fechaTxt = p.fecha ? `fecha ${p.fecha}` : "sin fecha cargada";
     lineas.push(
-      `- "${p.nombre}" (cliente: ${p.cliente || "sin cliente"}) — estado ${estadoProyecto(p)}. ` +
+      `- "${p.nombre}" (cliente: ${p.cliente || "sin cliente"}) — estado ${estadoProyecto(p)}, ${fechaTxt}. ` +
         `Gastos ${formatCurrency(totalGastos(p))}, ingresos ${formatCurrency(totalIngresos(p))}, ` +
         `ganancia ${formatCurrency(ganancia(p))}. Reparto: ${repTxt}.`
     );

@@ -89,8 +89,7 @@ export default function ChatPanel() {
             initial={false}
             className={`${
               open ? "flex" : "hidden"
-            } lg:flex fixed right-0 top-0 z-30 h-screen w-full sm:w-[360px] flex-col border-l border-black/10`}
-            style={{ background: "linear-gradient(180deg,#faf7ff,#f3fbff)" }}
+            } lg:flex fixed right-0 top-0 z-30 h-screen w-full sm:w-[360px] flex-col border-l border-white/10 bg-[#0d0d10]`}
           >
             <div
               className="flex items-center justify-between px-4 py-3 text-white"
@@ -119,7 +118,7 @@ export default function ChatPanel() {
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm whitespace-pre-wrap ${
                       m.role === "user"
                         ? "text-white rounded-br-sm"
-                        : "bg-white text-neutral-800 border border-black/5 rounded-bl-sm shadow-sm"
+                        : "bg-white/[0.06] text-white/90 border border-white/10 rounded-bl-sm"
                     }`}
                     style={m.role === "user" ? { background: "linear-gradient(135deg,#7c3aed,#06b6d4)" } : undefined}
                   >
@@ -129,16 +128,14 @@ export default function ChatPanel() {
               ))}
               {loading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-black/5 rounded-2xl rounded-bl-sm px-3.5 py-2 shadow-sm">
-                    <div className="text-neutral-500">
-                      <PrintLoaderDark />
-                    </div>
+                  <div className="bg-white/[0.06] border border-white/10 rounded-2xl rounded-bl-sm px-3.5 py-2">
+                    <PrintLoaderDark />
                   </div>
                 </div>
               )}
             </div>
 
-            <form onSubmit={enviar} className="p-3 border-t border-black/10 bg-white/60">
+            <form onSubmit={enviar} className="p-3 border-t border-white/10 bg-white/[0.02]">
               <div className="flex items-end gap-2">
                 <textarea
                   value={texto}
@@ -151,7 +148,7 @@ export default function ChatPanel() {
                   }}
                   rows={1}
                   placeholder="Escribí acá…"
-                  className="flex-1 resize-none rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-violet-400 max-h-32"
+                  className="flex-1 resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-violet-400 max-h-32 placeholder:text-white/40"
                 />
                 <button
                   type="submit"
@@ -174,7 +171,7 @@ export default function ChatPanel() {
 // Variante del loader con color oscuro para fondo claro.
 function PrintLoaderDark() {
   return (
-    <div className="flex items-center gap-2 text-sm text-neutral-500">
+    <div className="flex items-center gap-2 text-sm text-white/50">
       <div className="flex flex-col-reverse gap-[3px]">
         {[0, 1, 2, 3].map((i) => (
           <motion.div
