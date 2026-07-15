@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useStore, newId } from "../../lib/store";
-import { SOCIOS, Socio, Gasto, Ingreso, Filamento, Tarea } from "../../lib/types";
+import { SOCIOS, Socio, Gasto, Ingreso, Tarea } from "../../lib/types";
 import {
   totalGastos,
   totalIngresos,
@@ -28,10 +28,6 @@ export default function ProyectoDetalle() {
   const [iPrecio, setIPrecio] = useState("");
   const [iCant, setICant] = useState("1");
 
-  const [fPieza, setFPieza] = useState("");
-  const [fColor, setFColor] = useState("");
-  const [fPeso, setFPeso] = useState("");
-
   const [tDesc, setTDesc] = useState("");
   const [tQuien, setTQuien] = useState<Socio>(SOCIOS[0]);
 
@@ -47,6 +43,38 @@ export default function ProyectoDetalle() {
   }
 
   const reparto = repartoProyecto(proyecto);
+
+  function editarGasto(gastoId: string, campo: keyof Gasto, valor: string) {
+    updateProyecto(proyecto!.id, (p) => ({
+      ...p,
+      gastos: p.gastos.map((g) =>
+        g.id === gastoId
+          ? {
+              ...g,
+              [campo]: campo === "precio" || campo === "cantidad" ? Number(valor) || 0 : valor,
+            }
+          : g
+      ),
+    }));
+  }
+
+  function editarIngreso(ingresoId: string, campo: keyof Ingreso, valor: string) {
+    updateProyecto(proyecto!.id, (p) => ({
+      ...p,
+      ingresos: p.ingresos.map((i) =>
+        i.id === ingresoId
+          ? { ...i, [campo]: campo === "precio" || campo === "cantidad" ? Number(valor) || 0 : valor }
+          : i
+      ),
+    }));
+  }
+
+  function editarTarea(tareaId: string, campo: keyof Tarea, valor: string | boolean) {
+    updateProyecto(proyecto!.id, (p) => ({
+      ...p,
+      tareas: p.tareas.map((t) => (t.id === tareaId ? { ...t, [campo]: valor } : t)),
+    }));
+  }
 
   function addGasto(e: React.FormEvent) {
     e.preventDefault();
@@ -79,16 +107,6 @@ export default function ProyectoDetalle() {
     setICant("1");
   }
 
-  function addFilamento(e: React.FormEvent) {
-    e.preventDefault();
-    if (!fPieza.trim()) return;
-    const nuevo: Filamento = { id: newId(), pieza: fPieza.trim(), color: fColor.trim(), peso: fPeso.trim() };
-    updateProyecto(proyecto!.id, (p) => ({ ...p, filamentos: [...p.filamentos, nuevo] }));
-    setFPieza("");
-    setFColor("");
-    setFPeso("");
-  }
-
   function addTarea(e: React.FormEvent) {
     e.preventDefault();
     if (!tDesc.trim()) return;
@@ -97,14 +115,7 @@ export default function ProyectoDetalle() {
     setTDesc("");
   }
 
-  function toggleTarea(tareaId: string) {
-    updateProyecto(proyecto!.id, (p) => ({
-      ...p,
-      tareas: p.tareas.map((t) => (t.id === tareaId ? { ...t, hecha: !t.hecha } : t)),
-    }));
-  }
-
-  function borrar(lista: "gastos" | "ingresos" | "filamentos" | "tareas", itemId: string) {
+  function borrar(lista: "gastos" | "ingresos" | "tareas", itemId: string) {
     updateProyecto(proyecto!.id, (p) => ({
       ...p,
       [lista]: (p[lista] as { id: string }[]).filter((x) => x.id !== itemId),
@@ -119,24 +130,34 @@ export default function ProyectoDetalle() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
-        <div>
+      <div className="flex items-start justify-between mb-6 gap-4">
+        <div className="flex-1">
           <button onClick={() => router.push("/gestion")} className="text-sm text-white/50 hover:text-white mb-2">
             ← Tablero
           </button>
-          <h1 className="text-xl font-medium">
-            {proyecto.numero}. {proyecto.nombre}
-          </h1>
-          <p className="text-sm text-white/50">{proyecto.cliente || "Sin cliente"}</p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-white/40">{proyecto.numero}.</span>
+            <input
+              value={proyecto.nombre}
+              onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, nombre: e.target.value }))}
+              className="text-xl font-medium bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 flex-1"
+            />
+          </div>
+          <input
+            value={proyecto.cliente}
+            onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, cliente: e.target.value }))}
+            placeholder="Cliente"
+            className="text-sm text-white/50 bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 mt-1"
+          />
         </div>
-        <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400">
+        <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400 whitespace-nowrap">
           Eliminar proyecto
         </button>
       </div>
 
       {/* Datos generales */}
       <Section title="Datos generales">
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -145,12 +166,6 @@ export default function ProyectoDetalle() {
             />
             Entregado
           </label>
-          <input
-            type="date"
-            value={proyecto.fechaEntrega}
-            onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, fechaEntrega: e.target.value }))}
-            className="rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30"
-          />
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -159,12 +174,15 @@ export default function ProyectoDetalle() {
             />
             Pagado
           </label>
-          <input
-            type="date"
-            value={proyecto.fechaPago}
-            onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, fechaPago: e.target.value }))}
-            className="rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30"
-          />
+          <div>
+            <label className="block text-xs text-white/40 mb-1">Para cuándo es</label>
+            <input
+              type="date"
+              value={proyecto.fecha}
+              onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, fecha: e.target.value }))}
+              className="input"
+            />
+          </div>
         </div>
         <p className="mt-3 text-sm text-white/50">
           Estado: <span className="text-white">{estadoProyecto(proyecto)}</span>
@@ -173,19 +191,68 @@ export default function ProyectoDetalle() {
 
       {/* Gastos */}
       <Section title={`Gastos — total ${formatCurrency(totalGastos(proyecto))}`}>
-        <Tabla
-          headers={["Producto", "Precio", "Cant.", "Pagó", ""]}
-          rows={proyecto.gastos.map((g) => [
-            g.producto,
-            formatCurrency(g.precio),
-            String(g.cantidad),
-            g.pagadoPor,
-            <button key="del" onClick={() => borrar("gastos", g.id)} className="text-white/30 hover:text-red-400">
-              ✕
-            </button>,
-          ])}
-        />
-        <form onSubmit={addGasto} className="flex flex-wrap gap-2 mt-3">
+        {proyecto.gastos.length > 0 && (
+          <table className="w-full text-sm mb-3">
+            <thead>
+              <tr className="text-white/40 text-xs">
+                <th className="text-left font-normal pb-2">Producto</th>
+                <th className="text-left font-normal pb-2">Precio</th>
+                <th className="text-left font-normal pb-2">Cant.</th>
+                <th className="text-left font-normal pb-2">Pagó</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {proyecto.gastos.map((g) => (
+                <tr key={g.id} className="border-t border-white/5">
+                  <td className="py-1.5 pr-2">
+                    <input
+                      value={g.producto}
+                      onChange={(e) => editarGasto(g.id, "producto", e.target.value)}
+                      className="input w-full"
+                    />
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <input
+                      type="number"
+                      value={g.precio}
+                      onChange={(e) => editarGasto(g.id, "precio", e.target.value)}
+                      className="input w-24"
+                    />
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={g.cantidad}
+                      onChange={(e) => editarGasto(g.id, "cantidad", e.target.value)}
+                      className="input w-16"
+                    />
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <select
+                      value={g.pagadoPor}
+                      onChange={(e) => editarGasto(g.id, "pagadoPor", e.target.value)}
+                      className="input"
+                    >
+                      {SOCIOS.map((s) => (
+                        <option key={s} value={s} className="bg-black">
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="py-1.5">
+                    <button onClick={() => borrar("gastos", g.id)} className="text-white/30 hover:text-red-400">
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <form onSubmit={addGasto} className="flex flex-wrap gap-2">
           <input value={gProd} onChange={(e) => setGProd(e.target.value)} placeholder="Producto" className="input flex-1 min-w-[140px]" />
           <input value={gPrecio} onChange={(e) => setGPrecio(e.target.value)} placeholder="Precio" type="number" className="input w-28" />
           <input value={gCant} onChange={(e) => setGCant(e.target.value)} placeholder="Cant." type="number" step="0.1" className="input w-20" />
@@ -204,18 +271,53 @@ export default function ProyectoDetalle() {
 
       {/* Ingresos */}
       <Section title={`Ingresos — total ${formatCurrency(totalIngresos(proyecto))}`}>
-        <Tabla
-          headers={["Producto", "Precio", "Cant.", ""]}
-          rows={proyecto.ingresos.map((i) => [
-            i.producto,
-            formatCurrency(i.precio),
-            String(i.cantidad),
-            <button key="del" onClick={() => borrar("ingresos", i.id)} className="text-white/30 hover:text-red-400">
-              ✕
-            </button>,
-          ])}
-        />
-        <form onSubmit={addIngreso} className="flex flex-wrap gap-2 mt-3">
+        {proyecto.ingresos.length > 0 && (
+          <table className="w-full text-sm mb-3">
+            <thead>
+              <tr className="text-white/40 text-xs">
+                <th className="text-left font-normal pb-2">Producto</th>
+                <th className="text-left font-normal pb-2">Precio</th>
+                <th className="text-left font-normal pb-2">Cant.</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {proyecto.ingresos.map((i) => (
+                <tr key={i.id} className="border-t border-white/5">
+                  <td className="py-1.5 pr-2">
+                    <input
+                      value={i.producto}
+                      onChange={(e) => editarIngreso(i.id, "producto", e.target.value)}
+                      className="input w-full"
+                    />
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <input
+                      type="number"
+                      value={i.precio}
+                      onChange={(e) => editarIngreso(i.id, "precio", e.target.value)}
+                      className="input w-24"
+                    />
+                  </td>
+                  <td className="py-1.5 pr-2">
+                    <input
+                      type="number"
+                      value={i.cantidad}
+                      onChange={(e) => editarIngreso(i.id, "cantidad", e.target.value)}
+                      className="input w-16"
+                    />
+                  </td>
+                  <td className="py-1.5">
+                    <button onClick={() => borrar("ingresos", i.id)} className="text-white/30 hover:text-red-400">
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <form onSubmit={addIngreso} className="flex flex-wrap gap-2">
           <input value={iProd} onChange={(e) => setIProd(e.target.value)} placeholder="Producto" className="input flex-1 min-w-[140px]" />
           <input value={iPrecio} onChange={(e) => setIPrecio(e.target.value)} placeholder="Precio" type="number" className="input w-28" />
           <input value={iCant} onChange={(e) => setICant(e.target.value)} placeholder="Cant." type="number" className="input w-20" />
@@ -238,38 +340,29 @@ export default function ProyectoDetalle() {
         </div>
       </Section>
 
-      {/* Filamento */}
-      <Section title="Filamento">
-        <Tabla
-          headers={["Pieza", "Color", "Peso", ""]}
-          rows={proyecto.filamentos.map((f) => [
-            f.pieza,
-            f.color,
-            f.peso,
-            <button key="del" onClick={() => borrar("filamentos", f.id)} className="text-white/30 hover:text-red-400">
-              ✕
-            </button>,
-          ])}
-        />
-        <form onSubmit={addFilamento} className="flex flex-wrap gap-2 mt-3">
-          <input value={fPieza} onChange={(e) => setFPieza(e.target.value)} placeholder="Pieza" className="input flex-1 min-w-[120px]" />
-          <input value={fColor} onChange={(e) => setFColor(e.target.value)} placeholder="Color" className="input w-32" />
-          <input value={fPeso} onChange={(e) => setFPeso(e.target.value)} placeholder="Peso" className="input w-24" />
-          <button type="submit" className="px-3 py-1.5 rounded-md bg-white text-black text-sm">
-            Agregar
-          </button>
-        </form>
-      </Section>
-
       {/* Tareas */}
       <Section title="Tareas">
         <div className="space-y-1 mb-3">
           {proyecto.tareas.map((t) => (
             <div key={t.id} className="flex items-center gap-2 text-sm py-1">
-              <input type="checkbox" checked={t.hecha} onChange={() => toggleTarea(t.id)} />
-              <span className={t.hecha ? "line-through text-white/30" : ""}>{t.descripcion}</span>
-              <span className="text-white/40 text-xs">({t.asignadoA})</span>
-              <button onClick={() => borrar("tareas", t.id)} className="ml-auto text-white/30 hover:text-red-400">
+              <input type="checkbox" checked={t.hecha} onChange={() => editarTarea(t.id, "hecha", !t.hecha)} />
+              <input
+                value={t.descripcion}
+                onChange={(e) => editarTarea(t.id, "descripcion", e.target.value)}
+                className={`input flex-1 ${t.hecha ? "line-through text-white/30" : ""}`}
+              />
+              <select
+                value={t.asignadoA}
+                onChange={(e) => editarTarea(t.id, "asignadoA", e.target.value)}
+                className="input w-24"
+              >
+                {SOCIOS.map((s) => (
+                  <option key={s} value={s} className="bg-black">
+                    {s}
+                  </option>
+                ))}
+              </select>
+              <button onClick={() => borrar("tareas", t.id)} className="text-white/30 hover:text-red-400">
                 ✕
               </button>
             </div>
@@ -300,33 +393,5 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="text-sm font-medium text-white/70 mb-3">{title}</h2>
       {children}
     </div>
-  );
-}
-
-function Tabla({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
-  if (rows.length === 0) return <p className="text-sm text-white/30">Sin datos todavía.</p>;
-  return (
-    <table className="w-full text-sm">
-      <thead>
-        <tr className="text-white/40 text-xs">
-          {headers.map((h, i) => (
-            <th key={i} className="text-left font-normal pb-2">
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i} className="border-t border-white/5">
-            {row.map((cell, j) => (
-              <td key={j} className="py-1.5 pr-2">
-                {cell}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
   );
 }

@@ -38,12 +38,10 @@ export default function Tablero() {
       nombre: nombre.trim(),
       cliente: cliente.trim(),
       entregado: false,
-      fechaEntrega: "",
       pagado: false,
-      fechaPago: "",
+      fecha: "",
       gastos: [],
       ingresos: [],
-      filamentos: [],
       tareas: [],
     };
     addProyecto(nuevo);

@@ -16,13 +16,6 @@ export interface Ingreso {
   cantidad: number;
 }
 
-export interface Filamento {
-  id: string;
-  pieza: string;
-  color: string;
-  peso: string;
-}
-
 export interface Tarea {
   id: string;
   descripcion: string;
@@ -36,12 +29,10 @@ export interface Proyecto {
   nombre: string;
   cliente: string;
   entregado: boolean;
-  fechaEntrega: string; // ISO o ""
   pagado: boolean;
-  fechaPago: string; // ISO o ""
+  fecha: string; // para cuándo es (ISO o "")
   gastos: Gasto[];
   ingresos: Ingreso[];
-  filamentos: Filamento[];
   tareas: Tarea[];
 }
 
@@ -65,3 +56,24 @@ export interface DB {
 }
 
 export type EstadoProyecto = "En proceso" | "Entregado" | "Cobrado";
+
+// Adapta datos guardados con el esquema viejo (fechaEntrega/fechaPago/filamentos)
+// al esquema actual, sin perder la fecha que ya habían cargado.
+export function normalizeDB(raw: Partial<DB> | null | undefined): DB {
+  const proyectos = (raw?.proyectos ?? []).map((p) => {
+    const legacy = p as Proyecto & { fechaEntrega?: string; fechaPago?: string };
+    return {
+      id: legacy.id,
+      numero: legacy.numero,
+      nombre: legacy.nombre,
+      cliente: legacy.cliente,
+      entregado: !!legacy.entregado,
+      pagado: !!legacy.pagado,
+      fecha: legacy.fecha ?? legacy.fechaEntrega ?? legacy.fechaPago ?? "",
+      gastos: legacy.gastos ?? [],
+      ingresos: legacy.ingresos ?? [],
+      tareas: legacy.tareas ?? [],
+    };
+  });
+  return { proyectos, presupuestos: raw?.presupuestos ?? [] };
+}

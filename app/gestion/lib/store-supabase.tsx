@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, ReactNode } from "react";
-import { DB, Proyecto, Presupuesto } from "./types";
+import { DB, Proyecto, Presupuesto, normalizeDB } from "./types";
 import { seedDB } from "./seed-data";
 import { StoreContext } from "./store";
 import { supabase } from "./supabaseClient";
@@ -34,8 +34,9 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
       }
 
       if (data?.data) {
-        setDb(data.data as DB);
-        dbRef.current = data.data as DB;
+        const normalized = normalizeDB(data.data as DB);
+        setDb(normalized);
+        dbRef.current = normalized;
       } else {
         // Primera vez: no existe la fila todavía, la creamos con los datos semilla.
         await supabase!.from(TABLE).insert({ id: ROW_ID, data: seedDB });
@@ -57,7 +58,7 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
             writingOwnChange.current = false;
             return;
           }
-          const nuevaData = (payload.new as { data: DB }).data;
+          const nuevaData = normalizeDB((payload.new as { data: DB }).data);
           setDb(nuevaData);
           dbRef.current = nuevaData;
         }

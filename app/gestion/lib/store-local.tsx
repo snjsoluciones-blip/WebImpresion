@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { DB, Proyecto, Presupuesto } from "./types";
+import { DB, Proyecto, Presupuesto, normalizeDB } from "./types";
 import { seedDB } from "./seed-data";
 import { StoreContext } from "./store";
 
@@ -15,7 +15,7 @@ export function LocalStoreProvider({ children }: { children: ReactNode }) {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        setDb(JSON.parse(saved));
+        setDb(normalizeDB(JSON.parse(saved)));
       } catch {
         setDb(seedDB);
       }
