@@ -12,7 +12,6 @@ import { SupabaseStoreProvider } from "../lib/store-supabase";
 import LoginScreen from "./LoginScreen";
 import LoginScreenSupabase from "./LoginScreenSupabase";
 import Nav from "./Nav";
-import ChatPanel from "./ChatPanel";
 
 function Inner({ children }: { children: ReactNode }) {
   const { usuario } = useAuth();
@@ -24,8 +23,7 @@ function Inner({ children }: { children: ReactNode }) {
 
   return (
     <Store>
-      {/* Deja lugar al panel de chat fijo en pantallas grandes */}
-      <div className="lg:pr-[360px] min-h-screen">
+      <div className="min-h-screen">
         <Nav />
         <motion.main
           key={pathname}
@@ -37,7 +35,6 @@ function Inner({ children }: { children: ReactNode }) {
           {children}
         </motion.main>
       </div>
-      <ChatPanel />
     </Store>
   );
 }
