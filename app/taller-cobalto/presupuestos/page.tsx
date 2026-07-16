@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useStore, newId } from "../lib/store";
 import { totalPresupuesto, formatCurrency } from "../lib/calc";
 import { Presupuesto, PresupuestoItem } from "../lib/types";
+import { BASE } from "../lib/rutas";
 
 interface DraftItem {
   pieza: string;
@@ -136,7 +137,7 @@ export default function Presupuestos() {
             className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0"
           >
             <div>
-              <Link href={`/gestion/presupuestos/${p.id}`} className="font-medium hover:underline">
+              <Link href={`${BASE}/presupuestos/${p.id}`} className="font-medium hover:underline">
                 {p.cliente}
               </Link>
               <p className="text-xs text-white/40">{p.fecha}</p>

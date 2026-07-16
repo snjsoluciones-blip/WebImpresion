@@ -14,6 +14,7 @@ import {
   formatCurrency,
 } from "../../lib/calc";
 import PrintLoader from "../../components/PrintLoader";
+import { BASE } from "../../lib/rutas";
 
 export default function ProyectoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -42,7 +43,7 @@ export default function ProyectoDetalle() {
     return (
       <div>
         <p className="text-white/60 mb-4">No se encontró el proyecto.</p>
-        <button onClick={() => router.push("/gestion")} className="text-sm underline">
+        <button onClick={() => router.push(BASE)} className="text-sm underline">
           Volver al tablero
         </button>
       </div>
@@ -132,7 +133,7 @@ export default function ProyectoDetalle() {
   function eliminarProyecto() {
     if (!confirm(`¿Eliminar el proyecto "${proyecto!.nombre}"? No se puede deshacer.`)) return;
     removeProyecto(proyecto!.id);
-    router.push("/gestion");
+    router.push(BASE);
   }
 
   async function redactarMensaje() {
@@ -172,7 +173,7 @@ export default function ProyectoDetalle() {
     <div>
       <div className="flex items-start justify-between mb-6 gap-4">
         <div className="flex-1">
-          <button onClick={() => router.push("/gestion")} className="text-sm text-white/50 hover:text-white mb-2">
+          <button onClick={() => router.push(BASE)} className="text-sm text-white/50 hover:text-white mb-2">
             ← Tablero
           </button>
           <div className="flex items-baseline gap-2">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useStore } from "../lib/store";
 import { SOCIOS, Socio } from "../lib/types";
+import { BASE } from "../lib/rutas";
 
 export default function Tareas() {
   const { db, updateProyecto } = useStore();
@@ -58,7 +59,7 @@ export default function Tareas() {
                     <span className={t.hecha ? "line-through text-white/30" : ""}>
                       {t.descripcion}
                       <Link
-                        href={`/gestion/proyectos/${t.proyectoId}`}
+                        href={`${BASE}/proyectos/${t.proyectoId}`}
                         className="block text-xs text-white/40 hover:text-white/60"
                       >
                         {t.proyectoNombre}

@@ -3,6 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useStore } from "../../lib/store";
 import { totalPresupuesto, formatCurrency } from "../../lib/calc";
+import { BASE } from "../../lib/rutas";
 
 export default function PresupuestoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,7 @@ export default function PresupuestoDetalle() {
     return (
       <div>
         <p className="text-white/60 mb-4">No se encontró el presupuesto.</p>
-        <button onClick={() => router.push("/gestion/presupuestos")} className="text-sm underline">
+        <button onClick={() => router.push(`${BASE}/presupuestos`)} className="text-sm underline">
           Volver
         </button>
       </div>
@@ -40,7 +41,7 @@ export default function PresupuestoDetalle() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6 print:hidden">
-        <button onClick={() => router.push("/gestion/presupuestos")} className="text-sm text-white/50 hover:text-white">
+        <button onClick={() => router.push(`${BASE}/presupuestos`)} className="text-sm text-white/50 hover:text-white">
           ← Presupuestos
         </button>
         <div className="flex gap-2">

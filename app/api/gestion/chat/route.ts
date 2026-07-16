@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { CHAT_TOOLS } from "../../../gestion/lib/chat-tools";
+import { CHAT_TOOLS } from "../../../taller-cobalto/lib/chat-tools";
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY;

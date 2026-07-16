@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useStore } from "../lib/store";
 import { Proyecto } from "../lib/types";
+import { BASE } from "../lib/rutas";
 
 const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const MESES = [
@@ -91,7 +92,7 @@ export default function Calendario() {
               {proyectosDelDia.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/gestion/proyectos/${p.id}`}
+                  href={`${BASE}/proyectos/${p.id}`}
                   className="block truncate rounded bg-white/10 px-1.5 py-0.5 mb-1 hover:bg-white/20"
                   title={p.nombre}
                 >
@@ -111,7 +112,7 @@ export default function Calendario() {
         {proximos.map((p) => (
           <Link
             key={p.id}
-            href={`/gestion/proyectos/${p.id}`}
+            href={`${BASE}/proyectos/${p.id}`}
             className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0 hover:bg-white/[0.04]"
           >
             <span className="font-medium">

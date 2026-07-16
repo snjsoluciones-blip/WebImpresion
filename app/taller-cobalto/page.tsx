@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useStore, newId } from "./lib/store";
 import { estadoProyecto, ganancia, gananciaTotal, porCobrar, formatCurrency } from "./lib/calc";
 import { EstadoProyecto, Proyecto } from "./lib/types";
+import { BASE } from "./lib/rutas";
 
 const FILTROS: (EstadoProyecto | "Todos")[] = ["Todos", "En proceso", "Entregado", "Cobrado"];
 
@@ -125,7 +126,7 @@ export default function Tablero() {
               transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.4), ease: "easeOut" }}
             >
               <Link
-                href={`/gestion/proyectos/${p.id}`}
+                href={`${BASE}/proyectos/${p.id}`}
                 className="grid grid-cols-[2fr_1.3fr_1fr_1fr] gap-2 px-4 py-3 items-center border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition"
               >
                 <span className="font-medium">
