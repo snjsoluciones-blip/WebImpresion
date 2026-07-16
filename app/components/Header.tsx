@@ -1,8 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+
+// Entrada secreta a la app de gestión: 5 toques seguidos en el logo.
+// Mantener en sync con BASE de app/taller-cobalto/lib/rutas.ts
+const GESTION_PATH = "/taller-cobalto";
 
 const navLinks = [
   { label: "Servicios", href: "#servicios" },
@@ -15,12 +20,27 @@ const navLinks = [
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const taps = useRef<{ count: number; t: number }>({ count: 0, t: 0 });
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  function handleLogoClick(e: React.MouseEvent) {
+    e.preventDefault();
+    const now = Date.now();
+    const count = now - taps.current.t < 1500 ? taps.current.count + 1 : 1;
+    taps.current = { count, t: now };
+    if (count >= 5) {
+      taps.current = { count: 0, t: 0 };
+      router.push(GESTION_PATH);
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return (
     <header
@@ -32,7 +52,7 @@ export default function Header() {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 select-none">
+        <a href="#" onClick={handleLogoClick} className="flex items-center gap-2 select-none">
           <Image
             src="/images/snj-logo.png"
             alt="SNJ Soluciones"
