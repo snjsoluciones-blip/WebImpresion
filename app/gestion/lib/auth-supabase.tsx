@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { Socio } from "./types";
+import { Socio, SOCIOS } from "./types";
 import { AuthContext } from "./auth";
 import { supabase } from "./supabaseClient";
-import { buscarUsuario } from "./acceso";
 
-// La identidad y el permiso salen SIEMPRE de la lista de autorizados (acceso.ts),
-// no de metadata de la cuenta. Si el email no está en la lista, no hay socio => no entra.
-function socioFromUser(user: { email?: string | null } | null | undefined): Socio | null {
-  return buscarUsuario(user?.email)?.socio ?? null;
+function socioFromUser(user: { user_metadata?: Record<string, unknown> } | null | undefined): Socio | null {
+  const socio = user?.user_metadata?.socio;
+  if (typeof socio === "string" && (SOCIOS as readonly string[]).includes(socio)) {
+    return socio as Socio;
+  }
+  return null;
 }
 
 export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
@@ -40,12 +41,30 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     if (error || !data.user) return false;
     const socio = socioFromUser(data.user);
     if (!socio) {
-      // El email no está en la lista de autorizados (acceso.ts): se cierra la sesión.
+      // La cuenta existe pero no tiene asignado a qué socio corresponde.
       await supabase.auth.signOut();
       return false;
     }
     setUsuario(socio);
     return true;
+  }
+
+  async function signUp(
+    email: string,
+    password: string,
+    socio: Socio
+  ): Promise<{ ok: boolean; error?: string }> {
+    if (!supabase) return { ok: false, error: "Supabase no está configurado." };
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { socio } },
+    });
+    if (error) return { ok: false, error: error.message };
+    if (data.session?.user) {
+      setUsuario(socio);
+    }
+    return { ok: true };
   }
 
   function logout() {
@@ -56,6 +75,6 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   if (!ready) return null;
 
   return (
-    <AuthContext.Provider value={{ usuario, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ usuario, login, signUp, logout }}>{children}</AuthContext.Provider>
   );
 }
