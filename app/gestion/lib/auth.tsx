@@ -6,7 +6,6 @@ import { Socio } from "./types";
 export interface AuthCtx {
   usuario: Socio | null;
   login: (identifier: string, password: string) => boolean | Promise<boolean>;
-  signUp?: (email: string, password: string, socio: Socio) => Promise<{ ok: boolean; error?: string }>;
   logout: () => void;
 }
 
