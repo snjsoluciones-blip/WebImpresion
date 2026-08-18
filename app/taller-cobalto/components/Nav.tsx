@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BASE } from "../lib/rutas";
+import { useAuth } from "../lib/auth";
 
 const LINKS = [
   { href: BASE, label: "Tablero" },
@@ -14,6 +15,7 @@ const LINKS = [
 
 export default function Nav() {
   const pathname = usePathname();
+  const { usuario, logout } = useAuth();
 
   return (
     <header className="border-b border-white/10">
@@ -34,7 +36,15 @@ export default function Nav() {
             );
           })}
         </nav>
-        <span className="text-white/30 text-sm select-none">SNJ Gestión</span>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-white/60">{usuario}</span>
+          <button
+            onClick={logout}
+            className="px-3 py-1.5 rounded-md text-white/60 hover:bg-white/10 transition"
+          >
+            Salir
+          </button>
+        </div>
       </div>
     </header>
   );

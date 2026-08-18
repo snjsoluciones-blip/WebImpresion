@@ -4,14 +4,22 @@ import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { isSupabaseConfigured } from "../lib/supabaseClient";
+import { useAuth } from "../lib/auth";
+import { LocalAuthProvider } from "../lib/auth-local";
+import { SupabaseAuthProvider } from "../lib/auth-supabase";
 import { LocalStoreProvider } from "../lib/store-local";
 import { SupabaseStoreProvider } from "../lib/store-supabase";
+import LoginScreen from "./LoginScreen";
+import LoginScreenSupabase from "./LoginScreenSupabase";
 import Nav from "./Nav";
 
-// Sin login: se entra directo por la dirección secreta y los datos se comparten
-// entre todos (acceso público a la tabla, controlado en Supabase).
-export default function GestionShell({ children }: { children: ReactNode }) {
+function Inner({ children }: { children: ReactNode }) {
+  const { usuario } = useAuth();
   const pathname = usePathname();
+
+  // Sin sesión: pantalla de login. Nadie ve los datos sin iniciar sesión.
+  if (!usuario) return isSupabaseConfigured ? <LoginScreenSupabase /> : <LoginScreen />;
+
   const Store = isSupabaseConfigured ? SupabaseStoreProvider : LocalStoreProvider;
 
   return (
@@ -29,5 +37,15 @@ export default function GestionShell({ children }: { children: ReactNode }) {
         </motion.main>
       </div>
     </Store>
+  );
+}
+
+export default function GestionShell({ children }: { children: ReactNode }) {
+  const Auth = isSupabaseConfigured ? SupabaseAuthProvider : LocalAuthProvider;
+
+  return (
+    <Auth>
+      <Inner>{children}</Inner>
+    </Auth>
   );
 }
