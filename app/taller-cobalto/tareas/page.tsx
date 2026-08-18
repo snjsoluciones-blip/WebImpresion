@@ -15,6 +15,7 @@ export default function Tareas() {
   };
 
   for (const p of db.proyectos) {
+    if (p.eliminadoEn) continue;
     for (const t of p.tareas) {
       tareasPorSocio[t.asignadoA].push({
         proyectoId: p.id,

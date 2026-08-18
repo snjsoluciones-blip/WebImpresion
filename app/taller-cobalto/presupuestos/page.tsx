@@ -16,7 +16,8 @@ interface DraftItem {
 const emptyItem = (): DraftItem => ({ pieza: "", cantidad: "1", precio: "" });
 
 export default function Presupuestos() {
-  const { db, addPresupuesto, removePresupuesto } = useStore();
+  const { db, addPresupuesto, updatePresupuesto } = useStore();
+  const presupuestos = db.presupuestos.filter((p) => !p.eliminadoEn);
   const [showForm, setShowForm] = useState(false);
   const [cliente, setCliente] = useState("");
   const [items, setItems] = useState<DraftItem[]>([emptyItem()]);
@@ -50,6 +51,7 @@ export default function Presupuestos() {
       cliente: cliente.trim(),
       fecha: new Date().toISOString().slice(0, 10),
       items: parsedItems,
+      eliminadoEn: "",
     };
     addPresupuesto(nuevo);
     setCliente("");
@@ -128,10 +130,10 @@ export default function Presupuestos() {
       )}
 
       <div className="border border-white/10 rounded-lg overflow-hidden">
-        {db.presupuestos.length === 0 && (
+        {presupuestos.length === 0 && (
           <p className="px-4 py-6 text-sm text-white/40">Todavía no hay presupuestos.</p>
         )}
-        {[...db.presupuestos].reverse().map((p) => (
+        {[...presupuestos].reverse().map((p) => (
           <div
             key={p.id}
             className="flex items-center justify-between px-4 py-3 border-b border-white/5 last:border-0"
@@ -145,7 +147,10 @@ export default function Presupuestos() {
             <div className="flex items-center gap-4">
               <span>{formatCurrency(totalPresupuesto(p.items))}</span>
               <button
-                onClick={() => removePresupuesto(p.id)}
+                onClick={() => {
+                  if (!confirm(`¿Mandar el presupuesto de "${p.cliente}" a la papelera?`)) return;
+                  updatePresupuesto(p.id, (pr) => ({ ...pr, eliminadoEn: new Date().toISOString() }));
+                }}
                 className="text-white/30 hover:text-red-400 text-sm"
               >
                 Eliminar

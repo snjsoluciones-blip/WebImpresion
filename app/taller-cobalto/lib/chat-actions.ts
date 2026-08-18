@@ -53,8 +53,10 @@ export function aplicarAcciones(
   );
 
   for (const acc of ordenadas) {
+    const activos = proyectos.filter((p) => !p.eliminadoEn);
+
     if (acc.tipo === "crear_proyecto") {
-      if (buscarProyecto(proyectos, acc.nombre)) continue;
+      if (buscarProyecto(activos, acc.nombre)) continue;
       const numero = proyectos.length ? Math.max(...proyectos.map((p) => p.numero)) + 1 : 1;
       proyectos.push({
         id: newId(),
@@ -67,11 +69,12 @@ export function aplicarAcciones(
         gastos: [],
         ingresos: [],
         tareas: [],
+        eliminadoEn: "",
       });
       continue;
     }
 
-    const target = buscarProyecto(proyectos, acc.proyecto);
+    const target = buscarProyecto(activos, acc.proyecto);
     if (!target) continue;
     proyectos = proyectos.map((p) => {
       if (p.id !== target.id) return p;
@@ -123,18 +126,19 @@ export function aplicarAcciones(
 
 // Resumen compacto del estado actual para que la IA responda preguntas y ubique proyectos.
 export function resumenParaIA(db: DB, usuario: Socio): string {
-  const g = cuentasGlobales(db.proyectos);
+  const proyectos = db.proyectos.filter((p) => !p.eliminadoEn);
+  const g = cuentasGlobales(proyectos);
   const lineas: string[] = [];
   lineas.push(`Usuario logueado: ${usuario}. Socios: ${SOCIOS.join(", ")}.`);
   lineas.push(
-    `GLOBAL — Ganancia total: ${formatCurrency(gananciaTotal(db.proyectos))}. ` +
-      `Por cobrar: ${formatCurrency(porCobrar(db.proyectos))}.`
+    `GLOBAL — Ganancia total: ${formatCurrency(gananciaTotal(proyectos))}. ` +
+      `Por cobrar: ${formatCurrency(porCobrar(proyectos))}.`
   );
   for (const s of SOCIOS) {
     lineas.push(`  ${s}: puso ${formatCurrency(g[s].puso)}, le toca cobrar ${formatCurrency(g[s].cobra)}.`);
   }
   lineas.push('PROYECTOS (la "fecha" es para cuándo hay que tenerlo listo/entregar):');
-  for (const p of db.proyectos) {
+  for (const p of proyectos) {
     const rep = repartoProyecto(p);
     const repTxt = SOCIOS.map((s) => `${s} cobra ${formatCurrency(rep[s].cobra)}`).join(", ");
     const fechaTxt = p.fecha ? `fecha ${p.fecha}` : "sin fecha cargada";

@@ -1,9 +1,9 @@
-import { DB } from "./types";
+import { DB, normalizeDB } from "./types";
 
 let uid = 0;
 const id = () => `seed-${uid++}`;
 
-export const seedDB: DB = {
+export const seedDB: DB = normalizeDB({
   proyectos: [
     {
       id: id(),
@@ -25,6 +25,7 @@ export const seedDB: DB = {
       ],
       ingresos: [{ id: id(), producto: "Trofeo", precio: 50000, cantidad: 6 }],
       tareas: [],
+      eliminadoEn: "",
     },
     {
       id: id(),
@@ -37,6 +38,7 @@ export const seedDB: DB = {
       gastos: [],
       ingresos: [{ id: id(), producto: "Trofeo", precio: 50000, cantidad: 18 }],
       tareas: [],
+      eliminadoEn: "",
     },
     {
       id: id(),
@@ -49,6 +51,7 @@ export const seedDB: DB = {
       gastos: [{ id: id(), producto: "Flmnt", precio: 24605, cantidad: 1, pagadoPor: "Juan" }],
       ingresos: [{ id: id(), producto: "Trofeo Winston", precio: 50000, cantidad: 2 }],
       tareas: [],
+      eliminadoEn: "",
     },
     {
       id: id(),
@@ -68,6 +71,7 @@ export const seedDB: DB = {
         { id: id(), producto: "Soporte Volante", precio: 30200, cantidad: 2 },
       ],
       tareas: [],
+      eliminadoEn: "",
     },
     {
       id: id(),
@@ -80,6 +84,7 @@ export const seedDB: DB = {
       gastos: [],
       ingresos: [{ id: id(), producto: "Trofeo P. 1/2/3", precio: 60000, cantidad: 3 }],
       tareas: [],
+      eliminadoEn: "",
     },
     {
       id: id(),
@@ -92,6 +97,7 @@ export const seedDB: DB = {
       gastos: [{ id: id(), producto: "Flmt", precio: 23700, cantidad: 0.22, pagadoPor: "Juan" }],
       ingresos: [{ id: id(), producto: "Soporte Starlink", precio: 50000, cantidad: 1 }],
       tareas: [],
+      eliminadoEn: "",
     },
   ],
   presupuestos: [
@@ -100,6 +106,7 @@ export const seedDB: DB = {
       cliente: "Elio",
       fecha: "2026-07-14",
       items: [{ id: id(), pieza: "Engranaje", cantidad: 10, precio: 47000 }],
+      eliminadoEn: "",
     },
   ],
-};
+});

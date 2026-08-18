@@ -23,7 +23,7 @@ export default function Tablero() {
   const [nombre, setNombre] = useState("");
   const [cliente, setCliente] = useState("");
 
-  const proyectos = db.proyectos;
+  const proyectos = db.proyectos.filter((p) => !p.eliminadoEn);
   const activos = proyectos.filter((p) => estadoProyecto(p) !== "Cobrado").length;
 
   const filtrados = useMemo(
@@ -45,6 +45,7 @@ export default function Tablero() {
       gastos: [],
       ingresos: [],
       tareas: [],
+      eliminadoEn: "",
     };
     addProyecto(nuevo);
     setNombre("");

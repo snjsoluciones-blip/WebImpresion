@@ -19,7 +19,7 @@ import { BASE } from "../../lib/rutas";
 export default function ProyectoDetalle() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { db, updateProyecto, removeProyecto } = useStore();
+  const { db, updateProyecto } = useStore();
   const proyecto = db.proyectos.find((p) => p.id === id);
 
   const [gProd, setGProd] = useState("");
@@ -131,8 +131,8 @@ export default function ProyectoDetalle() {
   }
 
   function eliminarProyecto() {
-    if (!confirm(`¿Eliminar el proyecto "${proyecto!.nombre}"? No se puede deshacer.`)) return;
-    removeProyecto(proyecto!.id);
+    if (!confirm(`¿Mandar "${proyecto!.nombre}" a la papelera? Lo podés restaurar después.`)) return;
+    updateProyecto(proyecto!.id, (p) => ({ ...p, eliminadoEn: new Date().toISOString() }));
     router.push(BASE);
   }
 
@@ -191,10 +191,25 @@ export default function ProyectoDetalle() {
             className="text-sm text-white/50 bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 mt-1"
           />
         </div>
-        <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400 whitespace-nowrap">
-          Eliminar proyecto
-        </button>
+        {proyecto.eliminadoEn ? (
+          <button
+            onClick={() => updateProyecto(proyecto.id, (p) => ({ ...p, eliminadoEn: "" }))}
+            className="text-sm text-emerald-400 hover:text-emerald-300 whitespace-nowrap"
+          >
+            Restaurar de la papelera
+          </button>
+        ) : (
+          <button onClick={eliminarProyecto} className="text-sm text-red-400/70 hover:text-red-400 whitespace-nowrap">
+            Eliminar proyecto
+          </button>
+        )}
       </div>
+
+      {proyecto.eliminadoEn && (
+        <div className="mb-6 px-4 py-2 rounded-md bg-amber-400/10 text-amber-300 text-sm">
+          Este proyecto está en la papelera. No aparece en el tablero hasta que lo restaures.
+        </div>
+      )}
 
       {/* Mensaje al cliente con IA */}
       <div className="mb-6">

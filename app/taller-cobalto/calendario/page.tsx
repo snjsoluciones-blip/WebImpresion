@@ -26,7 +26,7 @@ export default function Calendario() {
   const proyectosPorFecha = useMemo(() => {
     const map: Record<string, Proyecto[]> = {};
     for (const p of db.proyectos) {
-      if (!p.fecha) continue;
+      if (!p.fecha || p.eliminadoEn) continue;
       if (!map[p.fecha]) map[p.fecha] = [];
       map[p.fecha].push(p);
     }
@@ -45,7 +45,9 @@ export default function Calendario() {
 
   const todayKey = toKey(new Date());
 
-  const proximos = [...db.proyectos].filter((p) => p.fecha).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  const proximos = [...db.proyectos]
+    .filter((p) => p.fecha && !p.eliminadoEn)
+    .sort((a, b) => a.fecha.localeCompare(b.fecha));
 
   return (
     <div>

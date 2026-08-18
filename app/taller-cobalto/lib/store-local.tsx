@@ -46,6 +46,13 @@ export function LocalStoreProvider({ children }: { children: ReactNode }) {
     setDb((prev) => ({ ...prev, presupuestos: [...prev.presupuestos, p] }));
   }
 
+  function updatePresupuesto(id: string, fn: (p: Presupuesto) => Presupuesto) {
+    setDb((prev) => ({
+      ...prev,
+      presupuestos: prev.presupuestos.map((p) => (p.id === id ? fn(p) : p)),
+    }));
+  }
+
   function removePresupuesto(id: string) {
     setDb((prev) => ({
       ...prev,
@@ -61,7 +68,16 @@ export function LocalStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <StoreContext.Provider
-      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto, applyBatch }}
+      value={{
+        db,
+        addProyecto,
+        updateProyecto,
+        removeProyecto,
+        addPresupuesto,
+        updatePresupuesto,
+        removePresupuesto,
+        applyBatch,
+      }}
     >
       {children}
     </StoreContext.Provider>

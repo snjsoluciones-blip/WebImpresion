@@ -6,7 +6,7 @@ import { SOCIOS } from "../lib/types";
 
 export default function Cuentas() {
   const { db } = useStore();
-  const cuentas = cuentasGlobales(db.proyectos);
+  const cuentas = cuentasGlobales(db.proyectos.filter((p) => !p.eliminadoEn));
 
   const promedio =
     SOCIOS.reduce((acc, s) => acc + cuentas[s].cobra, 0) / SOCIOS.length;

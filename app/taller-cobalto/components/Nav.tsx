@@ -11,6 +11,7 @@ const LINKS = [
   { href: `${BASE}/cuentas`, label: "Cuentas" },
   { href: `${BASE}/presupuestos`, label: "Presupuestos" },
   { href: `${BASE}/tareas`, label: "Tareas" },
+  { href: `${BASE}/papelera`, label: "Papelera" },
 ];
 
 export default function Nav() {

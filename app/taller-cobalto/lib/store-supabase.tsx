@@ -107,6 +107,15 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
     persist({ ...current, presupuestos: [...current.presupuestos, p] });
   }
 
+  function updatePresupuesto(id: string, fn: (p: Presupuesto) => Presupuesto) {
+    const current = dbRef.current;
+    if (!current) return;
+    persist({
+      ...current,
+      presupuestos: current.presupuestos.map((p) => (p.id === id ? fn(p) : p)),
+    });
+  }
+
   function removePresupuesto(id: string) {
     const current = dbRef.current;
     if (!current) return;
@@ -129,7 +138,16 @@ export function SupabaseStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <StoreContext.Provider
-      value={{ db, addProyecto, updateProyecto, removeProyecto, addPresupuesto, removePresupuesto, applyBatch }}
+      value={{
+        db,
+        addProyecto,
+        updateProyecto,
+        removeProyecto,
+        addPresupuesto,
+        updatePresupuesto,
+        removePresupuesto,
+        applyBatch,
+      }}
     >
       {children}
     </StoreContext.Provider>

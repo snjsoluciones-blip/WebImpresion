@@ -12,6 +12,7 @@ export interface StoreCtx {
   updateProyecto: (id: string, fn: (p: Proyecto) => Proyecto) => void;
   removeProyecto: (id: string) => void;
   addPresupuesto: (p: Presupuesto) => void;
+  updatePresupuesto: (id: string, fn: (p: Presupuesto) => Presupuesto) => void;
   removePresupuesto: (id: string) => void;
   applyBatch: (mutator: (db: DB) => DB) => void;
 }
