@@ -5,16 +5,21 @@ import { Socio, SOCIOS } from "./types";
 import { AuthContext } from "./auth";
 import { supabase } from "./supabaseClient";
 
-function socioFromUser(user: { user_metadata?: Record<string, unknown> } | null | undefined): Socio | null {
-  const socio = user?.user_metadata?.socio;
+// Nombre a mostrar: si la cuenta tiene un socio asignado lo usa; si no (cuenta
+// compartida tipo "admin"), muestra "Admin". Cualquier usuario autenticado entra.
+function nombreDeUsuario(
+  user: { user_metadata?: Record<string, unknown> } | null | undefined
+): string | null {
+  if (!user) return null;
+  const socio = user.user_metadata?.socio;
   if (typeof socio === "string" && (SOCIOS as readonly string[]).includes(socio)) {
-    return socio as Socio;
+    return socio;
   }
-  return null;
+  return "Admin";
 }
 
 export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
-  const [usuario, setUsuario] = useState<Socio | null>(null);
+  const [usuario, setUsuario] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -24,12 +29,12 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     }
 
     supabase.auth.getSession().then(({ data }) => {
-      setUsuario(socioFromUser(data.session?.user));
+      setUsuario(nombreDeUsuario(data.session?.user));
       setReady(true);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUsuario(socioFromUser(session?.user));
+      setUsuario(nombreDeUsuario(session?.user));
     });
 
     return () => listener.subscription.unsubscribe();
@@ -39,13 +44,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return false;
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error || !data.user) return false;
-    const socio = socioFromUser(data.user);
-    if (!socio) {
-      // La cuenta existe pero no tiene asignado a qué socio corresponde.
-      await supabase.auth.signOut();
-      return false;
-    }
-    setUsuario(socio);
+    setUsuario(nombreDeUsuario(data.user));
     return true;
   }
 

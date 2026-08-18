@@ -11,7 +11,7 @@ const STAGE1_PASSWORD = "snj2026";
 const STORAGE_KEY = "snj-gestion-session";
 
 export function LocalAuthProvider({ children }: { children: ReactNode }) {
-  const [usuario, setUsuario] = useState<Socio | null>(null);
+  const [usuario, setUsuario] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
