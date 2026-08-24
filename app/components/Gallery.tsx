@@ -20,18 +20,6 @@ const items: GalleryItem[] = [
     category: "Automovilismo",
   },
   {
-    src: "/images/gear.png",
-    title: "Engranaje de Precisión",
-    desc: "Pieza de transmisión con tolerancias exactas, impresa capa por capa sin postprocesado.",
-    category: "Mecánica",
-  },
-  {
-    src: "/images/connector.png",
-    title: "Conector Roscado",
-    desc: "Acoplamiento de alta resistencia con rosca funcional, lista para usar apenas sale de la impresora.",
-    category: "Conectores",
-  },
-  {
     src: "/images/soporte-aim-solo2.jpg",
     video: "/videos/soporte-aim-solo2.mp4",
     title: "Soportes de Telemetría a Medida",
@@ -41,7 +29,7 @@ const items: GalleryItem[] = [
   {
     src: "/images/llavero-mc-racing.jpg",
     title: "Llaveros Personalizados",
-    desc: "Diseño y modelado 100% a medida del logo del cliente. Llaveros terminados en menos de una semana.",
+    desc: "Tanda de 500 llaveros con diseño y modelado 100% a medida del logo del cliente, terminados en menos de una semana.",
     category: "Personalizados",
   },
 ];
