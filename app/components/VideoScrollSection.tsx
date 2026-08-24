@@ -24,6 +24,10 @@ export default function VideoScrollSection() {
     const section = sectionRef.current;
     if (!video || !section) return;
 
+    let cancelled = false;
+    let trigger: ScrollTrigger | null = null;
+    let lastSeek = -1;
+
     const textRefs = [text1Ref.current, text2Ref.current, text3Ref.current];
 
     // Text opacity ranges: [fadeInStart, peakStart, peakEnd, fadeOutEnd]
@@ -52,18 +56,27 @@ export default function VideoScrollSection() {
       return 0;
     };
 
-    const ctx = gsap.context(() => {
-      ScrollTrigger.create({
+    // Arranca el ScrollTrigger recién cuando el video tiene duración real
+    // (si no, el primer scroll pega un salto porque duration es 0/NaN).
+    const start = () => {
+      if (cancelled || trigger) return;
+      const duration = video.duration;
+      if (!duration || Number.isNaN(duration)) return;
+
+      trigger = ScrollTrigger.create({
         trigger: section,
         start: "top top",
         end: "bottom bottom",
-        scrub: true,
+        scrub: 0.35,
         onUpdate: (self) => {
           const p = self.progress;
 
-          // Sync video playback
-          if (video.readyState >= 1 && video.duration) {
-            video.currentTime = p * video.duration;
+          // Solo reubica el video si el salto es perceptible: reasignar
+          // currentTime en cada pixel de scroll es lo que trababa el scroll.
+          const target = p * duration;
+          if (video.readyState >= 2 && Math.abs(target - lastSeek) > 0.033) {
+            video.currentTime = target;
+            lastSeek = target;
           }
 
           // Animate text overlays
@@ -76,9 +89,19 @@ export default function VideoScrollSection() {
           });
         },
       });
-    }, sectionRef);
+    };
 
-    return () => ctx.revert();
+    if (video.readyState >= 1 && video.duration) {
+      start();
+    } else {
+      video.addEventListener("loadedmetadata", start, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      video.removeEventListener("loadedmetadata", start);
+      trigger?.kill();
+    };
   }, []);
 
   return (
