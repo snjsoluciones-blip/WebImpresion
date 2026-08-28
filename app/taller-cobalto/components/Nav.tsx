@@ -9,6 +9,7 @@ const LINKS = [
   { href: BASE, label: "Tablero" },
   { href: `${BASE}/calendario`, label: "Calendario" },
   { href: `${BASE}/cuentas`, label: "Cuentas" },
+  { href: `${BASE}/calculadora`, label: "Calculadora" },
   { href: `${BASE}/papelera`, label: "Papelera" },
 ];
 

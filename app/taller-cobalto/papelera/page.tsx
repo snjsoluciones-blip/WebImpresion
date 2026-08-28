@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useStore } from "../lib/store";
 import { ganancia, totalPresupuesto, formatCurrency } from "../lib/calc";
 import { normalizeDB, DB } from "../lib/types";
+import { exportarResumenProyectosCSV, exportarGastosCSV } from "../lib/csv";
 import { BASE } from "../lib/rutas";
 
 export default function Papelera() {
@@ -108,6 +109,28 @@ export default function Papelera() {
           </button>
           <input ref={fileRef} type="file" accept="application/json" onChange={onArchivoElegido} className="hidden" />
           {mensaje && <span className="text-xs text-white/50">{mensaje}</span>}
+        </div>
+      </div>
+
+      <div className="border border-white/10 rounded-lg p-4 mb-8">
+        <h2 className="text-sm font-medium text-white/70 mb-1">Exportar a Excel</h2>
+        <p className="text-xs text-white/40 mb-3">
+          Archivos CSV que se abren directo en Excel. Solo incluyen proyectos confirmados
+          (no los de la papelera ni los "sin confirmar").
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => exportarResumenProyectosCSV(db)}
+            className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20"
+          >
+            Resumen de proyectos (CSV)
+          </button>
+          <button
+            onClick={() => exportarGastosCSV(db)}
+            className="px-3 py-1.5 rounded-md text-sm bg-white/10 hover:bg-white/20"
+          >
+            Detalle de gastos (CSV)
+          </button>
         </div>
       </div>
 
