@@ -69,6 +69,7 @@ export function aplicarAcciones(
         gastos: [],
         ingresos: [],
         tareas: [],
+        confirmado: true,
         eliminadoEn: "",
       });
       continue;

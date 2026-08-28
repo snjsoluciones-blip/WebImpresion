@@ -30,6 +30,7 @@ export interface Proyecto {
   cliente: string;
   entregado: boolean;
   pagado: boolean;
+  confirmado: boolean; // false = todavía no es seguro que se haga
   fecha: string; // para cuándo es (ISO o "")
   gastos: Gasto[];
   ingresos: Ingreso[];
@@ -57,7 +58,7 @@ export interface DB {
   presupuestos: Presupuesto[];
 }
 
-export type EstadoProyecto = "En proceso" | "Entregado" | "Cobrado";
+export type EstadoProyecto = "En proceso" | "Pagado sin entregar" | "Entregado" | "Cobrado";
 
 // Adapta datos guardados con el esquema viejo (fechaEntrega/fechaPago/filamentos,
 // sin papelera) al esquema actual, sin perder nada de lo ya cargado.
@@ -71,6 +72,7 @@ export function normalizeDB(raw: Partial<DB> | null | undefined): DB {
       cliente: legacy.cliente,
       entregado: !!legacy.entregado,
       pagado: !!legacy.pagado,
+      confirmado: legacy.confirmado ?? true,
       fecha: legacy.fecha ?? legacy.fechaEntrega ?? legacy.fechaPago ?? "",
       gastos: legacy.gastos ?? [],
       ingresos: legacy.ingresos ?? [],

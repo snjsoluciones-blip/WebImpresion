@@ -31,7 +31,8 @@ export function repartoProyecto(p: Proyecto): Record<Socio, { puso: number; cobr
 }
 
 export function estadoProyecto(p: Proyecto): EstadoProyecto {
-  if (p.pagado) return "Cobrado";
+  if (p.entregado && p.pagado) return "Cobrado";
+  if (p.pagado) return "Pagado sin entregar";
   if (p.entregado) return "Entregado";
   return "En proceso";
 }

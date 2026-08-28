@@ -283,6 +283,14 @@ export default function ProyectoDetalle() {
             />
             Pagado
           </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={proyecto.confirmado}
+              onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, confirmado: e.target.checked }))}
+            />
+            Confirmado
+          </label>
           <div>
             <label className="block text-xs text-white/40 mb-1">Para cuándo es</label>
             <input

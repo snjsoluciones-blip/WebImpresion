@@ -25,6 +25,7 @@ export const seedDB: DB = normalizeDB({
       ],
       ingresos: [{ id: id(), producto: "Trofeo", precio: 50000, cantidad: 6 }],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
     {
@@ -38,6 +39,7 @@ export const seedDB: DB = normalizeDB({
       gastos: [],
       ingresos: [{ id: id(), producto: "Trofeo", precio: 50000, cantidad: 18 }],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
     {
@@ -51,6 +53,7 @@ export const seedDB: DB = normalizeDB({
       gastos: [{ id: id(), producto: "Flmnt", precio: 24605, cantidad: 1, pagadoPor: "Juan" }],
       ingresos: [{ id: id(), producto: "Trofeo Winston", precio: 50000, cantidad: 2 }],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
     {
@@ -71,6 +74,7 @@ export const seedDB: DB = normalizeDB({
         { id: id(), producto: "Soporte Volante", precio: 30200, cantidad: 2 },
       ],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
     {
@@ -84,6 +88,7 @@ export const seedDB: DB = normalizeDB({
       gastos: [],
       ingresos: [{ id: id(), producto: "Trofeo P. 1/2/3", precio: 60000, cantidad: 3 }],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
     {
@@ -97,6 +102,7 @@ export const seedDB: DB = normalizeDB({
       gastos: [{ id: id(), producto: "Flmt", precio: 23700, cantidad: 0.22, pagadoPor: "Juan" }],
       ingresos: [{ id: id(), producto: "Soporte Starlink", precio: 50000, cantidad: 1 }],
       tareas: [],
+      confirmado: true,
       eliminadoEn: "",
     },
   ],
