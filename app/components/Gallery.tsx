@@ -27,13 +27,17 @@ interface GalleryItem {
   label: string;
   /** Ficha técnica: tomada literalmente de la descripción publicada. */
   specs: SpecRow[];
+  /** Segunda foto en paralelo (díptico), p. ej. otra unidad de la misma serie o el proceso de impresión. */
+  pairSrc?: string;
+  pairAlt?: string;
+  pairLabel?: string;
 }
 
 const items: GalleryItem[] = [
   {
     src: "/images/trofeo-nankang.jpeg",
     title: "Trofeos Nankang",
-    desc: "Serie de dieciocho trofeos para el campeonato, con base texturada y el logo del sponsor grabado en relieve.",
+    desc: "Serie de dieciocho trofeos para el campeonato, con base texturada, el logo del sponsor grabado en relieve y una placa distinta por categoría.",
     category: "Automovilismo",
     alt: "Serie de trofeos impresos en 3D con base texturada para el campeonato Nankang",
     label: "Serie de 18",
@@ -42,6 +46,9 @@ const items: GalleryItem[] = [
       { k: "Terminación", v: "Base texturada + logo en relieve" },
       { k: "Rubro", v: "Automovilismo" },
     ],
+    pairSrc: "/images/trofeo-nankang-pole-minicas.jpg",
+    pairAlt: "Otro trofeo de la misma serie Nankang, con la placa grabada para la categoría Mini Cas",
+    pairLabel: "Otra unidad",
   },
   {
     src: "/images/soporte-aim-solo2.jpg",
@@ -70,6 +77,22 @@ const items: GalleryItem[] = [
       { k: "Modelado", v: "100% propio" },
     ],
   },
+  {
+    src: "/images/trofeo-piloto-dorado.jpg",
+    title: "Trofeo Piloto en Acabado Dorado",
+    desc: "Figura de piloto de pie con las manos en alto, en acabado metalizado dorado, sobre base circular negra.",
+    category: "Personalizados",
+    alt: "Trofeo de un piloto de pie con las manos en alto, en acabado metalizado dorado",
+    label: "Acabado dorado",
+    specs: [
+      { k: "Acabado", v: "Metalizado dorado" },
+      { k: "Base", v: "Circular, negra" },
+      { k: "Rubro", v: "Personalizados" },
+    ],
+    pairSrc: "/images/trofeo-piloto-dorado-impresion.jpg",
+    pairAlt: "El mismo trofeo recién terminado, todavía sobre la base de la impresora 3D",
+    pairLabel: "Recién impreso",
+  },
 ];
 
 /* Capa extra de scanlines que se suma a la de MediaFrame (.04) en hover → ~.06 total. */
@@ -89,11 +112,79 @@ function ArrowIcon() {
   );
 }
 
+type GalleryMediaProps = {
+  src: string;
+  video?: string;
+  alt: string;
+  category?: string;
+  hoverLabel: string;
+  hoverFx: boolean;
+  onOpen: () => void;
+  playLabel?: string;
+  sizes: string;
+};
+
+/** Un marco de media (foto o video) con TiltCard + rótulo en hover. Reutilizado para el caso
+ * simple y para el par de fotos en paralelo (díptico). */
+function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, playLabel, sizes }: GalleryMediaProps) {
+  return (
+    <TiltCard max={5} glare>
+      <div className="group/gal relative">
+        <MediaFrame
+          src={src}
+          video={video}
+          poster={video ? src : undefined}
+          alt={alt}
+          // MediaFrame necesita un ratio en el marco; la variable lo hace responsive:
+          // 4/3 (1.3333) en mobile, 16/10 (1.6) desde lg. Fallback 16/10.
+          ratio="var(--gal-ratio, 1.6)"
+          className="[--gal-ratio:1.3333] lg:[--gal-ratio:1.6]"
+          sizes={sizes}
+          quality={80}
+          category={category}
+          badge={video ? "Video" : undefined}
+          preload="none"
+          playLabel={playLabel}
+          onOpen={onOpen}
+        />
+
+        {hoverFx && (
+          <>
+            {/* Scanlines: suben de .04 a ~.06 */}
+            <div
+              aria-hidden="true"
+              className="layer-lines layer-lines--nofade pointer-events-none absolute inset-0 rounded-[var(--r-lg)] opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
+              style={HOVER_LINES}
+            />
+            {/* Borde: --line-1 → --line-3 */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 rounded-[var(--r-lg)] border opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
+              style={{ ...HOVER_EASE, borderColor: "var(--line-3)" }}
+            />
+            {/* Rótulo mono abajo a la izquierda (a la derecha del play si hay video) */}
+            <span
+              aria-hidden="true"
+              className={`font-mono-tech pointer-events-none absolute bottom-4 flex h-10 translate-y-1 items-center text-[11px] uppercase tracking-[0.18em] opacity-0 transition-[opacity,translate,transform] duration-[500ms] group-hover/gal:translate-y-0 group-hover/gal:opacity-100 ${
+                video ? "left-16" : "left-4"
+              }`}
+              style={{ ...HOVER_EASE, color: "var(--tx-2)" }}
+            >
+              {hoverLabel}
+            </span>
+          </>
+        )}
+      </div>
+    </TiltCard>
+  );
+}
+
 /**
- * Portfolio · 02. Tres casos reales en layout editorial de 12 columnas (media 7 / ficha 4,
+ * Portfolio · 02. Cuatro casos reales en layout editorial de 12 columnas (media 7 / ficha 4,
  * alternando lados), sin riel central. Media via MediaFrame (video con preload none, poster,
  * play/pause por IntersectionObserver), ficha con SpecTable, TiltCard + rótulo en hover solo
- * con puntero fino, número de caso fuera de la foto y Lightbox con navegación.
+ * con puntero fino, número de caso fuera de la foto y Lightbox con navegación. Un caso puede
+ * traer una segunda foto en paralelo (díptico): otra unidad de la misma serie o el proceso.
  */
 export default function Gallery() {
   const fine = usePointerFine();
@@ -101,19 +192,31 @@ export default function Gallery() {
   // Efectos de hover: no se degradan en touch / reduced-motion, directamente no se montan.
   const hoverFx = fine && !reduced;
 
-  // `index` sobrevive al cierre para que el contenido no cambie durante la animación de salida.
-  const [lightbox, setLightbox] = useState<{ open: boolean; index: number }>({ open: false, index: 0 });
+  // `index`/`sub` sobreviven al cierre para que el contenido no cambie durante la animación de
+  // salida. `sub` distingue la foto principal de la segunda foto en paralelo (si el caso la tiene).
+  const [lightbox, setLightbox] = useState<{ open: boolean; index: number; sub: "main" | "pair" }>({
+    open: false,
+    index: 0,
+    sub: "main",
+  });
 
   // Callbacks estables: Lightbox los tiene como deps de su efecto (foco + scroll lock).
-  const openAt = useCallback((i: number) => setLightbox({ open: true, index: i }), []);
+  const openAt = useCallback((i: number, sub: "main" | "pair" = "main") => setLightbox({ open: true, index: i, sub }), []);
   const close = useCallback(() => setLightbox((s) => ({ ...s, open: false })), []);
   const prev = useCallback(
-    () => setLightbox((s) => ({ ...s, index: (s.index - 1 + items.length) % items.length })),
+    () => setLightbox((s) => ({ ...s, index: (s.index - 1 + items.length) % items.length, sub: "main" })),
     []
   );
-  const next = useCallback(() => setLightbox((s) => ({ ...s, index: (s.index + 1) % items.length })), []);
+  const next = useCallback(
+    () => setLightbox((s) => ({ ...s, index: (s.index + 1) % items.length, sub: "main" })),
+    []
+  );
 
-  const current = items[lightbox.index];
+  const currentItem = items[lightbox.index];
+  const current =
+    lightbox.sub === "pair" && currentItem.pairSrc
+      ? { src: currentItem.pairSrc, video: undefined as string | undefined, alt: currentItem.pairAlt ?? currentItem.alt }
+      : { src: currentItem.src, video: currentItem.video, alt: currentItem.alt };
 
   return (
     <Section id="galeria" tone="base" labelledBy="galeria-title">
@@ -122,7 +225,7 @@ export default function Gallery() {
         eyebrow="Portfolio"
         titleId="galeria-title"
         title="Trabajos que ya salieron de la impresora"
-        lead="Tres casos reales: automovilismo, telemetría y series cortas."
+        lead="Cuatro casos reales: automovilismo, telemetría y personalizados."
       />
 
       <ol role="list" className="m-0 flex list-none flex-col p-0" style={{ rowGap: "clamp(5rem, 3rem + 6vw, 9rem)" }}>
@@ -131,56 +234,43 @@ export default function Gallery() {
           const n = String(i + 1).padStart(2, "0");
           return (
             <li key={item.title} className="lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-6">
-              {/* Media: 7 columnas, alternando lado */}
+              {/* Media: 7 columnas, alternando lado. Con pairSrc: dos fotos lado a lado (díptico). */}
               <div className={`lg:col-span-7 lg:row-start-1 ${flip ? "lg:col-start-6" : "lg:col-start-1"}`}>
-                <TiltCard max={5} glare>
-                  <div className="group/gal relative">
-                    <MediaFrame
+                {item.pairSrc ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    <GalleryMedia
                       src={item.src}
                       video={item.video}
-                      poster={item.video ? item.src : undefined}
                       alt={item.alt}
-                      // MediaFrame necesita un ratio en el marco; la variable lo hace responsive:
-                      // 4/3 (1.3333) en mobile, 16/10 (1.6) desde lg. Fallback 16/10.
-                      ratio="var(--gal-ratio, 1.6)"
-                      className="[--gal-ratio:1.3333] lg:[--gal-ratio:1.6]"
-                      sizes="(max-width: 1024px) 100vw, 58vw"
-                      quality={80}
                       category={item.category}
-                      badge={item.video ? "Video" : undefined}
-                      preload="none"
-                      playLabel={item.video ? "Reproducir video del soporte AiM Solo 2" : undefined}
-                      onOpen={() => openAt(i)}
+                      hoverLabel={item.label}
+                      hoverFx={hoverFx}
+                      onOpen={() => openAt(i, "main")}
+                      playLabel={item.video ? `Reproducir video de ${item.title}` : undefined}
+                      sizes="(max-width: 1024px) 50vw, 29vw"
                     />
-
-                    {hoverFx && (
-                      <>
-                        {/* Scanlines: suben de .04 a ~.06 */}
-                        <div
-                          aria-hidden="true"
-                          className="layer-lines layer-lines--nofade pointer-events-none absolute inset-0 rounded-[var(--r-lg)] opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
-                          style={HOVER_LINES}
-                        />
-                        {/* Borde: --line-1 → --line-3 */}
-                        <div
-                          aria-hidden="true"
-                          className="pointer-events-none absolute inset-0 rounded-[var(--r-lg)] border opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
-                          style={{ ...HOVER_EASE, borderColor: "var(--line-3)" }}
-                        />
-                        {/* Rótulo mono abajo a la izquierda (a la derecha del play si hay video) */}
-                        <span
-                          aria-hidden="true"
-                          className={`font-mono-tech pointer-events-none absolute bottom-4 flex h-10 translate-y-1 items-center text-[11px] uppercase tracking-[0.18em] opacity-0 transition-[opacity,translate,transform] duration-[500ms] group-hover/gal:translate-y-0 group-hover/gal:opacity-100 ${
-                            item.video ? "left-16" : "left-4"
-                          }`}
-                          style={{ ...HOVER_EASE, color: "var(--tx-2)" }}
-                        >
-                          {item.label}
-                        </span>
-                      </>
-                    )}
+                    <GalleryMedia
+                      src={item.pairSrc}
+                      alt={item.pairAlt ?? item.alt}
+                      hoverLabel={item.pairLabel ?? item.label}
+                      hoverFx={hoverFx}
+                      onOpen={() => openAt(i, "pair")}
+                      sizes="(max-width: 1024px) 50vw, 29vw"
+                    />
                   </div>
-                </TiltCard>
+                ) : (
+                  <GalleryMedia
+                    src={item.src}
+                    video={item.video}
+                    alt={item.alt}
+                    category={item.category}
+                    hoverLabel={item.label}
+                    hoverFx={hoverFx}
+                    onOpen={() => openAt(i, "main")}
+                    playLabel={item.video ? `Reproducir video de ${item.title}` : undefined}
+                    sizes="(max-width: 1024px) 100vw, 58vw"
+                  />
+                )}
               </div>
 
               {/* Ficha: 4 columnas, del lado opuesto */}
@@ -251,8 +341,8 @@ export default function Gallery() {
         src={current.src}
         video={current.video}
         alt={current.alt}
-        title={current.title}
-        caption={`${current.category} — ${current.desc}`}
+        title={currentItem.title}
+        caption={`${currentItem.category} — ${currentItem.desc}`}
       />
     </Section>
   );
