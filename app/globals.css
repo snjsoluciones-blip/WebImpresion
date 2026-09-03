@@ -27,3 +27,575 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* ==========================================================================
+   SNJ · web pública — tokens, utilidades y keyframes (rediseño "Ficha técnica")
+   Solo se AGREGA. Nada de lo anterior se modifica. Todo lo que pueda afectar a
+   /taller-cobalto va scopeado bajo .site-root o usa nombres únicos (snj-*).
+   ========================================================================== */
+
+:root {
+  /* superficies */
+  --srf-0: #070707;
+  --srf-1: #0a0a0a;
+  --srf-2: #0d0d0d;
+  --srf-3: #111111;
+  --srf-4: #161616;
+  /* líneas */
+  --line-1: rgba(255, 255, 255, 0.06);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --line-3: rgba(255, 255, 255, 0.18);
+  /* texto */
+  --tx-1: #ffffff;
+  --tx-2: rgba(255, 255, 255, 0.72);
+  --tx-3: rgba(255, 255, 255, 0.55);
+  --tx-4: rgba(255, 255, 255, 0.4);
+  --tx-5: rgba(255, 255, 255, 0.3);
+  /* whatsapp (único color fuera del gris) */
+  --wa: #25d366;
+  --wa-hover: #22c05c;
+  /* radios y layout */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-full: 999px;
+  --shell: 1240px;
+  --gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2rem);
+  --pad-y: clamp(5rem, 3.5rem + 7vw, 10rem);
+  --header-h: 72px;
+  --glow-1: rgba(255, 255, 255, 0.07);
+  /* movimiento */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-mech: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-1: 160ms;
+  --dur-2: 260ms;
+  --dur-3: 420ms;
+  --dur-4: 700ms;
+  --dur-5: 1000ms;
+  /* escala tipográfica fluida */
+  --fs-display: clamp(2.75rem, 1.4rem + 6.2vw, 6.5rem);
+  --fs-h2: clamp(2rem, 1.1rem + 4vw, 3.75rem);
+  --fs-h3: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem);
+  --fs-lead: clamp(1rem, 0.94rem + 0.35vw, 1.25rem);
+  --fs-body: clamp(0.9375rem, 0.9rem + 0.2vw, 1rem);
+  --fs-mono: 0.6875rem;
+  --fs-mono-lg: 0.75rem;
+}
+
+/* --font-inter la define next/font en layout.tsx (Inter({ variable: "--font-inter" }))
+   como clase sobre <html>. Esto es solo el fallback si esa clase no está presente. */
+html:not([class*="variable"]) {
+  --font-inter: "Inter", system-ui, sans-serif;
+}
+
+/* -------- Envoltorio de la web pública -------- */
+.site-root {
+  font-feature-settings: "ss01";
+  color-scheme: dark;
+}
+html:has(.site-root) {
+  scrollbar-color: rgba(255, 255, 255, 0.14) #0a0a0a;
+}
+html:has(.site-root)::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.shell {
+  width: 100%;
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.no-x {
+  /* clip, JAMÁS hidden: hidden rompe el sticky de VideoScrollSection */
+  overflow-x: clip;
+}
+
+/* -------- Tipografía -------- */
+.site-root .t-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: var(--fs-display);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.site-root .t-h2 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.site-root .t-h3 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: var(--fs-h3);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.site-root .t-lead {
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+  color: var(--tx-3);
+  text-wrap: pretty;
+  max-width: 52ch;
+}
+.site-root .t-body {
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  color: var(--tx-3);
+}
+.font-display {
+  font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
+}
+.font-mono-tech {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* -------- Cromo -------- */
+.chrome {
+  background-image: linear-gradient(
+    96deg,
+    #6c6c6c 0%,
+    #ffffff 22%,
+    #d6d6d6 38%,
+    #8a8a8a 52%,
+    #ffffff 72%,
+    #7a7a7a 100%
+  );
+  background-size: 200% 100%;
+  background-position: 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+.chrome--sweep {
+  animation: snj-chrome-sweep 6s linear infinite;
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .chrome {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+  }
+}
+
+/* -------- Hairlines -------- */
+.hairline {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--line-2) 15%, var(--line-2) 85%, transparent);
+}
+.hairline-v {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(180deg, transparent, var(--line-2) 15%, var(--line-2) 85%, transparent);
+}
+.hairline-glow {
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28) 50%, transparent);
+}
+
+/* -------- Texturas -------- */
+.layer-lines {
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(255, 255, 255, var(--layer-o, 0.05)) 0 1px,
+    transparent 1px var(--layer-sp, 7px)
+  );
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 25%, #000 75%, transparent);
+}
+.layer-lines--nofade {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.grid-blueprint {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.glow-soft {
+  background: radial-gradient(60% 55% at 50% 40%, var(--glow-1), transparent 70%);
+  filter: blur(40px);
+}
+.grain {
+  position: relative;
+}
+.grain::after,
+.grain-fixed {
+  content: "";
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.03;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+.grain::after {
+  position: absolute;
+  inset: 0;
+}
+.grain-fixed {
+  position: fixed;
+  inset: 0;
+}
+
+/* -------- Formularios y scroll -------- */
+.select-chevron {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff59' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hair {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.scrollbar-hair::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.scrollbar-hair::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+.scrollbar-hair::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* -------- Foco visible unificado (especificidad 0 gracias a :where) -------- */
+.site-root :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 2px;
+  border-radius: inherit;
+}
+.site-root :focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* -------- Primitivas: Surface / Button / Marquee (nombres únicos snj-*) -------- */
+.snj-surface {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, #141414, #0e0e0e);
+  border: 1px solid var(--line-1);
+  border-top-color: var(--line-2);
+  transition:
+    transform var(--dur-2) var(--ease-mech),
+    border-color var(--dur-1) var(--ease-mech);
+}
+.snj-surface[data-interactive="true"]:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-3);
+  border-top-color: var(--line-3);
+}
+.snj-surface[data-interactive="true"]:active {
+  transform: scale(0.985);
+  transition-duration: 90ms;
+}
+.snj-surface[data-interactive="static"]:hover {
+  border-color: var(--line-3);
+  border-top-color: var(--line-3);
+}
+.snj-surface__spot {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-2) var(--ease-mech);
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 255, 255, 0.055),
+    transparent 62%
+  );
+}
+.snj-surface[data-interactive="true"]:hover .snj-surface__spot {
+  opacity: 1;
+}
+
+.snj-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  border-radius: var(--r-full);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  min-height: 44px;
+  transition:
+    background-color var(--dur-1) var(--ease-mech),
+    color var(--dur-1) var(--ease-mech),
+    border-color var(--dur-1) var(--ease-mech),
+    box-shadow var(--dur-2) var(--ease-mech),
+    transform var(--dur-2) var(--ease-mech);
+}
+.snj-btn:active:not([aria-disabled="true"]):not(:disabled) {
+  transform: scale(0.985);
+}
+.snj-btn[aria-disabled="true"],
+.snj-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.snj-btn--sm {
+  height: 40px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+.snj-btn--md {
+  height: 48px;
+  padding: 0 24px;
+  font-size: 0.9375rem;
+}
+.snj-btn--lg {
+  height: 56px;
+  padding: 0 30px;
+  font-size: 1rem;
+}
+.snj-btn--full {
+  width: 100%;
+  display: flex;
+}
+.snj-btn--primary {
+  background: linear-gradient(180deg, #ffffff, #e7e7e7);
+  color: #0a0a0a;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.snj-btn--primary:hover:not([aria-disabled="true"]):not(:disabled) {
+  background: linear-gradient(180deg, #ffffff, #f2f2f2);
+}
+.snj-btn__sheen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  opacity: 0;
+}
+.snj-btn--whatsapp .snj-btn__sheen {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+}
+.snj-btn--primary:hover .snj-btn__sheen,
+.snj-btn--whatsapp:hover .snj-btn__sheen {
+  opacity: 1;
+  animation: snj-sheen 900ms var(--ease-out-expo) 1;
+}
+.snj-btn--outline {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border: 1px solid var(--line-2);
+}
+.snj-btn--outline:hover:not([aria-disabled="true"]):not(:disabled) {
+  border-color: var(--line-3);
+  background: rgba(255, 255, 255, 0.07);
+}
+.snj-btn--ghost {
+  background: transparent;
+  color: var(--tx-4);
+  padding-inline: 4px;
+}
+.snj-btn--ghost:hover:not([aria-disabled="true"]):not(:disabled),
+.snj-btn--ghost:focus-visible {
+  color: #ffffff;
+}
+.snj-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  transition: transform var(--dur-2) var(--ease-mech);
+}
+.snj-btn--ghost:hover .snj-btn__icon--right {
+  transform: translateX(3px);
+}
+.snj-btn--whatsapp {
+  background: var(--wa);
+  color: #ffffff;
+  box-shadow: 0 10px 34px rgba(37, 211, 102, 0.22);
+}
+.snj-btn--whatsapp:hover:not([aria-disabled="true"]):not(:disabled) {
+  background: var(--wa-hover);
+}
+
+.snj-marquee {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.snj-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: snj-marquee var(--speed, 40s) linear infinite;
+  will-change: transform;
+}
+.snj-marquee[data-direction="right"] .snj-marquee__track {
+  animation-direction: reverse;
+}
+.snj-marquee[data-pause-hover="true"]:hover .snj-marquee__track,
+.snj-marquee[data-paused="true"] .snj-marquee__track {
+  animation-play-state: paused;
+}
+.snj-marquee[data-static="true"] .snj-marquee__track {
+  animation: none;
+}
+
+/* -------- Keyframes -------- */
+@keyframes snj-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes snj-print-in {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes snj-chrome-sweep {
+  from {
+    background-position: -100% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+@keyframes snj-sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(220%) skewX(-18deg);
+  }
+}
+@keyframes snj-scroll-cue {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400%);
+    opacity: 0;
+  }
+}
+@keyframes snj-ring-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+@keyframes snj-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.snj-print-in {
+  animation: snj-print-in var(--dur-5) var(--ease-out-expo) both;
+}
+.snj-scroll-cue {
+  animation: snj-scroll-cue 2.4s var(--ease-in-out-quart) infinite;
+}
+.snj-ring-pulse {
+  animation: snj-ring-pulse 1.8s var(--ease-out-expo) infinite;
+}
+.snj-float {
+  animation: snj-float 6s ease-in-out infinite;
+}
+
+/* -------- Red de seguridad reduced-motion (scopeada a la web pública) -------- */
+@media (prefers-reduced-motion: reduce) {
+  .site-root *,
+  .site-root *::before,
+  .site-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* -------- Formulario: inputs de instrumento (cambio 87) -------- */
+.site-root .snj-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  background: #0d0d0d;
+  border: 1px solid var(--line-1);
+  border-bottom-color: var(--line-2);
+  border-radius: var(--r-sm);
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.4;
+  outline: none;
+  transition:
+    border-color var(--dur-1) var(--ease-mech),
+    box-shadow var(--dur-1) var(--ease-mech);
+}
+.site-root textarea.snj-input {
+  height: 160px;
+  padding: 14px 16px;
+  resize: none;
+}
+.site-root .snj-input::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+.site-root .snj-input:focus,
+.site-root .snj-input:focus-visible {
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+  outline: none;
+}
+.site-root .snj-input[aria-invalid="true"] {
+  border-bottom-color: var(--line-3);
+}
+/* El label sube de --tx-5 a --tx-2 mientras el campo tiene foco */
+.site-root .snj-field:focus-within label .font-mono-tech {
+  color: var(--tx-2) !important;
+}
+.site-root .snj-field label .font-mono-tech {
+  transition: color var(--dur-1) var(--ease-mech);
+}
+.site-root details > summary::-webkit-details-marker {
+  display: none;
+}

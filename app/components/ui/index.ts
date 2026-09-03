@@ -1,0 +1,60 @@
+// Barrel de primitivas de la web pública. Regla de consumo: ninguna sección declara sus
+// propios motion.div initial/whileInView, botones ni encabezados — consume esto.
+
+export { EASE, DUR, VIEWPORT, STAGGER, staggerDelay } from "./motion";
+export { useMediaQuery } from "./useMediaQuery";
+export { useReducedMotionSafe } from "./useReducedMotionSafe";
+export { usePointerFine } from "./usePointerFine";
+export { useActiveSection } from "./useActiveSection";
+export { useLocalDraft } from "./useLocalDraft";
+export { QuoteProvider, useQuote, SERVICE_VALUES, MATERIAL_VALUES } from "./quote-context";
+export type { QuotePreset, QuoteCtx } from "./quote-context";
+
+export { default as Section } from "./Section";
+export type { SectionProps } from "./Section";
+export { default as SectionHeading } from "./SectionHeading";
+export type { SectionHeadingProps } from "./SectionHeading";
+export { default as MonoLabel } from "./MonoLabel";
+export type { MonoLabelProps } from "./MonoLabel";
+export { default as Hairline } from "./Hairline";
+export type { HairlineProps } from "./Hairline";
+export { default as SpecTable } from "./SpecTable";
+export type { SpecRow, SpecTableProps } from "./SpecTable";
+export { default as LayerLines } from "./LayerLines";
+export type { LayerLinesProps } from "./LayerLines";
+export { default as Tag } from "./Tag";
+export type { TagProps } from "./Tag";
+export { default as WhatsAppIcon } from "./WhatsAppIcon";
+
+export { default as Reveal } from "./Reveal";
+export type { RevealProps } from "./Reveal";
+export { default as Stagger } from "./Stagger";
+export type { StaggerProps } from "./Stagger";
+export { default as LayerText } from "./LayerText";
+export type { LayerTextProps } from "./LayerText";
+export { default as ChromeText } from "./ChromeText";
+export type { ChromeTextProps } from "./ChromeText";
+export { default as Surface } from "./Surface";
+export type { SurfaceProps } from "./Surface";
+export { default as TiltCard } from "./TiltCard";
+export type { TiltCardProps } from "./TiltCard";
+export { default as Button } from "./Button";
+export type { ButtonProps } from "./Button";
+export { default as MagneticButton } from "./MagneticButton";
+export type { MagneticButtonProps } from "./MagneticButton";
+export { default as Marquee } from "./Marquee";
+export type { MarqueeProps } from "./Marquee";
+export { default as Counter } from "./Counter";
+export type { CounterProps } from "./Counter";
+export { default as ScrollProgress } from "./ScrollProgress";
+export { default as GrainOverlay } from "./GrainOverlay";
+export { default as Accordion } from "./Accordion";
+export type { AccordionItem, AccordionProps } from "./Accordion";
+export { default as MediaFrame } from "./MediaFrame";
+export type { MediaFrameProps } from "./MediaFrame";
+export { default as Lightbox } from "./Lightbox";
+export type { LightboxProps } from "./Lightbox";
+export { default as Field } from "./Field";
+export type { FieldProps } from "./Field";
+export { default as Stepper } from "./Stepper";
+export type { StepperProps } from "./Stepper";

@@ -1,33 +1,142 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useSyncExternalStore } from "react";
+import { motion, type Transition } from "framer-motion";
+import {
+  DUR,
+  EASE,
+  MagneticButton,
+  WhatsAppIcon,
+  useActiveSection,
+  useMediaQuery,
+  usePointerFine,
+  useReducedMotionSafe,
+} from "./ui";
 
+// href y mensaje intactos (spec §102). Mismo número y mismo texto que MobileActionBar.
 const WHATSAPP_URL = `https://wa.me/541161256413?text=${encodeURIComponent(
   "¡Hola! Vengo de la web de SNJ Soluciones y quiero hacer una consulta."
 )}`;
 
+const CONTACT_ID = "contacto";
+const CONTACT_IDS = [CONTACT_ID];
+
+/**
+ * Umbrales de scroll compartidos con MobileActionBar (§103, §105, §106):
+ * el botón flotante entra pasado el 60 % del alto de viewport; la barra mobile, pasado el 90 %.
+ * Ambos se retiran mientras #contacto está activo.
+ */
+const SHOW_RATIO = 0.6;
+const BAR_RATIO = 0.9;
+/** 5.5rem − 1.5rem = 4rem: cuánto sube el botón (vía transform) cuando la barra mobile está visible (§106). */
+const BAR_LIFT_PX = 64;
+
+// Umbrales como stores externos: SSR-safe (server → false), sin setState en efectos, y React
+// solo re-renderiza cuando cambia el booleano (no en cada evento de scroll).
+function subscribeScroll(onChange: () => void) {
+  window.addEventListener("scroll", onChange, { passive: true });
+  window.addEventListener("resize", onChange);
+  return () => {
+    window.removeEventListener("scroll", onChange);
+    window.removeEventListener("resize", onChange);
+  };
+}
+const getPastShow = () => window.scrollY > window.innerHeight * SHOW_RATIO;
+const getPastBar = () => window.scrollY > window.innerHeight * BAR_RATIO;
+const getServerFalse = () => false;
+
+/**
+ * Botón flotante de WhatsApp (spec §102-104).
+ * - Entra con scrollY > 60vh (escala .6→1 + opacidad, 300 ms expo) y se retira mientras
+ *   #contacto está activo (opacity 0 / scale .85 / y 12, 260 ms), quedando inerte.
+ * - Con puntero fino, en hover/focus se expande a pill "Escribinos" animando el max-width
+ *   del <span> interno (nunca el ancho del contenedor: cero layout thrash). En touch, círculo de 56 px.
+ * - Anillo `snj-ring-pulse` hasta la primera interacción. Reduced-motion: sin animación ni anillo.
+ * - Safe-area insets, z-40 (header 50, MobileActionBar 45, overlay del menú 70).
+ * - Bajo `md`, mientras la MobileActionBar está visible, sube 4rem para no quedar tapado.
+ */
 export default function WhatsAppButton() {
+  const reduced = useReducedMotionSafe();
+  const fine = usePointerFine();
+  const mdUp = useMediaQuery("(min-width: 48rem)", false); // = breakpoint `md`, igual que MobileActionBar
+  const pastShow = useSyncExternalStore(subscribeScroll, getPastShow, getServerFalse);
+  const pastBar = useSyncExternalStore(subscribeScroll, getPastBar, getServerFalse);
+  const active = useActiveSection(CONTACT_IDS, 80);
+  const [interacted, setInteracted] = useState(false);
+
+  const inContact = active === CONTACT_ID;
+  const shown = pastShow && !inContact;
+  const barVisible = !mdUp && pastBar && !inContact;
+  const lift = barVisible ? -BAR_LIFT_PX : 0;
+
+  const target = !pastShow
+    ? { opacity: 0, scale: 0.6, y: 0 }
+    : inContact
+      ? { opacity: 0, scale: 0.85, y: 12 }
+      : { opacity: 1, scale: 1, y: lift };
+
+  // Entrada: 300 ms expo. Salida: 260 ms mech. El desplazamiento por la barra mobile acompaña
+  // su propia entrada (300 ms in-out-quart). Reduced-motion: todo instantáneo.
+  const transition: Transition = reduced
+    ? { duration: 0 }
+    : shown
+      ? { duration: 0.3, ease: EASE.expo, y: { duration: 0.3, ease: EASE.quart } }
+      : { duration: DUR.d2, ease: EASE.mech };
+
+  const showRing = shown && !interacted && !reduced;
+  const stopRing = () => setInteracted(true);
+
+  // Solo con puntero fino: el rótulo se revela en hover/focus-visible del <a> (grupo).
+  const expandOnFine = fine
+    ? "group-hover:max-w-[132px] group-hover:opacity-100 group-focus-visible:max-w-[132px] group-focus-visible:opacity-100"
+    : "";
+
   return (
-    <motion.a
-      href={WHATSAPP_URL}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Escribinos por WhatsApp"
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 1, duration: 0.3, ease: "easeOut" }}
-      whileHover={{ scale: 1.08 }}
-      whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-[0_4px_20px_rgba(37,211,102,0.4)]"
+    <div
+      className={`fixed z-40 ${shown ? "" : "pointer-events-none"}`}
+      style={{
+        bottom: "calc(1.5rem + env(safe-area-inset-bottom))",
+        right: "calc(1.25rem + env(safe-area-inset-right))",
+      }}
+      inert={!shown}
+      aria-hidden={!shown}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="#fff"
-        className="h-7 w-7"
-        aria-hidden="true"
-      >
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.885-9.885 9.885m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-      </svg>
-    </motion.a>
+      <motion.div initial={false} animate={target} transition={transition} className="flex">
+        <MagneticButton strength={0.15} radius={72}>
+          <motion.a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Escribinos por WhatsApp"
+            tabIndex={shown ? undefined : -1}
+            whileHover={reduced ? undefined : { scale: 1.08 }}
+            whileTap={reduced ? undefined : { scale: 0.95 }}
+            transition={{ type: "tween", duration: DUR.d2, ease: EASE.mech }}
+            onPointerEnter={stopRing}
+            onPointerDown={stopRing}
+            onFocus={stopRing}
+            className="group relative flex h-14 min-w-14 items-center justify-end rounded-full bg-[#25D366] text-white shadow-[0_10px_34px_rgba(37,211,102,0.22)] transition-[background-color] duration-[var(--dur-1)] ease-[var(--ease-mech)] hover:bg-[var(--wa-hover)]"
+          >
+            {showRing && (
+              <span
+                aria-hidden="true"
+                className="snj-ring-pulse pointer-events-none absolute inset-0 rounded-full border-2 border-[#25D366]"
+              />
+            )}
+            <span
+              aria-hidden="true"
+              className={`block max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-[max-width,opacity] duration-[320ms] ease-[var(--ease-mech)] ${expandOnFine}`}
+            >
+              <span className="block pl-6 pr-1 text-[15px] font-semibold leading-none tracking-[-0.01em]">
+                Escribinos
+              </span>
+            </span>
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center">
+              <WhatsAppIcon className="h-7 w-7" />
+            </span>
+          </motion.a>
+        </MagneticButton>
+      </motion.div>
+    </div>
   );
 }
