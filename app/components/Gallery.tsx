@@ -80,14 +80,14 @@ const items: GalleryItem[] = [
   {
     src: "/images/trofeo-piloto-dorado.jpg",
     title: "Trofeo Piloto en Acabado Dorado",
-    desc: "Figura de piloto de pie con las manos en alto, en acabado metalizado dorado, sobre base circular negra.",
-    category: "Personalizados",
+    desc: "Trofeo a medida para un cliente de automovilismo: figura de piloto de pie con las manos en alto, en acabado metalizado dorado, sobre base circular negra.",
+    category: "Automovilismo",
     alt: "Trofeo de un piloto de pie con las manos en alto, en acabado metalizado dorado",
     label: "Acabado dorado",
     specs: [
       { k: "Acabado", v: "Metalizado dorado" },
       { k: "Base", v: "Circular, negra" },
-      { k: "Rubro", v: "Personalizados" },
+      { k: "Rubro", v: "Automovilismo" },
     ],
     pairSrc: "/images/trofeo-piloto-dorado-impresion.jpg",
     pairAlt: "El mismo trofeo recién terminado, todavía sobre la base de la impresora 3D",
