@@ -51,14 +51,13 @@ const navLinks: NavLink[] = [
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];
 
-// Menú mobile a pantalla completa: suma Equipo y FAQ (viven acá y en el footer). Índices 01…08.
+// Menú mobile a pantalla completa: suma FAQ (vive acá y en el footer). Índices 01…07.
 const mobileLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios", id: "servicios" },
   { label: "Galería", href: "#galeria", id: "galeria" },
   { label: "Materiales", href: "#materiales", id: "materiales" },
   { label: "Tecnología", href: "#tecnologia", id: "tecnologia" },
   { label: "Proceso", href: "#como-funciona", id: "como-funciona" },
-  { label: "Equipo", href: "#equipo", id: "equipo" },
   { label: "FAQ", href: "#faq", id: "faq" },
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];

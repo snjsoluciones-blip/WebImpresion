@@ -212,7 +212,7 @@ export default function Faq() {
             {/* mb-8! pisa el margen inferior grande que SectionHeading trae por inline style:
                 acá el CTA forma parte del mismo bloque que el título. */}
             <SectionHeading
-              index="07"
+              index="06"
               eyebrow="Preguntas"
               titleId="faq-title"
               title="Lo que más nos preguntan"

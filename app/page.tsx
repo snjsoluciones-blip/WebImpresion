@@ -8,7 +8,6 @@ import Gallery from "./components/Gallery";
 import Technology from "./components/Technology";
 import Materials from "./components/Materials";
 import HowItWorks from "./components/HowItWorks";
-import Team from "./components/Team";
 import Faq from "./components/Faq";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -39,7 +38,6 @@ export default function Home() {
           <Technology />
           <Materials />
           <HowItWorks />
-          <Team />
           <Faq />
           <ContactForm />
         </main>

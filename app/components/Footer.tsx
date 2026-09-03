@@ -49,7 +49,6 @@ const NAV_LINKS: FooterLinkItem[] = [
   { label: "Materiales", href: "#materiales" },
   { label: "Tecnología", href: "#tecnologia" },
   { label: "Proceso", href: "#como-funciona" },
-  { label: "Equipo", href: "#equipo" },
   { label: "FAQ", href: "#faq" },
   { label: "Contacto", href: "#contacto" },
 ];
