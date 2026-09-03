@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import type { CSSProperties, ReactNode } from "react";
 import {
@@ -21,11 +20,12 @@ import {
 } from "./ui";
 
 /* =========================================================================
-   03 · Tecnología — Bambu Lab P2S
-   Todo lo que se afirma acá deriva de hechos ya publicados en la web:
-   500 llaveros en menos de una semana, ABS para piezas de auto y moto,
-   modelado 3D propio, 4 materiales, zona de cobertura, respuesta por WhatsApp.
-   No se inventa ninguna spec del equipo.
+   03 · Tecnología — parque de impresoras
+   Todo lo que se afirma acá deriva de hechos publicados por SNJ (500 llaveros
+   en menos de una semana, ABS para piezas de auto y moto, modelado 3D propio,
+   4 materiales, zona de cobertura, respuesta por WhatsApp) o de specs de
+   fábrica de cada modelo (cerrada/abierta, CoreXY/bedslinger). No se inventa
+   ninguna spec del taller.
    ========================================================================= */
 
 /* ---------- Íconos de 1px (misma familia que Services: viewBox 48, non-scaling-stroke) ---------- */
@@ -135,8 +135,8 @@ type Capability = { id: string; title: string; body: string; icon: ReactNode };
 const CAPABILITIES: Capability[] = [
   {
     id: "camara",
-    title: "Cámara cerrada",
-    body: "Imprime con la cámara cerrada, así el ABS no sufre warping. Por eso podemos encarar piezas de auto y moto que tienen que aguantar impacto y temperatura.",
+    title: "Impresión con cámara cerrada",
+    body: "Parte de nuestro parque imprime con la cámara cerrada, así el ABS no sufre warping. Por eso podemos encarar piezas de auto y moto que tienen que aguantar impacto y temperatura.",
     icon: <EnclosureIcon />,
   },
   {
@@ -154,25 +154,23 @@ const CAPABILITIES: Capability[] = [
 ];
 
 const SPECS: SpecRow[] = [
-  { k: "Equipo", v: "Bambu Lab P2S" },
-  { k: "Cámara", v: "Cerrada" },
+  { k: "Parque", v: "Bambu Lab P2S · Bambu Lab A1 · Elegoo Centauri Carbon (x2) + máquinas adicionales" },
+  { k: "Cámara", v: "Cerrada (P2S, Centauri Carbon) y abierta (A1), según la pieza" },
   { k: "Materiales", v: "PLA · PETG · ABS · TPU" },
   { k: "Modelado 3D", v: "Propio, a partir de tu archivo o tu idea" },
   { k: "Serie de referencia", v: "500 llaveros en menos de una semana" },
   { k: "Respuesta", v: "Por WhatsApp" },
 ];
 
-type Part = { src: string; label: string; alt: string };
+type FleetEntry = { model: string; note: string };
 
-// Renders reales de /public/images. connector.png y bracket.png pesan ~7-8 MB:
-// van sí o sí por next/image con sizes acotado, quality 70 y lazy. Jamás priority.
-const PARTS: Part[] = [
-  { src: "/images/gear.png", label: "Engranaje", alt: "Render 3D de un engranaje mecánico, en escala de grises" },
-  { src: "/images/connector.png", label: "Conector", alt: "Render 3D de un conector técnico, en escala de grises" },
-  { src: "/images/bracket.png", label: "Soporte", alt: "Render 3D de un soporte a medida, en escala de grises" },
+// Parque real de impresoras (no son renders: es texto, a la espera de fotos propias).
+const FLEET: FleetEntry[] = [
+  { model: "Bambu Lab P2S", note: "Cámara cerrada · piezas de auto y moto" },
+  { model: "Bambu Lab A1", note: "Bandeja abierta · piezas rápidas" },
+  { model: "Elegoo Centauri Carbon (x2)", note: "CoreXY, cámara cerrada · alta velocidad" },
+  { model: "+ máquinas adicionales", note: "Menor porte, para sostener muchas impresiones en paralelo" },
 ];
-
-const PART_SIZES = "(max-width:1024px) 45vw, 22vw";
 
 // Glow de fondo: tope 6% (la regla general es ≤8%).
 const GLOW_STYLE = { "--glow-1": "rgba(255,255,255,0.06)" } as CSSProperties;
@@ -217,52 +215,21 @@ function CapabilityColumn({ item, index, reduced }: { item: Capability; index: n
   );
 }
 
-function PartFigure({ part, index, reduced }: { part: Part; index: number; reduced: boolean }) {
+function FleetRow({ entry, index }: { entry: FleetEntry; index: number }) {
+  // Fila ficha (sin imagen): índice + modelo + nota, con Hairline debajo — mismo lenguaje
+  // que SpecTable/MonoLabel del resto de la sección.
   return (
-    <Reveal
-      as="li"
-      delay={staggerDelay(index)}
-      className="w-[calc(50%-0.5rem)] md:w-[calc(50%-0.75rem)] lg:w-auto"
-    >
-      <figure className="relative m-0">
-        {/* halo blanco al 6% debajo de la pieza (queda quieto mientras la pieza flota) */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-[12%] -bottom-3 h-8 rounded-full"
-          style={{
-            background: "radial-gradient(50% 60% at 50% 50%, rgba(255,255,255,0.06), transparent 70%)",
-            filter: "blur(10px)",
-          }}
-        />
-        <div
-          className={`relative overflow-hidden rounded-[var(--r-md)] border ${reduced ? "" : "snj-float"}`}
-          style={{
-            aspectRatio: "11 / 6",
-            borderColor: "var(--line-1)",
-            borderTopColor: "var(--line-2)",
-            background: "linear-gradient(180deg, #141414, #0e0e0e)",
-            animationDelay: reduced ? undefined : `${index * 0.8}s`,
-          }}
-        >
-          <Image
-            src={part.src}
-            alt={part.alt}
-            fill
-            sizes={PART_SIZES}
-            quality={70}
-            loading="lazy"
-            className="object-cover"
-            style={{ filter: "grayscale(1) brightness(1.1) contrast(1.05)" }}
-          />
-          <LayerLines opacity={0.04} fade={false} />
-        </div>
-        <figcaption className="mt-3 flex items-center justify-between gap-3">
-          <MonoLabel tone="bright" rule>
-            {part.label}
-          </MonoLabel>
+    <Reveal as="li" delay={staggerDelay(index)} className="list-none">
+      <div className="flex items-baseline justify-between gap-4 py-3">
+        <div className="flex items-baseline gap-3">
           <MonoLabel>{String(index + 1).padStart(2, "0")}</MonoLabel>
-        </figcaption>
-      </figure>
+          <span className="t-body text-white">{entry.model}</span>
+        </div>
+        <span className="font-mono-tech shrink-0 text-right text-[11px] uppercase tracking-[0.14em]" style={{ color: "var(--tx-4)" }}>
+          {entry.note}
+        </span>
+      </div>
+      <Hairline />
     </Reveal>
   );
 }
@@ -287,8 +254,8 @@ export default function Technology() {
           index="03"
           eyebrow="Tecnología"
           titleId="tecnologia-title"
-          title="Impresoras Bambu Lab P2S"
-          lead="Es el equipo con el que producimos. Cerrado y estable: por eso podemos hacer series cortas sin perder consistencia entre piezas."
+          title="Nuestro parque de impresoras"
+          lead="Bambu Lab P2S, Bambu Lab A1 y Elegoo Centauri Carbon, más otras máquinas de menor porte para sostener muchas impresiones a la vez. Por eso podemos hacer series cortas sin perder consistencia entre piezas."
         />
 
         {/* 64 · tres columnas de capacidad con hairlines verticales */}
@@ -309,11 +276,11 @@ export default function Technology() {
 
           <div className="lg:col-span-8">
             <MonoLabel rule as="h3">
-              Piezas técnicas · renders
+              Parque de impresoras
             </MonoLabel>
-            <ul className="m-0 mt-5 flex list-none flex-wrap justify-center gap-4 p-0 md:gap-6 lg:grid lg:grid-cols-3">
-              {PARTS.map((part, i) => (
-                <PartFigure key={part.src} part={part} index={i} reduced={reduced} />
+            <ul className="m-0 mt-4 flex flex-col p-0">
+              {FLEET.map((entry, i) => (
+                <FleetRow key={entry.model} entry={entry} index={i} />
               ))}
             </ul>
           </div>

@@ -33,12 +33,12 @@ const items: GalleryItem[] = [
   {
     src: "/images/trofeo-nankang.jpeg",
     title: "Trofeos Nankang",
-    desc: "Serie de seis trofeos para el campeonato, con base texturada y el logo del sponsor grabado en relieve.",
+    desc: "Serie de dieciocho trofeos para el campeonato, con base texturada y el logo del sponsor grabado en relieve.",
     category: "Automovilismo",
     alt: "Serie de trofeos impresos en 3D con base texturada para el campeonato Nankang",
-    label: "Serie de 6",
+    label: "Serie de 18",
     specs: [
-      { k: "Cantidad", v: "6" },
+      { k: "Cantidad", v: "18" },
       { k: "Terminación", v: "Base texturada + logo en relieve" },
       { k: "Rubro", v: "Automovilismo" },
     ],
