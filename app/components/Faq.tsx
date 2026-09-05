@@ -58,7 +58,7 @@ const FAQ: FaqEntry[] = [
           ".",
         ],
       },
-      { p: ["Todas las piezas salen de nuestras impresoras Bambu Lab P2S."] },
+      { p: ["Todas las piezas salen de impresión FDM profesional, con control de calidad en cada pieza."] },
     ],
   },
   {
@@ -212,7 +212,7 @@ export default function Faq() {
             {/* mb-8! pisa el margen inferior grande que SectionHeading trae por inline style:
                 acá el CTA forma parte del mismo bloque que el título. */}
             <SectionHeading
-              index="06"
+              index="05"
               eyebrow="Preguntas"
               titleId="faq-title"
               title="Lo que más nos preguntan"

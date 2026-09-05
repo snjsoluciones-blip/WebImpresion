@@ -165,7 +165,7 @@ export default function HowItWorks() {
   return (
     <Section id="como-funciona" tone="raised" labelledBy="proceso-title">
       <SectionHeading
-        index="05"
+        index="04"
         eyebrow="Proceso"
         titleId="proceso-title"
         title="De la idea a la pieza, en cuatro pasos"

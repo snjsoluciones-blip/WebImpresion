@@ -5,7 +5,6 @@ import CapabilitiesMarquee from "./components/CapabilitiesMarquee";
 import Services from "./components/Services";
 import VideoScrollSection from "./components/VideoScrollSection";
 import Gallery from "./components/Gallery";
-import Technology from "./components/Technology";
 import Materials from "./components/Materials";
 import HowItWorks from "./components/HowItWorks";
 import Faq from "./components/Faq";
@@ -35,7 +34,6 @@ export default function Home() {
           <Services />
           <VideoScrollSection />
           <Gallery />
-          <Technology />
           <Materials />
           <HowItWorks />
           <Faq />

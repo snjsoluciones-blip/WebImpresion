@@ -576,7 +576,7 @@ export default function Materials() {
   return (
     <Section id="materiales" tone="base" labelledBy="materiales-title">
       <SectionHeading
-        index="04"
+        index="03"
         eyebrow="Materiales"
         titleId="materiales-title"
         title="El material correcto para cada pieza"

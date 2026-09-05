@@ -18,7 +18,7 @@ import {
    -------------------------------------------------------------------------- */
 const CHAPTERS = [
   { kicker: "01 / Capa a capa", text: "Precisión en cada capa" },
-  { kicker: "02 / Bambu Lab P2S", text: "Tecnología de vanguardia" },
+  { kicker: "02 / Impresión FDM", text: "Tecnología de vanguardia" },
   { kicker: "03 / De la idea a la pieza", text: "Tu visión, hecha realidad" },
 ] as const;
 
@@ -272,7 +272,7 @@ function ScrubChapters({ onFail }: { onFail: () => void }) {
               {layerLabel(0)}
             </span>
             <span className={`${KICKER_CLASS} hidden sm:inline`} style={{ color: "var(--tx-5)" }}>
-              FDM · Bambu Lab P2S
+              FDM · Precisión industrial
             </span>
           </div>
           <div className="h-px w-full" style={{ background: "var(--line-2)" }}>

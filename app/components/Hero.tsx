@@ -30,13 +30,12 @@ const COORDS = "−34.4522 / −58.6469";
 
 const SPEC_ROWS: { k: string; v: string }[] = [
   { k: "Materiales", v: "PLA · PETG · ABS · TPU" },
-  { k: "Equipo", v: "Bambu Lab P2S" },
   { k: "Servicios", v: "Modelado + Impresión" },
   { k: "Zona", v: "Pacheco · Tigre · Zona Norte · CABA" },
 ];
 
 // Micro-pruebas: solo hechos ya publicados, ninguna promesa de plazo.
-const PROOFS = ["Respondemos por WhatsApp", "Impresoras Bambu Lab P2S", "PLA · PETG · ABS · TPU"];
+const PROOFS = ["Respondemos por WhatsApp", "Series cortas sin perder consistencia"];
 
 /* ---------- navigator.connection.saveData, SSR-safe y sin setState en efectos ---------- */
 
