@@ -12,7 +12,7 @@ const CAPABILITIES: readonly string[] = [
   "Repuestos",
   "Piezas técnicas",
   "Series cortas",
-  "Modelado 3D",
+  "Estuches a medida",
 ];
 
 /**

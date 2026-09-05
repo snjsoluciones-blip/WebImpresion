@@ -7,10 +7,8 @@ import Surface from "./ui/Surface";
 import Button from "./ui/Button";
 import MonoLabel from "./ui/MonoLabel";
 import Hairline from "./ui/Hairline";
-import Tag from "./ui/Tag";
 import Reveal from "./ui/Reveal";
 import Stagger from "./ui/Stagger";
-import { SERVICE_VALUES, useQuote } from "./ui/quote-context";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 
 /* ------------------------------------------------------------------------ */
@@ -19,47 +17,6 @@ import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 
 // 44px dentro del tile de 48px (1px de borde por lado): el trazo sigue siendo 1px real.
 const ICON_SVG = "h-11 w-11";
-
-/** Wireframe isométrico de un cubo con los vértices marcados por cuadraditos de 3px. */
-function CubeIcon() {
-  // Hexágono: T(24,10) UR(36,17) LR(36,31) B(24,38) LL(12,31) UL(12,17). Vértice frontal C(24,24).
-  const vertices: [number, number][] = [
-    [24, 10],
-    [36, 17],
-    [36, 31],
-    [24, 38],
-    [12, 31],
-    [12, 17],
-    [24, 24],
-  ];
-  return (
-    <svg
-      viewBox="0 0 48 48"
-      className={ICON_SVG}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1}
-      shapeRendering="geometricPrecision"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {/* aristas visibles */}
-      <path vectorEffect="non-scaling-stroke" d="M24 10 36 17 36 31 24 38 12 31 12 17Z" />
-      <path vectorEffect="non-scaling-stroke" d="M24 24 12 17M24 24 36 17M24 24 24 38" />
-      {/* aristas ocultas (wireframe) */}
-      <path
-        vectorEffect="non-scaling-stroke"
-        strokeOpacity={0.45}
-        strokeDasharray="2 2"
-        d="M24 24 24 10M24 24 12 31M24 24 36 31"
-      />
-      {/* vértices */}
-      {vertices.map(([x, y]) => (
-        <rect key={`${x}-${y}`} x={x - 1.5} y={y - 1.5} width={3} height={3} fill="currentColor" stroke="none" />
-      ))}
-    </svg>
-  );
-}
 
 /** Tres capas apiladas con la boquilla depositando la superior. */
 function LayersIcon() {
@@ -143,26 +100,20 @@ function IconTile({ children }: { children: ReactNode }) {
 }
 
 /* ------------------------------------------------------------------------ */
-/* Datos. `title` coincide EXACTAMENTE con los value de los <option> del      */
-/* formulario. Solo Impresión es el servicio principal: imprimimos lo que ya */
-/* está modelado. El modelado sigue existiendo, pero como algo a consultar,   */
-/* no como una opción más del mismo peso.                                    */
+/* Datos. `title` coincide EXACTAMENTE con el value fijo del campo servicio   */
+/* del formulario. Un solo servicio: imprimimos lo que ya está modelado.      */
+/* No ofrecemos modelado, en ningún caso.                                    */
 /* ------------------------------------------------------------------------ */
-
-type ServiceValue = (typeof SERVICE_VALUES)[number];
 
 type Service = {
   index: string;
   slug: string;
-  title: ServiceValue;
+  title: "Solo Impresión";
   description: string;
   detail: string;
-  badge: string | null;
   /** "Qué necesitamos de vos": derivado del detail y de los campos del formulario. */
   needs: readonly string[];
   icon: ReactNode;
-  /** Columnas en lg (grid de 12): la principal ocupa 7, la de consulta 5. */
-  span: string;
 };
 
 const services: readonly Service[] = [
@@ -173,22 +124,8 @@ const services: readonly Service[] = [
     description: "¿Ya tenés el archivo 3D? Lo imprimimos.",
     detail:
       "Envianos tu archivo STL o STEP y nos encargamos de la impresión con los mejores materiales disponibles. ¿No tenés archivo? Podés conseguir modelos gratis en MakerWorld, Printables o Thingiverse.",
-    badge: "Servicio principal",
     needs: ["Archivo STL o STEP", "Material deseado", "Cantidad"],
     icon: <LayersIcon />,
-    span: "lg:col-span-7",
-  },
-  {
-    index: "S-02",
-    slug: "modelado-impresion",
-    title: "Modelado + Impresión",
-    description: "¿No encontrás el archivo ni sabés armarlo? En casos puntuales, también lo modelamos.",
-    detail:
-      "Es un servicio a consultar, no el principal: contanos tu idea y evaluamos juntos si podemos modelarla antes de imprimirla.",
-    badge: "A consultar",
-    needs: ["Descripción o croquis", "Medidas aproximadas", "Para qué la vas a usar"],
-    icon: <CubeIcon />,
-    span: "lg:col-span-5",
   },
 ];
 
@@ -197,16 +134,13 @@ const services: readonly Service[] = [
 /* ------------------------------------------------------------------------ */
 
 function ServiceCard({ service }: { service: Service }) {
-  const { setPreset } = useQuote();
   const reduced = useReducedMotionSafe();
   const titleId = `servicio-${service.slug}-title`;
   const needsId = `servicio-${service.slug}-necesitamos`;
 
-  // Pre-selecciona el servicio en el formulario y baja a #contacto.
   // El href="#contacto" del Button queda como fallback sin JS (y como navegación nativa
   // al hash: actualiza la URL y mueve el punto de partida del foco a la sección).
   const handleSelect = () => {
-    setPreset({ servicio: service.title });
     document
       .getElementById("contacto")
       ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
@@ -214,13 +148,10 @@ function ServiceCard({ service }: { service: Service }) {
 
   return (
     // w-full + el Reveal padre en `flex`: la ficha estira a la altura de la fila en md/lg.
-    <Surface as="article" spotlight corners padding="lg" className="group w-full min-h-[380px]">
-      {/* (a) cabecera: índice mono + badge en flujo · tile con ícono */}
+    <Surface as="article" spotlight corners padding="lg" className="group w-full max-w-2xl min-h-[340px]">
+      {/* (a) cabecera: índice mono · tile con ícono */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <MonoLabel>{service.index}</MonoLabel>
-          {service.badge && <Tag tone={service.badge === "Servicio principal" ? "solid" : "line"}>{service.badge}</Tag>}
-        </div>
+        <MonoLabel>{service.index}</MonoLabel>
         <IconTile>{service.icon}</IconTile>
       </div>
 
@@ -295,7 +226,7 @@ export default function Services() {
         eyebrow="Servicios"
         titleId="servicios-title"
         title="¿Qué necesitás?"
-        lead="Nuestro fuerte es imprimir: traé tu archivo 3D y lo hacemos. El modelado también existe, pero es un servicio aparte, a consultar."
+        lead="Traé tu archivo 3D y lo hacemos."
         action={
           <Button variant="ghost" href="#contacto" icon={<ArrowIcon />}>
             Contar mi proyecto
@@ -303,10 +234,9 @@ export default function Services() {
         }
       />
 
-      {/* mobile: apiladas gap 16 · md: 50/50 gap 20 · lg: grid de 12 → 7/5. Stagger de hermanos (70 ms). */}
-      <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-12">
+      <Stagger className="grid grid-cols-1">
         {services.map((service) => (
-          <Reveal key={service.slug} className={`flex ${service.span}`}>
+          <Reveal key={service.slug} className="flex">
             <ServiceCard service={service} />
           </Reveal>
         ))}

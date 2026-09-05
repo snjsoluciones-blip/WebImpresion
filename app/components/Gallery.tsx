@@ -81,14 +81,14 @@ const items: GalleryItem[] = [
   {
     src: "/images/llavero-mc-racing.jpg",
     title: "Llaveros Personalizados",
-    desc: "Tanda de 500 llaveros con diseño y modelado 100% a medida del logo del cliente, terminados en menos de una semana.",
+    desc: "Tanda de 500 llaveros con diseño 100% a medida del logo del cliente, terminados en menos de una semana.",
     category: "Personalizados",
     alt: "Tanda de llaveros personalizados con el logo de MC Racing",
     label: "500 unidades",
     specs: [
       { k: "Cantidad", v: "500" },
       { k: "Plazo", v: "Menos de una semana" },
-      { k: "Modelado", v: "100% propio" },
+      { k: "Diseño", v: "100% propio" },
     ],
   },
   {
@@ -335,7 +335,7 @@ export default function Gallery() {
                 ¿Tenés una pieza parecida?
               </MonoLabel>
               <p className="t-body m-0 mt-2 max-w-[52ch]">
-                Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, podés conseguirlo en MakerWorld, Printables o Thingiverse, o consultarnos por modelado.
+                Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, podés conseguirlo en MakerWorld, Printables o Thingiverse.
               </p>
             </div>
             <Button variant="ghost" size="sm" href="#contacto" icon={<ArrowIcon />}>

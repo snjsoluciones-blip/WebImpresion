@@ -53,7 +53,6 @@ const NAV_LINKS: FooterLinkItem[] = [
 ];
 
 const SERVICE_LINKS: FooterLinkItem[] = [
-  { label: "Modelado + Impresión", href: "#servicios" },
   { label: "Solo Impresión", href: "#servicios" },
   { label: "Series cortas", href: "#contacto" },
   { label: "Repuestos y prototipos", href: "#contacto" },
@@ -337,7 +336,7 @@ export default function Footer() {
         <div className="flex items-center justify-between gap-6 py-5 md:py-6">
           <div className="font-mono-tech flex flex-col gap-2 text-[11px] uppercase leading-relaxed tracking-[0.14em] text-[color:var(--tx-5)]">
             <p>© {year} SNJ Soluciones. Todos los derechos reservados.</p>
-            <p>Impresión 3D &middot; Modelado 3D &middot; Pacheco, Tigre y Zona Norte GBA</p>
+            <p>Impresión 3D &middot; Pacheco, Tigre y Zona Norte GBA</p>
           </div>
           <BackToTop />
         </div>

@@ -40,9 +40,7 @@ const FAQ: FaqEntry[] = [
     a: [
       {
         p: [
-          "No hay problema: podés conseguir un modelo gratis en MakerWorld, Printables o Thingiverse y nos lo mandás. Si no encontrás nada parecido, contanos tu idea — en casos puntuales también la ",
-          { text: "modelamos nosotros", href: "#servicios" },
-          " antes de imprimir.",
+          "Podés conseguir un modelo gratis en MakerWorld, Printables o Thingiverse y nos lo mandás.",
         ],
       },
     ],
@@ -99,7 +97,7 @@ const FAQ: FaqEntry[] = [
       { p: ["Las dos cosas. Hacemos piezas únicas y también series cortas."] },
       {
         p: [
-          "Un ejemplo real: para MC Racing imprimimos una tanda de 500 llaveros con diseño y modelado 100 % a medida del logo del cliente, terminados en menos de una semana. Podés verlos en la ",
+          "Un ejemplo real: para MC Racing imprimimos una tanda de 500 llaveros con diseño 100 % a medida del logo del cliente, terminados en menos de una semana. Podés verlos en la ",
           { text: "galería", href: "#galeria" },
           ".",
         ],

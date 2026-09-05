@@ -17,8 +17,8 @@ type Fact = {
 const FACTS: readonly Fact[] = [
   { value: 500, label: "Llaveros en una tanda", note: "MC Racing · menos de una semana" },
   { value: 4, label: "Materiales técnicos", note: "PLA · PETG · ABS · TPU" },
-  { value: 4, label: "Pasos del proceso", note: "De la idea a la pieza" },
-  { value: 3, label: "Socios", note: "Modelado e impresión propios" },
+  { value: 3, label: "Pasos del proceso", note: "De tu archivo a la pieza" },
+  { value: 3, label: "Socios", note: "Impresión 3D profesional" },
 ];
 
 // Números: Space Grotesk 700 (font-display de Counter + font-bold), tabular-nums, cromo estático.

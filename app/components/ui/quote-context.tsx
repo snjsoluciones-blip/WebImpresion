@@ -3,15 +3,13 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 /**
- * Preset del formulario de cotización. Los valores son EXACTAMENTE los `value`
- * de los <option> del formulario actual:
- *  - servicio: "Modelado + Impresión" | "Solo Impresión"
- *  - material: "PLA" | "PETG" | "ABS" | "TPU" | "No sé, asesorarme"
+ * Preset del formulario de cotización. Un solo servicio (Solo Impresión), así que
+ * lo único que se pre-selecciona es el material. El value es EXACTAMENTE el `value`
+ * de los <option> del formulario actual: "PLA" | "PETG" | "ABS" | "TPU" | "No sé, asesorarme"
  */
-export type QuotePreset = { servicio?: string; material?: string };
+export type QuotePreset = { material?: string };
 export type QuoteCtx = { preset: QuotePreset; setPreset: (p: QuotePreset) => void };
 
-export const SERVICE_VALUES = ["Solo Impresión", "Modelado + Impresión"] as const;
 export const MATERIAL_VALUES = ["PLA", "PETG", "ABS", "TPU", "No sé, asesorarme"] as const;
 
 const QuoteContext = createContext<QuoteCtx>({
@@ -21,7 +19,6 @@ const QuoteContext = createContext<QuoteCtx>({
 
 export function QuoteProvider({ children }: { children: React.ReactNode }) {
   const [preset, setPresetState] = useState<QuotePreset>({});
-  // Merge: "Cotizar en PETG" no debe borrar un servicio ya elegido y viceversa.
   const setPreset = useCallback((p: QuotePreset) => {
     setPresetState((prev) => ({ ...prev, ...p }));
   }, []);

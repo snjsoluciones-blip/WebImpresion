@@ -7,7 +7,7 @@ export { useReducedMotionSafe } from "./useReducedMotionSafe";
 export { usePointerFine } from "./usePointerFine";
 export { useActiveSection } from "./useActiveSection";
 export { useLocalDraft } from "./useLocalDraft";
-export { QuoteProvider, useQuote, SERVICE_VALUES, MATERIAL_VALUES } from "./quote-context";
+export { QuoteProvider, useQuote, MATERIAL_VALUES } from "./quote-context";
 export type { QuotePreset, QuoteCtx } from "./quote-context";
 
 export { default as Section } from "./Section";

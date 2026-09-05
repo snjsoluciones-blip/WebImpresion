@@ -26,7 +26,10 @@ import WhatsAppIcon from "./ui/WhatsAppIcon";
 import { EASE } from "./ui/motion";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 import { useLocalDraft } from "./ui/useLocalDraft";
-import { MATERIAL_VALUES, SERVICE_VALUES, useQuote } from "./ui/quote-context";
+import { MATERIAL_VALUES, useQuote } from "./ui/quote-context";
+import StlViewer from "./ui/StlViewer";
+import { estimatePrice, formatArs, MATERIALS, type MaterialName } from "./ui/pricing";
+import type { ParsedStl } from "./ui/stl";
 
 /* =========================================================================
    Datos de contacto reales — intactos.
@@ -43,10 +46,11 @@ interface FormState {
   nombre: string;
   email: string;
   telefono: string;
-  servicio: string;
   descripcion: string;
   medidas: string;
   material: string;
+  /** Texto libre: no se valida como número para no bloquear el paso si escriben "2 o 3". */
+  cantidad: string;
 }
 
 type FieldName = keyof FormState;
@@ -55,10 +59,10 @@ const INITIAL: FormState = {
   nombre: "",
   email: "",
   telefono: "",
-  servicio: "Solo Impresión",
   descripcion: "",
   medidas: "",
   material: "PLA",
+  cantidad: "1",
 };
 
 const STEPS = ["Tu proyecto", "Tus datos", "Revisar y enviar"];
@@ -67,24 +71,29 @@ const STEPS = ["Tu proyecto", "Tus datos", "Revisar y enviar"];
 const STEP_REQUIRED: FieldName[][] = [["descripcion", "medidas"], ["nombre", "email", "telefono"], []];
 
 const FIELD_STEP: Record<FieldName, number> = {
-  servicio: 0,
   descripcion: 0,
   medidas: 0,
   material: 0,
+  cantidad: 0,
   nombre: 1,
   email: 1,
   telefono: 1,
 };
 
 const FIELD_WORD: Record<FieldName, string> = {
-  servicio: "servicio",
   descripcion: "descripción",
   medidas: "medidas",
   material: "material",
+  cantidad: "cantidad",
   nombre: "nombre",
   email: "email",
   telefono: "teléfono",
 };
+
+/** ¿El material elegido es uno de los 4 reales (no "No sé, asesorarme")? Solo ahí calculamos precio. */
+function isPriceableMaterial(m: string): m is MaterialName {
+  return (MATERIALS as readonly string[]).includes(m);
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -93,23 +102,30 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
    buildWhatsAppUrl() lo consume; la preview del paso 3 lo muestra tal cual.
    ========================================================================= */
 
-function buildMessage(form: FormState) {
+/** Línea de estimación (peso + precio), solo si el cliente subió un STL y se pudo calcular. */
+function buildEstimateLine(estimate: ReturnType<typeof estimatePrice> | null): string {
+  if (!estimate) return "";
+  const grams = Math.round(estimate.estimatedGrams);
+  return `⚖️ Peso estimado: ~${grams} g\n💰 Precio estimado: ${formatArs(estimate.estimatedPriceArs)} (a confirmar antes de imprimir)\n`;
+}
+
+function buildMessage(form: FormState, estimate: ReturnType<typeof estimatePrice> | null = null) {
   return `Hola SNJ Soluciones! 👋 Quiero solicitar una pieza 3D.
 
 👤 Nombre: ${form.nombre.trim()}
 📧 Email: ${form.email.trim()}
 📱 Teléfono: ${form.telefono.trim()}
 
-📋 Servicio: ${form.servicio}
 📝 Descripción: ${form.descripcion.trim()}
 📐 Medidas: ${form.medidas.trim()}
 🧪 Material: ${form.material}
-
+🔢 Cantidad: ${form.cantidad.trim() || "1"}
+${buildEstimateLine(estimate)}
 Quedo a disposición para coordinar. Gracias!`;
 }
 
-function buildWhatsAppUrl(form: FormState) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form))}`;
+function buildWhatsAppUrl(form: FormState, estimate: ReturnType<typeof estimatePrice> | null = null) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form, estimate))}`;
 }
 
 function isFormValid(f: FormState) {
@@ -179,11 +195,11 @@ function CheckIcon() {
 }
 
 /* =========================================================================
-   Chips de servicio / material (radiogroup con flechas + select sr-only sincronizado)
+   Chip de material (radiogroup con flechas + select sr-only sincronizado)
    ========================================================================= */
 
 type ChipGroupProps = {
-  id: "servicio" | "material";
+  id: "material";
   index: string;
   label: string;
   options: readonly string[];
@@ -269,6 +285,110 @@ function ChipGroup({ id, index, label, options, value, onChange }: ChipGroupProp
 }
 
 /* =========================================================================
+   Subida de STL: opcional. Todo pasa en el navegador (nada se sube a ningún
+   servidor todavía) — solo sirve para mostrar la pieza en 3D y calcular un
+   precio ESTIMADO por peso. Nunca es el precio final: eso se confirma por
+   WhatsApp antes de imprimir.
+   ========================================================================= */
+
+type StlUploadProps = {
+  file: File | null;
+  onFile: (file: File | null) => void;
+  parsed: ParsedStl | null;
+  error: string | null;
+  onParsed: (parsed: ParsedStl) => void;
+  onError: (message: string) => void;
+  estimate: ReturnType<typeof estimatePrice> | null;
+  priceableMaterial: boolean;
+};
+
+function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, priceableMaterial }: StlUploadProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handlePick = (e: ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0] ?? null;
+    e.target.value = ""; // permite volver a elegir el mismo archivo si lo reemplazan
+    if (picked && !picked.name.toLowerCase().endsWith(".stl")) {
+      onError("Por ahora solo podemos abrir archivos .stl");
+      return;
+    }
+    onFile(picked);
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <span className="inline-flex items-center gap-2">
+        <MonoLabel tone="dim">05 · Modelo 3D (opcional)</MonoLabel>
+      </span>
+
+      {!file ? (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="snj-input flex min-h-[3.25rem] items-center justify-center gap-2 border-dashed text-sm"
+          style={{ color: "var(--tx-3)" }}
+        >
+          <ClipIcon />
+          Subir archivo STL — así vemos la pieza y estimamos el precio
+        </button>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="flex min-w-0 items-center gap-2 text-sm" style={{ color: "var(--tx-2)" }}>
+              <ClipIcon />
+              <span className="truncate">{file.name}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onFile(null)}
+              className="shrink-0 text-xs underline underline-offset-4"
+              style={{ color: "var(--tx-4)" }}
+            >
+              Quitar
+            </button>
+          </div>
+
+          <div
+            className="h-64 w-full overflow-hidden rounded-[var(--r-md)] border sm:h-80"
+            style={{ borderColor: "var(--line-1)" }}
+          >
+            <StlViewer file={file} onParsed={onParsed} onError={onError} />
+          </div>
+
+          {error && (
+            <p className="text-sm" style={{ color: "var(--tx-3)" }}>
+              {error}
+            </p>
+          )}
+
+          {parsed && !priceableMaterial && (
+            <p className="text-sm" style={{ color: "var(--tx-3)" }}>
+              Elegí PLA, PETG, ABS o TPU arriba para ver el precio estimado.
+            </p>
+          )}
+
+          {estimate && (
+            <div className="rounded-[var(--r-sm)] border px-4 py-3" style={{ borderColor: "var(--line-2)" }}>
+              <p className="font-mono-tech text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--tx-4)" }}>
+                Estimado · a confirmar antes de imprimir
+              </p>
+              <p className="mt-1 text-lg text-white">
+                {formatArs(estimate.estimatedPriceArs)}
+                <span className="ml-2 text-sm" style={{ color: "var(--tx-3)" }}>
+                  (~{Math.round(estimate.estimatedGrams)} g en {estimate.material})
+                </span>
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      <input ref={inputRef} type="file" accept=".stl" onChange={handlePick} className="hidden" />
+    </div>
+  );
+}
+
+/* =========================================================================
    Panel de paso: enfoca el primer control al montar (nunca en la carga inicial)
    ========================================================================= */
 
@@ -327,28 +447,40 @@ export default function ContactForm() {
   const [sent, setSent] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<FieldName, string | null>>>({});
 
+  // Archivo STL: vive fuera de `form`/useLocalDraft a propósito — un File no se puede
+  // guardar en localStorage, y no hace falta persistirlo entre visitas.
+  const [stlFile, setStlFile] = useState<File | null>(null);
+  const [stlParsed, setStlParsed] = useState<ParsedStl | null>(null);
+  const [stlError, setStlError] = useState<string | null>(null);
+  const onStlParsed = useCallback((parsed: ParsedStl) => {
+    setStlParsed(parsed);
+    setStlError(null);
+  }, []);
+  const onStlError = useCallback((message: string) => {
+    setStlParsed(null);
+    setStlError(message);
+  }, []);
+  const priceEstimate =
+    stlParsed && isPriceableMaterial(form.material)
+      ? estimatePrice(stlParsed.volumeMm3, form.material, Math.max(1, parseInt(form.cantidad, 10) || 1))
+      : null;
+
   // Borrador recuperado: hay algo escrito y el usuario todavía no tocó nada en esta visita.
   const recovered = !touched && !recoveredDismissed && JSON.stringify(form) !== JSON.stringify(INITIAL);
 
-  // Preset que llega desde Servicios / Materiales ("Cotizar en PETG").
+  // Preset que llega desde Materiales ("Cotizar en PETG").
   // Diferido (no sincrónico en el efecto) para no encadenar renders.
   useEffect(() => {
-    const next: Partial<FormState> = {};
-    if (preset.servicio && (SERVICE_VALUES as readonly string[]).includes(preset.servicio)) {
-      next.servicio = preset.servicio;
-    }
-    if (preset.material && (MATERIAL_VALUES as readonly string[]).includes(preset.material)) {
-      next.material = preset.material;
-    }
-    if (Object.keys(next).length === 0) return;
+    if (!preset.material || !(MATERIAL_VALUES as readonly string[]).includes(preset.material)) return;
+    const material = preset.material;
     const id = window.setTimeout(() => {
       setTouched(true);
-      setForm((p) => ({ ...p, ...next }));
+      setForm((p) => ({ ...p, material }));
       setDirection(-1);
       setStep(0);
     }, 0);
     return () => window.clearTimeout(id);
-  }, [preset.servicio, preset.material, setForm]);
+  }, [preset.material, setForm]);
 
   const go = useCallback(
     (to: number, focus: string | null = null) => {
@@ -375,7 +507,7 @@ export default function ContactForm() {
     setErrors((p) => (p[name] === message ? p : { ...p, [name]: message }));
   };
 
-  const setChip = (name: "servicio" | "material") => (v: string) => {
+  const setChip = (name: "material") => (v: string) => {
     setTouched(true);
     setForm((p) => ({ ...p, [name]: v }));
   };
@@ -424,8 +556,8 @@ export default function ContactForm() {
   };
 
   const summaryRows: { key: FieldName; label: string; value: string }[] = [
-    { key: "servicio", label: "Servicio", value: form.servicio },
     { key: "material", label: "Material", value: form.material },
+    { key: "cantidad", label: "Cantidad", value: form.cantidad },
     { key: "medidas", label: "Medidas", value: form.medidas },
     { key: "descripcion", label: "Descripción", value: truncate(form.descripcion, 140) },
     { key: "nombre", label: "Nombre", value: form.nombre },
@@ -501,19 +633,10 @@ export default function ContactForm() {
                     {/* ---------- Paso 1: tu proyecto ---------- */}
                     {step === 0 && (
                       <div className="flex flex-col gap-7">
-                        <ChipGroup
-                          id="servicio"
-                          index="01"
-                          label="Tipo de servicio"
-                          options={SERVICE_VALUES}
-                          value={form.servicio}
-                          onChange={setChip("servicio")}
-                        />
-
                         <div className="snj-field">
                           <Field
                             id="descripcion"
-                            index="02"
+                            index="01"
                             label="Descripción detallada de la pieza"
                             required
                             counter={{ current: form.descripcion.length, max: DESC_MAX }}
@@ -535,7 +658,7 @@ export default function ContactForm() {
                         </div>
 
                         <div className="snj-field">
-                          <Field id="medidas" index="03" label="Medidas aproximadas" required error={errors.medidas}>
+                          <Field id="medidas" index="02" label="Medidas aproximadas" required error={errors.medidas}>
                             <input
                               type="text"
                               name="medidas"
@@ -551,11 +674,40 @@ export default function ContactForm() {
 
                         <ChipGroup
                           id="material"
-                          index="04"
+                          index="03"
                           label="Material preferido"
                           options={MATERIAL_VALUES}
                           value={form.material}
                           onChange={setChip("material")}
+                        />
+
+                        <div className="snj-field max-w-[10rem]">
+                          <Field id="cantidad" index="04" label="Cantidad">
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              min={1}
+                              name="cantidad"
+                              value={form.cantidad}
+                              onChange={handleChange}
+                              className="snj-input"
+                            />
+                          </Field>
+                        </div>
+
+                        <StlUpload
+                          file={stlFile}
+                          onFile={(f) => {
+                            setStlFile(f);
+                            setStlParsed(null);
+                            setStlError(null);
+                          }}
+                          parsed={stlParsed}
+                          error={stlError}
+                          onParsed={onStlParsed}
+                          onError={onStlError}
+                          estimate={priceEstimate}
+                          priceableMaterial={isPriceableMaterial(form.material)}
                         />
                       </div>
                     )}
@@ -564,7 +716,7 @@ export default function ContactForm() {
                     {step === 1 && (
                       <div className="flex flex-col gap-7">
                         <div className="snj-field">
-                          <Field id="nombre" index="05" label="Nombre" required error={errors.nombre}>
+                          <Field id="nombre" index="06" label="Nombre" required error={errors.nombre}>
                             <input
                               type="text"
                               name="nombre"
@@ -581,7 +733,7 @@ export default function ContactForm() {
 
                         <div className="grid gap-7 sm:grid-cols-2">
                           <div className="snj-field">
-                            <Field id="email" index="06" label="Email" required error={errors.email}>
+                            <Field id="email" index="07" label="Email" required error={errors.email}>
                               <input
                                 type="email"
                                 name="email"
@@ -597,7 +749,7 @@ export default function ContactForm() {
                             </Field>
                           </div>
                           <div className="snj-field">
-                            <Field id="telefono" index="07" label="Teléfono / WhatsApp" required error={errors.telefono}>
+                            <Field id="telefono" index="08" label="Teléfono / WhatsApp" required error={errors.telefono}>
                               <input
                                 type="tel"
                                 name="telefono"
@@ -691,7 +843,7 @@ export default function ContactForm() {
                             className="font-mono-tech whitespace-pre-line px-4 pb-4 text-[12px] leading-relaxed"
                             style={{ color: "var(--tx-4)" }}
                           >
-                            {buildMessage(form)}
+                            {buildMessage(form, priceEstimate)}
                           </div>
                         </details>
 
@@ -718,7 +870,7 @@ export default function ContactForm() {
                                   variant="whatsapp"
                                   size="lg"
                                   full
-                                  href={buildWhatsAppUrl(form)}
+                                  href={buildWhatsAppUrl(form, priceEstimate)}
                                   external
                                   onClick={handleSent}
                                   icon={<WhatsAppIcon className="h-5 w-5" />}
