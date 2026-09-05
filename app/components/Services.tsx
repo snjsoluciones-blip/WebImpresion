@@ -143,8 +143,10 @@ function IconTile({ children }: { children: ReactNode }) {
 }
 
 /* ------------------------------------------------------------------------ */
-/* Datos. Los 4 textos de cada servicio se conservan palabra por palabra.     */
-/* `title` coincide EXACTAMENTE con los value de los <option> del formulario. */
+/* Datos. `title` coincide EXACTAMENTE con los value de los <option> del      */
+/* formulario. Solo Impresión es el servicio principal: imprimimos lo que ya */
+/* está modelado. El modelado sigue existiendo, pero como algo a consultar,   */
+/* no como una opción más del mismo peso.                                    */
 /* ------------------------------------------------------------------------ */
 
 type ServiceValue = (typeof SERVICE_VALUES)[number];
@@ -159,33 +161,33 @@ type Service = {
   /** "Qué necesitamos de vos": derivado del detail y de los campos del formulario. */
   needs: readonly string[];
   icon: ReactNode;
-  /** Columnas en lg (grid de 12): la más popular ocupa 7, la otra 5. */
+  /** Columnas en lg (grid de 12): la principal ocupa 7, la de consulta 5. */
   span: string;
 };
 
 const services: readonly Service[] = [
   {
     index: "S-01",
-    slug: "modelado-impresion",
-    title: "Modelado + Impresión",
-    description: "¿Tenés una idea? Nosotros la modelamos en 3D y la imprimimos.",
+    slug: "solo-impresion",
+    title: "Solo Impresión",
+    description: "¿Ya tenés el archivo 3D? Lo imprimimos.",
     detail:
-      "Desde el concepto hasta la pieza física. Trabajamos con vos para dar forma a tu idea con precisión profesional.",
-    badge: "Más popular",
-    needs: ["Descripción o croquis", "Medidas aproximadas", "Para qué la vas a usar"],
-    icon: <CubeIcon />,
+      "Envianos tu archivo STL o STEP y nos encargamos de la impresión con los mejores materiales disponibles. ¿No tenés archivo? Podés conseguir modelos gratis en MakerWorld, Printables o Thingiverse.",
+    badge: "Servicio principal",
+    needs: ["Archivo STL o STEP", "Material deseado", "Cantidad"],
+    icon: <LayersIcon />,
     span: "lg:col-span-7",
   },
   {
     index: "S-02",
-    slug: "solo-impresion",
-    title: "Solo Impresión",
-    description: "¿Ya tenés el modelo? Solo necesitamos el archivo y lo imprimimos.",
+    slug: "modelado-impresion",
+    title: "Modelado + Impresión",
+    description: "¿No encontrás el archivo ni sabés armarlo? En casos puntuales, también lo modelamos.",
     detail:
-      "Envianos tu archivo STL o STEP y nos encargamos de la impresión con los mejores materiales disponibles.",
-    badge: null,
-    needs: ["Archivo STL o STEP", "Material deseado", "Cantidad"],
-    icon: <LayersIcon />,
+      "Es un servicio a consultar, no el principal: contanos tu idea y evaluamos juntos si podemos modelarla antes de imprimirla.",
+    badge: "A consultar",
+    needs: ["Descripción o croquis", "Medidas aproximadas", "Para qué la vas a usar"],
+    icon: <CubeIcon />,
     span: "lg:col-span-5",
   },
 ];
@@ -217,7 +219,7 @@ function ServiceCard({ service }: { service: Service }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <MonoLabel>{service.index}</MonoLabel>
-          {service.badge && <Tag tone="solid">{service.badge}</Tag>}
+          {service.badge && <Tag tone={service.badge === "Servicio principal" ? "solid" : "line"}>{service.badge}</Tag>}
         </div>
         <IconTile>{service.icon}</IconTile>
       </div>
@@ -293,7 +295,7 @@ export default function Services() {
         eyebrow="Servicios"
         titleId="servicios-title"
         title="¿Qué necesitás?"
-        lead="Dos formas de trabajar con nosotros, según en qué punto estés. En las dos, la pieza sale del taller lista para usar."
+        lead="Nuestro fuerte es imprimir: traé tu archivo 3D y lo hacemos. El modelado también existe, pero es un servicio aparte, a consultar."
         action={
           <Button variant="ghost" href="#contacto" icon={<ArrowIcon />}>
             Contar mi proyecto

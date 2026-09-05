@@ -17,30 +17,24 @@ import {
 } from "./ui";
 
 /**
- * Los 4 pasos. `title` y `desc` se conservan palabra por palabra.
+ * Los 3 pasos del servicio principal (Solo Impresión: traés tu archivo, no lo modelamos).
  * `deliverable` es la línea mono "qué recibís", derivada del propio contenido (sin plazos ni precios).
  */
 const steps = [
   {
     number: "01",
-    title: "Describís tu pieza",
-    desc: "Enviás descripción, medidas, material y fotos de referencia",
+    title: "Nos compartís tu archivo",
+    desc: "Mandás el archivo 3D (o el link de MakerWorld, Printables, etc.), material y cantidad",
     deliverable: "Formulario o WhatsApp",
   },
   {
     number: "02",
-    title: "Modelamos en 3D",
-    desc: "Nuestro equipo crea el modelo digital de tu pieza",
-    deliverable: "Modelado 3D propio",
+    title: "Confirmamos los detalles",
+    desc: "Revisamos el archivo, el material y te confirmamos antes de imprimir",
+    deliverable: "Confirmación antes de imprimir",
   },
   {
     number: "03",
-    title: "Confirmás el diseño",
-    desc: "Revisás el modelo antes de imprimir",
-    deliverable: "Vista previa antes de imprimir",
-  },
-  {
-    number: "04",
     title: "Imprimimos y enviamos",
     desc: "Imprimimos con alta calidad y te lo enviamos",
     deliverable: "Pieza terminada",
@@ -87,8 +81,8 @@ function litCountFor(progress: number, thresholds: number[]): number {
 /*
  * Geometría de las líneas. Las variables --tl-* las escribe el efecto de medición sobre el track
  * (centro real del primer y último nodo). Los fallbacks cubren SSR / sin JS, cada uno para su
- * breakpoint: nodo de 44px en mobile (centro 22px) y de 56px en lg (centro 28px; el 4.º nodo de la
- * grilla de 4 columnas con gap 24px queda centrado en 75% + 46px).
+ * breakpoint: nodo de 44px en mobile (centro 22px) y de 56px en lg (centro 28px; el 3.º nodo de la
+ * grilla de 3 columnas con gap 24px queda centrado en 66.667% + 44px).
  */
 const vLine: CSSProperties = {
   left: "calc(var(--tl-x0, 22px) - 0.5px)",
@@ -97,12 +91,12 @@ const vLine: CSSProperties = {
 };
 const hLine: CSSProperties = {
   left: "var(--tl-x0, 28px)",
-  right: "calc(100% - var(--tl-x1, calc(75% + 46px)))",
+  right: "calc(100% - var(--tl-x1, calc(66.667% + 44px)))",
   top: "calc(var(--tl-y0, 28px) - 0.5px)",
 };
 
 /**
- * Proceso en 4 pasos. Línea de progreso ligada al scroll con useScroll (sin pin, sin ScrollTrigger,
+ * Proceso en 3 pasos. Línea de progreso ligada al scroll con useScroll (sin pin, sin ScrollTrigger,
  * sin altura artificial): guía estática --line-1 + relleno scaleX/scaleY. En <lg es una timeline
  * vertical continua (un único elemento); desde lg, cuatro columnas con la línea horizontal.
  * Los nodos se "encienden" al ser superados por el progreso. Reduced-motion: línea llena, nodos
@@ -168,7 +162,7 @@ export default function HowItWorks() {
         index="04"
         eyebrow="Proceso"
         titleId="proceso-title"
-        title="De la idea a la pieza, en cuatro pasos"
+        title="De tu archivo a la pieza, en tres pasos"
       />
 
       <div ref={trackRef} className="relative">
@@ -207,7 +201,7 @@ export default function HowItWorks() {
         />
 
         {/* role="list" explícito: Safari quita la semántica de lista con list-style:none */}
-        <ol role="list" className="flex list-none flex-col gap-8 lg:grid lg:grid-cols-4 lg:gap-6">
+        <ol role="list" className="flex list-none flex-col gap-8 lg:grid lg:grid-cols-3 lg:gap-6">
           {steps.map((step, i) => {
             const isLit = i < litCount;
             return (

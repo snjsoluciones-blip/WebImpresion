@@ -40,12 +40,11 @@ const FAQ: FaqEntry[] = [
     a: [
       {
         p: [
-          "No hace falta. Con el servicio de ",
-          { text: "Modelado + Impresión", href: "#servicios" },
-          " lo modelamos nosotros a partir de tu idea: nos contás qué necesitás, creamos el modelo digital y lo revisás antes de que se imprima.",
+          "No hay problema: podés conseguir un modelo gratis en MakerWorld, Printables o Thingiverse y nos lo mandás. Si no encontrás nada parecido, contanos tu idea — en casos puntuales también la ",
+          { text: "modelamos nosotros", href: "#servicios" },
+          " antes de imprimir.",
         ],
       },
-      { p: ["Es nuestro servicio más elegido, tanto para ideas nuevas como para repuestos."] },
     ],
   },
   {
@@ -124,7 +123,7 @@ const FAQ: FaqEntry[] = [
       },
       {
         p: [
-          "De ahí en adelante son cuatro pasos: describís tu pieza, la modelamos en 3D, confirmás el diseño y la imprimimos y te la enviamos. Está detallado en ",
+          "De ahí en adelante son tres pasos: nos compartís tu archivo, confirmamos los detalles y la imprimimos y te la enviamos. Está detallado en ",
           { text: "cómo funciona", href: "#como-funciona" },
           ".",
         ],

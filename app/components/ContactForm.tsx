@@ -55,7 +55,7 @@ const INITIAL: FormState = {
   nombre: "",
   email: "",
   telefono: "",
-  servicio: "Modelado + Impresión",
+  servicio: "Solo Impresión",
   descripcion: "",
   medidas: "",
   material: "PLA",

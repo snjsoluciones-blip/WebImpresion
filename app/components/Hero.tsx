@@ -30,7 +30,7 @@ const COORDS = "−34.4522 / −58.6469";
 
 const SPEC_ROWS: { k: string; v: string }[] = [
   { k: "Materiales", v: "PLA · PETG · ABS · TPU" },
-  { k: "Servicios", v: "Modelado + Impresión" },
+  { k: "Servicios", v: "Solo Impresión" },
   { k: "Zona", v: "Pacheco · Tigre · Zona Norte · CABA" },
 ];
 

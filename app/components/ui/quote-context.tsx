@@ -11,7 +11,7 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 export type QuotePreset = { servicio?: string; material?: string };
 export type QuoteCtx = { preset: QuotePreset; setPreset: (p: QuotePreset) => void };
 
-export const SERVICE_VALUES = ["Modelado + Impresión", "Solo Impresión"] as const;
+export const SERVICE_VALUES = ["Solo Impresión", "Modelado + Impresión"] as const;
 export const MATERIAL_VALUES = ["PLA", "PETG", "ABS", "TPU", "No sé, asesorarme"] as const;
 
 const QuoteContext = createContext<QuoteCtx>({

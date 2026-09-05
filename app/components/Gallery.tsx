@@ -321,7 +321,7 @@ export default function Gallery() {
                 ¿Tenés una pieza parecida?
               </MonoLabel>
               <p className="t-body m-0 mt-2 max-w-[52ch]">
-                Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, lo modelamos nosotros.
+                Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, podés conseguirlo en MakerWorld, Printables o Thingiverse, o consultarnos por modelado.
               </p>
             </div>
             <Button variant="ghost" size="sm" href="#contacto" icon={<ArrowIcon />}>
