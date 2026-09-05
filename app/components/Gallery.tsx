@@ -65,6 +65,20 @@ const items: GalleryItem[] = [
     ],
   },
   {
+    src: "/images/estuche-aim-solo2.jpg",
+    video: "/videos/estuche-aim-solo2.mp4",
+    title: "Estuches AiM Solo 2 + Cámara, a Medida",
+    desc: "Estuche rígido con espuma recortada a medida para guardar el AiM Solo 2 junto con una cámara de acción, con el nombre del piloto grabado en la tapa. Ya lo hicimos para varios pilotos.",
+    category: "Automovilismo",
+    alt: "Estuche rígido personalizado con el nombre del piloto grabado, con espuma recortada para el AiM Solo 2 y una cámara de acción",
+    label: "A medida",
+    specs: [
+      { k: "Interior", v: "Espuma recortada a medida" },
+      { k: "Personalización", v: "Nombre grabado en la tapa" },
+      { k: "Rubro", v: "Automovilismo" },
+    ],
+  },
+  {
     src: "/images/llavero-mc-racing.jpg",
     title: "Llaveros Personalizados",
     desc: "Tanda de 500 llaveros con diseño y modelado 100% a medida del logo del cliente, terminados en menos de una semana.",
@@ -180,7 +194,7 @@ function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, 
 }
 
 /**
- * Portfolio · 02. Cuatro casos reales en layout editorial de 12 columnas (media 7 / ficha 4,
+ * Portfolio · 02. Cinco casos reales en layout editorial de 12 columnas (media 7 / ficha 4,
  * alternando lados), sin riel central. Media via MediaFrame (video con preload none, poster,
  * play/pause por IntersectionObserver), ficha con SpecTable, TiltCard + rótulo en hover solo
  * con puntero fino, número de caso fuera de la foto y Lightbox con navegación. Un caso puede
@@ -225,7 +239,7 @@ export default function Gallery() {
         eyebrow="Portfolio"
         titleId="galeria-title"
         title="Trabajos que ya salieron de la impresora"
-        lead="Cuatro casos reales: automovilismo, telemetría y personalizados."
+        lead="Cinco casos reales: automovilismo, telemetría y personalizados."
       />
 
       <ol role="list" className="m-0 flex list-none flex-col p-0" style={{ rowGap: "clamp(5rem, 3rem + 6vw, 9rem)" }}>
