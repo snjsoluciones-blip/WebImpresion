@@ -130,20 +130,27 @@ const HOVER_LINES: CSSProperties = {
 const HOVER_EASE: CSSProperties = { transitionTimingFunction: "var(--ease-mech)" };
 
 /* ------------------------------------------------------------------------ */
-/* Fotos flotantes: piezas reales del taller que van entrando de los costados */
-/* mientras se hace scroll por la galería, con flote continuo. Decorativas —   */
-/* position:absolute contra el <section> (no contra .shell), así se salen del */
-/* ancho del contenido hacia el borde. */
+/* Fotos flotantes: piezas reales del taller, decorativas, en el margen       */
+/* AFUERA de .shell (nunca contra el contenido: .shell mide 1240px, así que    */
+/* con la pantalla angosta ese margen no existe — por eso solo aparecen desde  */
+/* 2xl, donde el margen real ya es mayor que la foto + un colchón). */
 /* ------------------------------------------------------------------------ */
 
-type FloatPhoto = { src: string; alt: string; side: "left" | "right"; top: string; size: string };
+type FloatPhoto = { src: string; alt: string; side: "left" | "right"; top: string };
+
+const FLOAT_SIZE = 176; // px, fijo (no responsive): así el cálculo del margen de abajo es exacto.
 
 const FLOAT_PHOTOS: readonly FloatPhoto[] = [
-  { src: "/images/float-llavero-castrol.jpg", alt: "Llavero personalizado de un bidón Castrol", side: "left", top: "6%", size: "w-48 sm:w-60 md:w-72" },
-  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", side: "right", top: "30%", size: "w-52 sm:w-64 md:w-80" },
-  { src: "/images/float-llavero-castrol-car.jpg", alt: "Llavero de un auto de carrera Castrol, junto a un estuche GoPro", side: "left", top: "56%", size: "w-48 sm:w-60 md:w-72" },
-  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", side: "right", top: "80%", size: "w-52 sm:w-64 md:w-80" },
+  { src: "/images/float-llavero-castrol.jpg", alt: "Llavero personalizado de un bidón Castrol", side: "left", top: "8%" },
+  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", side: "right", top: "32%" },
+  { src: "/images/float-llavero-castrol-car.jpg", alt: "Llavero de un auto de carrera Castrol, junto a un estuche GoPro", side: "left", top: "58%" },
+  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", side: "right", top: "82%" },
 ] as const;
+
+// Afuera de .shell con un colchón de 24px: (100% - shell)/2 es el margen real a cada lado.
+// En pantallas donde ese margen no alcanza, el valor da negativo y overflow-hidden la recorta
+// en vez de superponerla al contenido — por eso además se oculta por completo hasta 2xl (1536px).
+const marginOffset = `calc((100% - var(--shell)) / 2 - ${FLOAT_SIZE}px - 24px)`;
 
 function FloatingPhoto({ photo, reduced }: { photo: FloatPhoto; reduced: boolean }) {
   const fromX = photo.side === "left" ? -120 : 120;
@@ -152,10 +159,15 @@ function FloatingPhoto({ photo, reduced }: { photo: FloatPhoto; reduced: boolean
   return (
     <motion.div
       aria-hidden="true"
-      className={`pointer-events-none absolute hidden overflow-hidden rounded-[var(--r-lg)] border lg:block ${photo.size} ${
-        photo.side === "left" ? "left-0 xl:-left-6" : "right-0 xl:-right-6"
-      }`}
-      style={{ top: photo.top, borderColor: "var(--line-2)", background: "var(--srf-2)", boxShadow: "0 24px 48px rgba(0,0,0,0.5)" }}
+      className="pointer-events-none absolute hidden overflow-hidden rounded-[var(--r-lg)] border 2xl:block"
+      style={{
+        top: photo.top,
+        width: FLOAT_SIZE,
+        [photo.side]: marginOffset,
+        borderColor: "var(--line-2)",
+        background: "var(--srf-2)",
+        boxShadow: "0 24px 48px rgba(0,0,0,0.5)",
+      }}
       initial={reduced ? { opacity: 0 } : { opacity: 0, x: fromX, scale: 0.82, rotate: 0 }}
       whileInView={
         reduced
@@ -171,7 +183,7 @@ function FloatingPhoto({ photo, reduced }: { photo: FloatPhoto; reduced: boolean
         animate={reduced ? undefined : { y: [0, -10, 0] }}
         transition={reduced ? undefined : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Image src={photo.src} alt={photo.alt} fill sizes="320px" quality={72} className="object-cover" />
+        <Image src={photo.src} alt={photo.alt} fill sizes={`${FLOAT_SIZE}px`} quality={72} className="object-cover" />
       </motion.div>
     </motion.div>
   );

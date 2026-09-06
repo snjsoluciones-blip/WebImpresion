@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type DragEvent,
   type FocusEvent,
   type KeyboardEvent,
   type ReactNode,
@@ -304,15 +305,26 @@ type StlUploadProps = {
 
 function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, priceableMaterial }: StlUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
 
-  const handlePick = (e: ChangeEvent<HTMLInputElement>) => {
-    const picked = e.target.files?.[0] ?? null;
-    e.target.value = ""; // permite volver a elegir el mismo archivo si lo reemplazan
+  const acceptFile = (picked: File | null) => {
     if (picked && !picked.name.toLowerCase().endsWith(".stl")) {
       onError("Por ahora solo podemos abrir archivos .stl");
       return;
     }
     onFile(picked);
+  };
+
+  const handlePick = (e: ChangeEvent<HTMLInputElement>) => {
+    const picked = e.target.files?.[0] ?? null;
+    e.target.value = ""; // permite volver a elegir el mismo archivo si lo reemplazan
+    acceptFile(picked);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setDragging(false);
+    acceptFile(e.dataTransfer.files?.[0] ?? null);
   };
 
   return (
@@ -327,11 +339,18 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="snj-input flex min-h-[3.25rem] items-center justify-center gap-2 border-dashed text-sm"
-          style={{ color: "var(--tx-3)" }}
+          onDragEnter={(e) => {
+            e.preventDefault();
+            setDragging(true);
+          }}
+          onDragOver={(e) => e.preventDefault()}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          className="snj-input flex min-h-[3.25rem] items-center justify-center gap-2 border-dashed text-sm transition-colors duration-150"
+          style={{ color: dragging ? "var(--tx-1)" : "var(--tx-3)", borderColor: dragging ? "var(--line-3)" : undefined }}
         >
           <ClipIcon />
-          Subir archivo STL — es obligatorio, así vemos la pieza y estimamos el precio
+          {dragging ? "Soltá el archivo acá" : "Subí o arrastrá tu archivo STL — es obligatorio, así vemos la pieza y estimamos el precio"}
         </button>
       ) : (
         <div className="flex flex-col gap-3">
