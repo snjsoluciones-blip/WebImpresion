@@ -350,10 +350,7 @@ export default function Gallery() {
         <Reveal>
           <div className="flex flex-col gap-5 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
             <div>
-              <MonoLabel rule as="p" className="m-0">
-                ¿Tenés una pieza parecida?
-              </MonoLabel>
-              <p className="t-body m-0 mt-2 max-w-[52ch]">
+              <p className="t-body m-0 max-w-[52ch]">
                 Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, podés conseguirlo en MakerWorld, Printables o Thingiverse.
               </p>
             </div>

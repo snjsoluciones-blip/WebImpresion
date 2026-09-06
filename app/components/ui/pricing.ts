@@ -3,12 +3,12 @@
  * por ahora: falta la tarifa por hora, se suma más adelante si hace falta).
  *
  * precio = gramos estimados × precio por gramo del material
- * gramos estimados = volumen sólido del STL (mm³) × factor de densidad efectiva
- *                     (paredes + relleno, no es una pieza 100% sólida) × densidad del material
+ * gramos estimados = volumen sólido del STL (mm³) × densidad del material
  *
- * El factor de densidad efectiva (30%) es un promedio típico de una impresión FDM con
- * relleno y paredes estándar. Es una ESTIMACIÓN: se lo mostramos al cliente como tal,
- * nunca como precio final cerrado.
+ * SNJ imprime con relleno al 100% (pieza sólida), así que el volumen del STL —que
+ * se calcula exacto, no se aproxima— multiplicado por la densidad del material da
+ * directamente el peso real, sin ningún factor inventado de por medio. Igual se
+ * muestra como ESTIMADO: nunca como precio final cerrado.
  */
 
 export const MATERIALS = ["PLA", "PETG", "ABS", "TPU"] as const;
@@ -36,8 +36,8 @@ export const PRICE_PER_GRAM: Record<MaterialName, number> = {
   TPU: 450,
 };
 
-/** Relleno + paredes típicos de una impresión FDM estándar (no es pieza sólida). */
-export const EFFECTIVE_DENSITY_FACTOR = 0.3;
+/** Relleno con el que imprime SNJ: 100% (pieza sólida) — confirmado, no una estimación. */
+export const INFILL_FACTOR = 1;
 
 export type PriceEstimate = {
   material: MaterialName;
@@ -49,7 +49,7 @@ export type PriceEstimate = {
 
 export function estimatePrice(volumeMm3: number, material: MaterialName, quantity = 1): PriceEstimate {
   const volumeCm3 = volumeMm3 / 1000;
-  const estimatedGrams = volumeCm3 * EFFECTIVE_DENSITY_FACTOR * MATERIAL_DENSITY[material];
+  const estimatedGrams = volumeCm3 * INFILL_FACTOR * MATERIAL_DENSITY[material];
   const pricePerGram = PRICE_PER_GRAM[material];
   const estimatedPriceArs = estimatedGrams * pricePerGram * quantity;
   return { material, volumeMm3, estimatedGrams, pricePerGram, estimatedPriceArs };
