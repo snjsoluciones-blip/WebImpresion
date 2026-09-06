@@ -31,6 +31,10 @@ interface GalleryItem {
   pairSrc?: string;
   pairAlt?: string;
   pairLabel?: string;
+  /** Relación de aspecto fija (ancho/alto) para fotos verticales u otras que no sean 16:10 —
+   *  sin esto, MediaFrame las recorta fuerte con object-cover. Si no se pasa, usa el default. */
+  ratio?: string;
+  pairRatio?: string;
 }
 
 const items: GalleryItem[] = [
@@ -49,6 +53,9 @@ const items: GalleryItem[] = [
     pairSrc: "/images/trofeo-nankang-pole-minicas.jpg",
     pairAlt: "Otro trofeo de la misma serie Nankang, con la placa grabada para la categoría Mini Cas",
     pairLabel: "Otra unidad",
+    // Fotos verticales (piloto sosteniendo la rueda arriba de la cabeza): sin esto se recortan mal.
+    ratio: "0.6",
+    pairRatio: "0.75",
   },
   {
     src: "/images/soporte-aim-solo2.jpg",
@@ -106,6 +113,9 @@ const items: GalleryItem[] = [
     pairSrc: "/images/trofeo-piloto-dorado-impresion.jpg",
     pairAlt: "El mismo trofeo recién terminado, todavía sobre la base de la impresora 3D",
     pairLabel: "Recién impreso",
+    // Foto principal casi cuadrada + foto del proceso, vertical: mismo motivo que el caso anterior.
+    ratio: "1",
+    pairRatio: "0.6",
   },
 ];
 
@@ -136,11 +146,13 @@ type GalleryMediaProps = {
   onOpen: () => void;
   playLabel?: string;
   sizes: string;
+  /** Relación de aspecto fija (ver GalleryItem.ratio). Si no se pasa, usa el default responsive. */
+  ratio?: string;
 };
 
 /** Un marco de media (foto o video) con TiltCard + rótulo en hover. Reutilizado para el caso
  * simple y para el par de fotos en paralelo (díptico). */
-function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, playLabel, sizes }: GalleryMediaProps) {
+function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, playLabel, sizes, ratio }: GalleryMediaProps) {
   return (
     <TiltCard max={5} glare>
       <div className="group/gal relative">
@@ -149,10 +161,11 @@ function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, 
           video={video}
           poster={video ? src : undefined}
           alt={alt}
-          // MediaFrame necesita un ratio en el marco; la variable lo hace responsive:
-          // 4/3 (1.3333) en mobile, 16/10 (1.6) desde lg. Fallback 16/10.
-          ratio="var(--gal-ratio, 1.6)"
-          className="[--gal-ratio:1.3333] lg:[--gal-ratio:1.6]"
+          // MediaFrame necesita un ratio en el marco. Sin override: 4/3 (1.3333) en mobile,
+          // 16/10 (1.6) desde lg, vía la variable. Con override (fotos verticales o cuadradas
+          // que "cover" recortaría mal), un número fijo en las dos resoluciones.
+          ratio={ratio ?? "var(--gal-ratio, 1.6)"}
+          className={ratio ? undefined : "[--gal-ratio:1.3333] lg:[--gal-ratio:1.6]"}
           sizes={sizes}
           quality={80}
           category={category}
@@ -164,12 +177,15 @@ function GalleryMedia({ src, video, alt, category, hoverLabel, hoverFx, onOpen, 
 
         {hoverFx && (
           <>
-            {/* Scanlines: suben de .04 a ~.06 */}
-            <div
-              aria-hidden="true"
-              className="layer-lines layer-lines--nofade pointer-events-none absolute inset-0 rounded-[var(--r-lg)] opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
-              style={HOVER_LINES}
-            />
+            {/* Scanlines: se sacan en video — contra el movimiento generan un moiré tipo
+                "cuadraditos" que queda feo. En fotos estáticas quedan bien. */}
+            {!video && (
+              <div
+                aria-hidden="true"
+                className="layer-lines layer-lines--nofade pointer-events-none absolute inset-0 rounded-[var(--r-lg)] opacity-0 transition-opacity duration-[500ms] group-hover/gal:opacity-100"
+                style={HOVER_LINES}
+              />
+            )}
             {/* Borde: --line-1 → --line-3 */}
             <div
               aria-hidden="true"
@@ -262,6 +278,7 @@ export default function Gallery() {
                       onOpen={() => openAt(i, "main")}
                       playLabel={item.video ? `Reproducir video de ${item.title}` : undefined}
                       sizes="(max-width: 1024px) 50vw, 29vw"
+                      ratio={item.ratio}
                     />
                     <GalleryMedia
                       src={item.pairSrc}
@@ -270,6 +287,7 @@ export default function Gallery() {
                       hoverFx={hoverFx}
                       onOpen={() => openAt(i, "pair")}
                       sizes="(max-width: 1024px) 50vw, 29vw"
+                      ratio={item.pairRatio ?? item.ratio}
                     />
                   </div>
                 ) : (
@@ -283,6 +301,7 @@ export default function Gallery() {
                     onOpen={() => openAt(i, "main")}
                     playLabel={item.video ? `Reproducir video de ${item.title}` : undefined}
                     sizes="(max-width: 1024px) 100vw, 58vw"
+                    ratio={item.ratio}
                   />
                 )}
               </div>

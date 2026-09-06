@@ -139,7 +139,8 @@ export default function MediaFrame({
           style={{ transitionTimingFunction: "var(--ease-out-expo)" }}
         />
       ) : null}
-      <LayerLines opacity={0.04} fade={false} className="opacity-100" />
+      {/* Contra un video en movimiento, esta textura genera un moiré tipo "cuadraditos" — solo va en fotos. */}
+      {!video && <LayerLines opacity={0.04} fade={false} className="opacity-100" />}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"

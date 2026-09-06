@@ -1,6 +1,5 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import TrustStrip from "./components/TrustStrip";
 import CapabilitiesMarquee from "./components/CapabilitiesMarquee";
 import Services from "./components/Services";
 import VideoScrollSection from "./components/VideoScrollSection";
@@ -29,15 +28,14 @@ export default function Home() {
         {/* .no-x usa overflow-x:clip (nunca hidden): hidden rompería el sticky de VideoScrollSection */}
         <main id="contenido" className="no-x">
           <Hero />
-          <TrustStrip />
           <CapabilitiesMarquee />
           <Services />
           <VideoScrollSection />
           <Gallery />
           <Materials />
           <HowItWorks />
-          <Faq />
           <ContactForm />
+          <Faq />
         </main>
         <Footer />
         <WhatsAppButton />

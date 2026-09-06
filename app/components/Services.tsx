@@ -147,68 +147,65 @@ function ServiceCard({ service }: { service: Service }) {
   };
 
   return (
-    // w-full + el Reveal padre en `flex`: la ficha estira a la altura de la fila en md/lg.
-    <Surface as="article" spotlight corners padding="lg" className="group w-full max-w-2xl min-h-[340px]">
-      {/* (a) cabecera: índice mono · tile con ícono */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <MonoLabel>{service.index}</MonoLabel>
-        <IconTile>{service.icon}</IconTile>
-      </div>
+    // Un solo servicio: panel ancho de dos columnas en vez de una ficha angosta aislada
+    // (una card sola en lo que era una grilla de comparación se veía como un hueco vacío).
+    <Surface as="article" spotlight corners padding="lg" className="group w-full">
+      <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
+        {/* Columna izquierda: índice + ícono, título y descripción */}
+        <div className="flex flex-1 flex-col gap-4 lg:max-w-md">
+          <div className="flex items-center justify-between gap-3">
+            <MonoLabel>{service.index}</MonoLabel>
+            <IconTile>{service.icon}</IconTile>
+          </div>
+          <h3 id={titleId} className="t-h3 text-balance text-white">
+            {service.title}
+          </h3>
+          <p className="t-body text-pretty" style={{ color: "var(--tx-2)" }}>
+            {service.description}
+          </p>
+          <p className="text-pretty text-sm leading-relaxed" style={{ color: "var(--tx-3)" }}>
+            {service.detail}
+          </p>
+        </div>
 
-      <Hairline className="my-6" />
+        <Hairline orientation="v" className="hidden lg:block" />
+        <Hairline className="lg:hidden" />
 
-      {/* (b) cuerpo */}
-      <div className="flex flex-col gap-3">
-        <h3 id={titleId} className="t-h3 text-balance text-white">
-          {service.title}
-        </h3>
-        <p className="t-body text-pretty" style={{ color: "var(--tx-2)" }}>
-          {service.description}
-        </p>
-        <p className="text-pretty text-sm leading-relaxed" style={{ color: "var(--tx-3)" }}>
-          {service.detail}
-        </p>
-      </div>
+        {/* Columna derecha: qué necesitamos de vos + CTA */}
+        <div className="flex flex-1 flex-col justify-between gap-6 lg:max-w-sm">
+          <div>
+            <p id={needsId}>
+              <MonoLabel>Qué necesitamos de vos</MonoLabel>
+            </p>
+            <ul aria-labelledby={needsId} className="mt-3 flex flex-col gap-2">
+              {service.needs.map((need) => (
+                <li
+                  key={need}
+                  className="font-mono-tech flex items-center gap-2 text-[12px] leading-snug"
+                  style={{ color: "var(--tx-3)" }}
+                >
+                  <span style={{ color: "var(--tx-4)" }} className="flex">
+                    <CheckIcon />
+                  </span>
+                  {need}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-      {/* Qué necesitamos de vos */}
-      <Hairline className="mt-6" />
-      <div className="pt-5">
-        <p id={needsId}>
-          <MonoLabel>Qué necesitamos de vos</MonoLabel>
-        </p>
-        <ul
-          aria-labelledby={needsId}
-          className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(11rem,1fr))] gap-x-6 gap-y-2"
-        >
-          {service.needs.map((need) => (
-            <li
-              key={need}
-              className="font-mono-tech flex items-center gap-2 text-[12px] leading-snug"
-              style={{ color: "var(--tx-3)" }}
-            >
-              <span style={{ color: "var(--tx-4)" }} className="flex">
-                <CheckIcon />
-              </span>
-              {need}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* (c) pie: CTA que pre-selecciona el servicio */}
-      <div className="mt-auto pt-6">
-        <Hairline className="mb-4" />
-        {/* aria-describedby → h3: los dos links dicen lo mismo; así cada uno queda asociado a su servicio. */}
-        <Button
-          variant="ghost"
-          size="sm"
-          href="#contacto"
-          onClick={handleSelect}
-          icon={<ArrowIcon />}
-          aria-describedby={titleId}
-        >
-          Solicitar este servicio
-        </Button>
+          {/* aria-describedby → h3: asocia el CTA con el servicio que describe. */}
+          <Button
+            variant="ghost"
+            size="sm"
+            href="#contacto"
+            onClick={handleSelect}
+            icon={<ArrowIcon />}
+            aria-describedby={titleId}
+            className="self-start"
+          >
+            Solicitar este servicio
+          </Button>
+        </div>
       </div>
     </Surface>
   );

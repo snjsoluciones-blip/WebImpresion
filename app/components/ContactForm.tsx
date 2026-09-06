@@ -572,7 +572,7 @@ export default function ContactForm() {
         <LayerLines spacing={7} opacity={0.05} />
         <div className="shell relative">
           <div className="mb-6 flex items-center gap-4">
-            <MonoLabel>06 / Contacto</MonoLabel>
+            <MonoLabel>05 / Contacto</MonoLabel>
             <Hairline animate className="flex-1" />
           </div>
           <Reveal>
