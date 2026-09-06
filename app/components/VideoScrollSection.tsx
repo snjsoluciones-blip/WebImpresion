@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -64,29 +63,6 @@ const getTextY = (progress: number, range: TextRange) => {
 const layerLabel = (progress: number) =>
   "CAPA " + String(Math.round(progress * TOTAL_LAYERS)).padStart(3, "0") + " / " + TOTAL_LAYERS;
 
-/* --------------------------------------------------------------------------
-   Fotos flotantes: piezas reales que van apareciendo a los costados mientras
-   se hace scroll, cada una en su propia franja de progreso (no se pisan entre
-   sí). Reusan getTextOpacity/getTextY con un desplazamiento propio más chico
-   (drift, no la entrada de 16px del texto).
-   -------------------------------------------------------------------------- */
-type FloatImage = { src: string; alt: string; range: TextRange; corner: "top" | "bottom" };
-
-const FLOAT_IMAGES: readonly FloatImage[] = [
-  { src: "/images/float-llavero-castrol.jpg", alt: "Llavero personalizado de un bidón Castrol, impreso en 3D", range: [0.04, 0.13, 0.26, 0.34], corner: "top" },
-  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", range: [0.3, 0.39, 0.49, 0.57], corner: "bottom" },
-  { src: "/images/float-llavero-castrol-car.jpg", alt: "Llavero de un auto de carrera con la marca Castrol, junto a un estuche GoPro", range: [0.55, 0.63, 0.75, 0.83], corner: "top" },
-  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", range: [0.78, 0.86, 0.95, 1], corner: "bottom" },
-] as const;
-
-const getImageY = (progress: number, range: TextRange, corner: "top" | "bottom") => {
-  const from = corner === "top" ? -14 : 14;
-  const [fi, ps] = range;
-  if (progress < fi) return from;
-  if (progress < ps) return from * (1 - (progress - fi) / (ps - fi));
-  return 0;
-};
-
 // Misma fórmula que staggerDelay() de ui/motion.ts (escalera "líneas", tope de 6).
 // Local porque el parámetro `step` de staggerDelay está tipado como el literal 0.07.
 const chapterDelay = (i: number) => Math.min(i, STAGGER.max) * STAGGER.line;
@@ -121,7 +97,6 @@ function ScrubChapters({ onFail }: { onFail: () => void }) {
   const text3Ref = useRef<HTMLDivElement>(null);
   const counterRef = useRef<HTMLSpanElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
-  const floatRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -160,12 +135,6 @@ function ScrubChapters({ onFail }: { onFail: () => void }) {
       });
       if (counter) counter.textContent = layerLabel(p);
       if (bar) bar.style.transform = `scaleX(${p})`;
-      floatRefs.current.forEach((el, i) => {
-        if (!el) return;
-        const img = FLOAT_IMAGES[i];
-        el.style.opacity = String(getTextOpacity(p, img.range));
-        el.style.transform = `translateY(${getImageY(p, img.range, img.corner)}px)`;
-      });
     };
 
     // El trigger arranca ya: el texto y el contador no dependen del video.
@@ -294,34 +263,6 @@ function ScrubChapters({ onFail }: { onFail: () => void }) {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Fotos flotantes: piezas reales, una a la vez a cada lado (top/bottom), cada una en
-            su propio tramo de progreso — nunca se pisan entre sí. Solo desde lg: en pantallas
-            angostas competirían con el texto. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
-          {FLOAT_IMAGES.map((img, i) => (
-            <div
-              key={img.src}
-              ref={(el) => {
-                floatRefs.current[i] = el;
-              }}
-              className={`absolute right-8 w-40 overflow-hidden rounded-[var(--r-md)] border will-change-[transform,opacity] xl:right-14 xl:w-48 ${
-                img.corner === "top" ? "top-28" : "bottom-36"
-              }`}
-              style={{
-                opacity: 0,
-                transform: `translateY(${img.corner === "top" ? -14 : 14}px)`,
-                borderColor: "var(--line-2)",
-                background: "var(--srf-2)",
-                boxShadow: "0 16px 32px rgba(0,0,0,0.5)",
-              }}
-            >
-              <div className="relative aspect-[4/3]">
-                <Image src={img.src} alt={img.alt} fill sizes="200px" quality={70} className="object-cover" />
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Indicador de capa + barra de progreso (escritos por ref) */}

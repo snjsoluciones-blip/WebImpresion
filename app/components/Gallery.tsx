@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
 import Section from "./ui/Section";
 import SectionHeading from "./ui/SectionHeading";
 import MediaFrame from "./ui/MediaFrame";
@@ -12,6 +14,7 @@ import Stagger from "./ui/Stagger";
 import MonoLabel from "./ui/MonoLabel";
 import Hairline from "./ui/Hairline";
 import Button from "./ui/Button";
+import { EASE } from "./ui/motion";
 import { usePointerFine } from "./ui/usePointerFine";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 
@@ -127,6 +130,54 @@ const HOVER_LINES: CSSProperties = {
 } as CSSProperties;
 
 const HOVER_EASE: CSSProperties = { transitionTimingFunction: "var(--ease-mech)" };
+
+/* ------------------------------------------------------------------------ */
+/* Fotos flotantes: piezas reales del taller que van entrando de los costados */
+/* mientras se hace scroll por la galería, con flote continuo. Decorativas —   */
+/* position:absolute contra el <section> (no contra .shell), así se salen del */
+/* ancho del contenido hacia el borde. */
+/* ------------------------------------------------------------------------ */
+
+type FloatPhoto = { src: string; alt: string; side: "left" | "right"; top: string; size: string };
+
+const FLOAT_PHOTOS: readonly FloatPhoto[] = [
+  { src: "/images/float-llavero-castrol.jpg", alt: "Llavero personalizado de un bidón Castrol", side: "left", top: "6%", size: "w-48 sm:w-60 md:w-72" },
+  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", side: "right", top: "30%", size: "w-52 sm:w-64 md:w-80" },
+  { src: "/images/float-llavero-castrol-car.jpg", alt: "Llavero de un auto de carrera Castrol, junto a un estuche GoPro", side: "left", top: "56%", size: "w-48 sm:w-60 md:w-72" },
+  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", side: "right", top: "80%", size: "w-52 sm:w-64 md:w-80" },
+] as const;
+
+function FloatingPhoto({ photo, reduced }: { photo: FloatPhoto; reduced: boolean }) {
+  const fromX = photo.side === "left" ? -120 : 120;
+  const restRotate = photo.side === "left" ? -3 : 3;
+
+  return (
+    <motion.div
+      aria-hidden="true"
+      className={`pointer-events-none absolute hidden overflow-hidden rounded-[var(--r-lg)] border lg:block ${photo.size} ${
+        photo.side === "left" ? "left-0 xl:-left-6" : "right-0 xl:-right-6"
+      }`}
+      style={{ top: photo.top, borderColor: "var(--line-2)", background: "var(--srf-2)", boxShadow: "0 24px 48px rgba(0,0,0,0.5)" }}
+      initial={reduced ? { opacity: 0 } : { opacity: 0, x: fromX, scale: 0.82, rotate: 0 }}
+      whileInView={
+        reduced
+          ? { opacity: 1 }
+          : { opacity: 1, x: 0, scale: 1, rotate: restRotate }
+      }
+      viewport={{ once: true, margin: "-10% 0px" }}
+      transition={{ duration: 1.1, ease: EASE.expo }}
+    >
+      {/* Flote continuo y sutil, aparte de la entrada — se detiene con reduced-motion. */}
+      <motion.div
+        className="relative aspect-[4/3]"
+        animate={reduced ? undefined : { y: [0, -10, 0] }}
+        transition={reduced ? undefined : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <Image src={photo.src} alt={photo.alt} fill sizes="320px" quality={72} className="object-cover" />
+      </motion.div>
+    </motion.div>
+  );
+}
 
 function ArrowIcon() {
   return (
@@ -249,7 +300,11 @@ export default function Gallery() {
       : { src: currentItem.src, video: currentItem.video, alt: currentItem.alt };
 
   return (
-    <Section id="galeria" tone="base" labelledBy="galeria-title">
+    <Section id="galeria" tone="base" labelledBy="galeria-title" className="overflow-hidden">
+      {FLOAT_PHOTOS.map((photo) => (
+        <FloatingPhoto key={photo.src} photo={photo} reduced={reduced} />
+      ))}
+
       <SectionHeading
         index="02"
         eyebrow="Portfolio"
@@ -258,7 +313,11 @@ export default function Gallery() {
         lead="Cinco casos reales: automovilismo, telemetría y personalizados."
       />
 
-      <ol role="list" className="m-0 flex list-none flex-col p-0" style={{ rowGap: "clamp(5rem, 3rem + 6vw, 9rem)" }}>
+      <ol
+        role="list"
+        className="relative m-0 flex list-none flex-col p-0"
+        style={{ rowGap: "clamp(5rem, 3rem + 6vw, 9rem)" }}
+      >
         {items.map((item, i) => {
           const flip = i % 2 === 1;
           const n = String(i + 1).padStart(2, "0");
