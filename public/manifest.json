@@ -1,7 +1,7 @@
 {
-  "name": "SNJ Soluciones - Impresión 3D Industrial",
+  "name": "SNJ Soluciones - Impresión de Modelos 3D",
   "short_name": "SNJ Soluciones",
-  "description": "Servicios de impresión 3D industrial y modelado 3D en Argentina",
+  "description": "Impresión de modelos 3D bajo demanda en Argentina: subís tu archivo y te lo imprimimos",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
