@@ -9,11 +9,9 @@ import MediaFrame from "./ui/MediaFrame";
 import TiltCard from "./ui/TiltCard";
 import SpecTable, { type SpecRow } from "./ui/SpecTable";
 import Lightbox from "./ui/Lightbox";
-import Reveal from "./ui/Reveal";
 import Stagger from "./ui/Stagger";
 import MonoLabel from "./ui/MonoLabel";
 import Hairline from "./ui/Hairline";
-import Button from "./ui/Button";
 import { EASE } from "./ui/motion";
 import { usePointerFine } from "./ui/usePointerFine";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
@@ -176,14 +174,6 @@ function FloatingPhoto({ photo, reduced }: { photo: FloatPhoto; reduced: boolean
         <Image src={photo.src} alt={photo.alt} fill sizes="320px" quality={72} className="object-cover" />
       </motion.div>
     </motion.div>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.25} aria-hidden="true">
-      <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 
@@ -402,23 +392,6 @@ export default function Gallery() {
           );
         })}
       </ol>
-
-      {/* Cierre: la sección apunta al mismo lugar que todas */}
-      <div style={{ marginTop: "clamp(4rem, 3rem + 4vw, 7rem)" }}>
-        <Hairline />
-        <Reveal>
-          <div className="flex flex-col gap-5 pt-6 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
-            <div>
-              <p className="t-body m-0 max-w-[52ch]">
-                Contanos qué necesitás y te respondemos por WhatsApp. Si no tenés el archivo 3D, podés conseguirlo en MakerWorld, Printables o Thingiverse.
-              </p>
-            </div>
-            <Button variant="ghost" size="sm" href="#contacto" icon={<ArrowIcon />}>
-              Cotizar mi pieza
-            </Button>
-          </div>
-        </Reveal>
-      </div>
 
       <Lightbox
         open={lightbox.open}
