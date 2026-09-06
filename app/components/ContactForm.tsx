@@ -106,7 +106,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 function buildEstimateLine(estimate: ReturnType<typeof estimatePrice> | null): string {
   if (!estimate) return "";
   const grams = Math.round(estimate.estimatedGrams);
-  return `⚖️ Peso estimado: ~${grams} g\n💰 Precio estimado: ${formatArs(estimate.estimatedPriceArs)} (a confirmar antes de imprimir)\n`;
+  return `⚖️ Peso estimado: ~${grams} g\n💰 Precio: alrededor de ${formatArs(estimate.estimatedPriceArs)} (a confirmar antes de imprimir)\n`;
 }
 
 function buildMessage(form: FormState, estimate: ReturnType<typeof estimatePrice> | null = null) {
@@ -318,7 +318,9 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
   return (
     <div className="flex flex-col gap-3">
       <span className="inline-flex items-center gap-2">
-        <MonoLabel tone="dim">05 · Modelo 3D (opcional)</MonoLabel>
+        <MonoLabel tone="dim">05 · Modelo 3D</MonoLabel>
+        <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
+        <span className="sr-only">(obligatorio)</span>
       </span>
 
       {!file ? (
@@ -329,7 +331,7 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
           style={{ color: "var(--tx-3)" }}
         >
           <ClipIcon />
-          Subir archivo STL — así vemos la pieza y estimamos el precio
+          Subir archivo STL — es obligatorio, así vemos la pieza y estimamos el precio
         </button>
       ) : (
         <div className="flex flex-col gap-3">
@@ -373,7 +375,7 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
                 Estimado · a confirmar antes de imprimir
               </p>
               <p className="mt-1 text-lg text-white">
-                {formatArs(estimate.estimatedPriceArs)}
+                Alrededor de {formatArs(estimate.estimatedPriceArs)}
                 <span className="ml-2 text-sm" style={{ color: "var(--tx-3)" }}>
                   (~{Math.round(estimate.estimatedGrams)} g en {estimate.material})
                 </span>
@@ -513,8 +515,10 @@ export default function ContactForm() {
   };
 
   const missing = STEP_REQUIRED[step].filter((n) => form[n].trim() === "");
-  const canContinue = missing.length === 0;
-  const formValid = isFormValid(form);
+  // El archivo STL es obligatorio, pero vive fuera de `form` (ver comentario de stlFile más arriba).
+  const missingFile = step === 0 && !stlFile;
+  const canContinue = missing.length === 0 && !missingFile;
+  const formValid = isFormValid(form) && Boolean(stlFile);
 
   const onFormKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
     if (e.key !== "Enter") return;
@@ -938,7 +942,9 @@ export default function ContactForm() {
                       className="font-mono-tech m-0 min-h-[14px] text-[11px] uppercase tracking-[0.14em] sm:text-right"
                       style={{ color: "var(--tx-5)" }}
                     >
-                      {!canContinue ? `Falta: ${missing.map((m) => FIELD_WORD[m]).join(", ")}` : ""}
+                      {!canContinue
+                        ? `Falta: ${[...missing.map((m) => FIELD_WORD[m]), ...(missingFile ? ["archivo 3D"] : [])].join(", ")}`
+                        : ""}
                     </p>
                   </div>
                 </div>
