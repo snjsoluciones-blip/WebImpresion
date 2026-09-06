@@ -15,9 +15,9 @@ type Piece = { src: string; alt: string; label: string };
 
 const PIECES: readonly Piece[] = [
   { src: "/images/float-llavero-castrol.jpg", alt: "Llavero personalizado de un bidón Castrol, impreso en 3D", label: "Llavero Castrol" },
-  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", label: "Estuche a medida" },
-  { src: "/images/float-llavero-castrol-car.jpg", alt: "Llavero de un auto de carrera Castrol, junto a un estuche GoPro", label: "Llavero de carrera" },
-  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", label: "Espuma a medida" },
+  { src: "/images/float-estuche-valen.jpg", alt: "Estuche a medida para AiM Solo 2 y cámara, con el nombre del piloto grabado", label: "Estuche AiM Solo 2" },
+  { src: "/images/float-llavero-castrol-car.jpg", alt: "Estuche GoPro junto a un llavero de un auto de carrera Castrol", label: "Estuche GoPro y llavero" },
+  { src: "/images/float-estuche-interior.jpg", alt: "Interior de un estuche a medida, con la espuma recortada para cada pieza", label: "Interior a medida" },
 ];
 
 export default function PieceShowcase() {
