@@ -6,6 +6,7 @@ import VideoScrollSection from "./components/VideoScrollSection";
 import Gallery from "./components/Gallery";
 import Materials from "./components/Materials";
 import HowItWorks from "./components/HowItWorks";
+import PieceShowcase from "./components/PieceShowcase";
 import Faq from "./components/Faq";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -34,6 +35,7 @@ export default function Home() {
           <Gallery />
           <Materials />
           <HowItWorks />
+          <PieceShowcase />
           <ContactForm />
           <Faq />
         </main>
