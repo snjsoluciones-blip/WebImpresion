@@ -29,8 +29,6 @@ import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 import { useLocalDraft } from "./ui/useLocalDraft";
 import { MATERIAL_VALUES, useQuote } from "./ui/quote-context";
 import StlViewer from "./ui/StlViewer";
-import { estimatePrice, formatArs, MATERIALS, type MaterialName } from "./ui/pricing";
-import type { ParsedStl } from "./ui/stl";
 
 /* =========================================================================
    Datos de contacto reales — intactos.
@@ -91,11 +89,6 @@ const FIELD_WORD: Record<FieldName, string> = {
   telefono: "teléfono",
 };
 
-/** ¿El material elegido es uno de los 4 reales (no "No sé, asesorarme")? Solo ahí calculamos precio. */
-function isPriceableMaterial(m: string): m is MaterialName {
-  return (MATERIALS as readonly string[]).includes(m);
-}
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /* =========================================================================
@@ -103,14 +96,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
    buildWhatsAppUrl() lo consume; la preview del paso 3 lo muestra tal cual.
    ========================================================================= */
 
-/** Línea de estimación (peso + precio), solo si el cliente subió un STL y se pudo calcular. */
-function buildEstimateLine(estimate: ReturnType<typeof estimatePrice> | null): string {
-  if (!estimate) return "";
-  const grams = Math.round(estimate.estimatedGrams);
-  return `⚖️ Peso estimado: ~${grams} g\n💰 Precio: alrededor de ${formatArs(estimate.estimatedPriceArs)} (a confirmar antes de imprimir)\n`;
-}
-
-function buildMessage(form: FormState, estimate: ReturnType<typeof estimatePrice> | null = null) {
+function buildMessage(form: FormState) {
   return `Hola SNJ Soluciones! 👋 Quiero solicitar una pieza 3D.
 
 👤 Nombre: ${form.nombre.trim()}
@@ -121,12 +107,12 @@ function buildMessage(form: FormState, estimate: ReturnType<typeof estimatePrice
 📐 Medidas: ${form.medidas.trim()}
 🧪 Material: ${form.material}
 🔢 Cantidad: ${form.cantidad.trim() || "1"}
-${buildEstimateLine(estimate)}
-Quedo a disposición para coordinar. Gracias!`;
+
+Quedo a disposición para cotizar y coordinar. Gracias!`;
 }
 
-function buildWhatsAppUrl(form: FormState, estimate: ReturnType<typeof estimatePrice> | null = null) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form, estimate))}`;
+function buildWhatsAppUrl(form: FormState) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form))}`;
 }
 
 function isFormValid(f: FormState) {
@@ -286,24 +272,19 @@ function ChipGroup({ id, index, label, options, value, onChange }: ChipGroupProp
 }
 
 /* =========================================================================
-   Subida de STL: opcional. Todo pasa en el navegador (nada se sube a ningún
-   servidor todavía) — solo sirve para mostrar la pieza en 3D y calcular un
-   precio ESTIMADO por peso. Nunca es el precio final: eso se confirma por
-   WhatsApp antes de imprimir.
+   Subida de STL: obligatoria. Todo pasa en el navegador (nada se sube a ningún
+   servidor todavía) — solo sirve para mostrar la pieza en 3D. El precio NO se
+   calcula acá: se cotiza hablando por WhatsApp.
    ========================================================================= */
 
 type StlUploadProps = {
   file: File | null;
   onFile: (file: File | null) => void;
-  parsed: ParsedStl | null;
   error: string | null;
-  onParsed: (parsed: ParsedStl) => void;
   onError: (message: string) => void;
-  estimate: ReturnType<typeof estimatePrice> | null;
-  priceableMaterial: boolean;
 };
 
-function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, priceableMaterial }: StlUploadProps) {
+function StlUpload({ file, onFile, error, onError }: StlUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -350,7 +331,7 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
           style={{ color: dragging ? "var(--tx-1)" : "var(--tx-3)", borderColor: dragging ? "var(--line-3)" : undefined }}
         >
           <ClipIcon />
-          {dragging ? "Soltá el archivo acá" : "Subí o arrastrá tu archivo STL — es obligatorio, así vemos la pieza y estimamos el precio"}
+          {dragging ? "Soltá el archivo acá" : "Subí o arrastrá tu archivo STL — es obligatorio, así vemos la pieza"}
         </button>
       ) : (
         <div className="flex flex-col gap-3">
@@ -373,7 +354,7 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
             className="h-64 w-full overflow-hidden rounded-[var(--r-md)] border sm:h-80"
             style={{ borderColor: "var(--line-1)" }}
           >
-            <StlViewer file={file} onParsed={onParsed} onError={onError} />
+            <StlViewer file={file} onError={onError} />
           </div>
 
           {error && (
@@ -382,27 +363,22 @@ function StlUpload({ file, onFile, parsed, error, onParsed, onError, estimate, p
             </p>
           )}
 
-          {parsed && !priceableMaterial && (
-            <p className="text-sm" style={{ color: "var(--tx-3)" }}>
-              Elegí PLA, PETG, ABS o TPU arriba para ver el precio estimado.
-            </p>
-          )}
-
-          {estimate && (
-            <div className="rounded-[var(--r-sm)] border px-4 py-3" style={{ borderColor: "var(--line-2)" }}>
-              <p className="font-mono-tech text-[11px] uppercase tracking-[0.18em]" style={{ color: "var(--tx-4)" }}>
-                Estimado · a confirmar antes de imprimir
-              </p>
-              <p className="mt-1 text-lg text-white">
-                Alrededor de {formatArs(estimate.estimatedPriceArs)}
-                <span className="ml-2 text-sm" style={{ color: "var(--tx-3)" }}>
-                  (~{Math.round(estimate.estimatedGrams)} g en {estimate.material})
-                </span>
-              </p>
-            </div>
-          )}
         </div>
       )}
+
+      <p className="m-0 text-sm" style={{ color: "var(--tx-3)" }}>
+        Para cotizar,{" "}
+        <a
+          href={WHATSAPP_DIRECT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4 transition-colors duration-150 hover:text-white"
+          style={{ color: "var(--tx-2)" }}
+        >
+          hablanos por WhatsApp
+        </a>
+        : con tu archivo te pasamos el precio.
+      </p>
 
       <input ref={inputRef} type="file" accept=".stl" onChange={handlePick} className="hidden" />
     </div>
@@ -471,20 +447,8 @@ export default function ContactForm() {
   // Archivo STL: vive fuera de `form`/useLocalDraft a propósito — un File no se puede
   // guardar en localStorage, y no hace falta persistirlo entre visitas.
   const [stlFile, setStlFile] = useState<File | null>(null);
-  const [stlParsed, setStlParsed] = useState<ParsedStl | null>(null);
   const [stlError, setStlError] = useState<string | null>(null);
-  const onStlParsed = useCallback((parsed: ParsedStl) => {
-    setStlParsed(parsed);
-    setStlError(null);
-  }, []);
-  const onStlError = useCallback((message: string) => {
-    setStlParsed(null);
-    setStlError(message);
-  }, []);
-  const priceEstimate =
-    stlParsed && isPriceableMaterial(form.material)
-      ? estimatePrice(stlParsed.volumeMm3, form.material, Math.max(1, parseInt(form.cantidad, 10) || 1))
-      : null;
+  const onStlError = useCallback((message: string) => setStlError(message), []);
 
   // Borrador recuperado: hay algo escrito y el usuario todavía no tocó nada en esta visita.
   const recovered = !touched && !recoveredDismissed && JSON.stringify(form) !== JSON.stringify(INITIAL);
@@ -722,15 +686,10 @@ export default function ContactForm() {
                           file={stlFile}
                           onFile={(f) => {
                             setStlFile(f);
-                            setStlParsed(null);
                             setStlError(null);
                           }}
-                          parsed={stlParsed}
                           error={stlError}
-                          onParsed={onStlParsed}
                           onError={onStlError}
-                          estimate={priceEstimate}
-                          priceableMaterial={isPriceableMaterial(form.material)}
                         />
                       </div>
                     )}
@@ -866,7 +825,7 @@ export default function ContactForm() {
                             className="font-mono-tech whitespace-pre-line px-4 pb-4 text-[12px] leading-relaxed"
                             style={{ color: "var(--tx-4)" }}
                           >
-                            {buildMessage(form, priceEstimate)}
+                            {buildMessage(form)}
                           </div>
                         </details>
 
@@ -893,7 +852,7 @@ export default function ContactForm() {
                                   variant="whatsapp"
                                   size="lg"
                                   full
-                                  href={buildWhatsAppUrl(form, priceEstimate)}
+                                  href={buildWhatsAppUrl(form)}
                                   external
                                   onClick={handleSent}
                                   icon={<WhatsAppIcon className="h-5 w-5" />}
