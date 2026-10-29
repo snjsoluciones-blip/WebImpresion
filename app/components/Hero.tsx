@@ -238,8 +238,8 @@ export default function Hero() {
           {/* Subtítulo + CTAs + micro-pruebas · col 1-7 */}
           <div className="flex flex-col items-center">
             <Reveal delay={0.35}>
-              <p className="t-lead mx-auto" style={{ maxWidth: "34ch" }}>
-                Repuestos, matricería y series cortas.
+              <p className="t-lead mx-auto" style={{ maxWidth: "40ch" }}>
+                Modelado e impresión 3D de repuestos, matricería y series cortas.
                 Alta precisión, desde Pacheco.
               </p>
             </Reveal>

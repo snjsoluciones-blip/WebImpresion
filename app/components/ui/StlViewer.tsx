@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { ThreeMFLoader } from "three/examples/jsm/loaders/3MFLoader.js";
 import { parseStlFile, type ParsedStl } from "./stl";
 
 export type StlViewerProps = {
@@ -13,7 +14,7 @@ export type StlViewerProps = {
 };
 
 /**
- * Visor 3D del archivo STL que el cliente sube (sin subirlo a ningún servidor: se
+ * Visor 3D del archivo STL o 3MF que el cliente sube (sin subirlo a ningún servidor: se
  * parsea y se renderiza 100% en el navegador). Escena mínima: una luz ambiente + una
  * direccional, cámara que encuadra la pieza entera, y OrbitControls para poder girarla
  * con el mouse/dedo. También devuelve el volumen exacto de la malla via `onParsed`,
@@ -72,28 +73,40 @@ export default function StlViewer({ file, onParsed, onError }: StlViewerProps) {
     };
     window.addEventListener("resize", onResize);
 
-    let mesh: THREE.Mesh | null = null;
+    let mesh: THREE.Object3D | null = null;
 
-    parseStlFile(file)
-      .then((parsed) => {
-        if (disposed) return;
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(parsed.positions, 3));
-        geometry.computeVertexNormals();
-
-        const material = new THREE.MeshStandardMaterial({
-          color: 0xd9d9d9,
-          metalness: 0.05,
-          roughness: 0.55,
+    const loadObject = async (): Promise<{ object: THREE.Object3D; parsed?: ParsedStl }> => {
+      if (/\.3mf$/i.test(file.name)) {
+        const group = new ThreeMFLoader().parse(await file.arrayBuffer());
+        const material = new THREE.MeshStandardMaterial({ color: 0xd9d9d9, metalness: 0.05, roughness: 0.55 });
+        group.traverse((o) => {
+          if ((o as THREE.Mesh).isMesh) (o as THREE.Mesh).material = material;
         });
-        mesh = new THREE.Mesh(geometry, material);
+        // 3MF viene en Z-arriba, igual que los slicers: se acuesta para que el piso quede abajo en la escena.
+        group.rotation.x = -Math.PI / 2;
+        const wrap = new THREE.Group();
+        wrap.add(group);
+        return { object: wrap };
+      }
+      const parsed = await parseStlFile(file);
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute("position", new THREE.BufferAttribute(parsed.positions, 3));
+      geometry.computeVertexNormals();
+      const material = new THREE.MeshStandardMaterial({ color: 0xd9d9d9, metalness: 0.05, roughness: 0.55 });
+      return { object: new THREE.Mesh(geometry, material), parsed };
+    };
+
+    loadObject()
+      .then(({ object, parsed }) => {
+        if (disposed) return;
+        mesh = object;
 
         // Centrar la pieza en el origen y ubicar la cámara a una distancia que la encuadre entera.
-        const box = new THREE.Box3().setFromObject(mesh);
+        const box = new THREE.Box3().setFromObject(object);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
-        mesh.position.sub(center);
-        scene.add(mesh);
+        object.position.sub(center);
+        scene.add(object);
 
         const maxDim = Math.max(size.x, size.y, size.z) || 1;
         const distance = maxDim * 2.2;
@@ -102,18 +115,18 @@ export default function StlViewer({ file, onParsed, onError }: StlViewerProps) {
         controls.target.set(0, 0, 0);
         controls.update();
 
-        // Rejilla de referencia bajo la pieza (misma escala que el STL: mm).
+        // Rejilla de referencia bajo la pieza (misma escala que el archivo: mm).
         const grid = new THREE.GridHelper(maxDim * 3, 10, 0x333333, 0x1a1a1a);
         grid.position.y = box.min.y - center.y;
         scene.add(grid);
 
         setStatus("ready");
-        onParsed?.(parsed);
+        if (parsed) onParsed?.(parsed);
       })
       .catch((err: unknown) => {
         if (disposed) return;
         setStatus("error");
-        onError?.(err instanceof Error ? err.message : "No se pudo leer el archivo STL");
+        onError?.(err instanceof Error ? err.message : "No se pudo leer el archivo");
       });
 
     return () => {
@@ -122,8 +135,13 @@ export default function StlViewer({ file, onParsed, onError }: StlViewerProps) {
       window.removeEventListener("resize", onResize);
       controls.dispose();
       if (mesh) {
-        mesh.geometry.dispose();
-        (mesh.material as THREE.Material).dispose();
+        mesh.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) {
+            m.geometry.dispose();
+            (Array.isArray(m.material) ? m.material : [m.material]).forEach((mt) => mt.dispose());
+          }
+        });
       }
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) {

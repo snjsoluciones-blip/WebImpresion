@@ -7,13 +7,13 @@ import Surface from "./ui/Surface";
 import Button from "./ui/Button";
 import Reveal from "./ui/Reveal";
 import Stagger from "./ui/Stagger";
+import { useQuote } from "./ui/quote-context";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 
 /* ------------------------------------------------------------------------ */
-/* Iconografía técnica: 1px sobre grilla de 48×48, trazo que no escala.      */
+/* Iconos: trazo fino sobre grilla de 48×48.                                 */
 /* ------------------------------------------------------------------------ */
 
-// 44px dentro del tile de 48px (1px de borde por lado): el trazo sigue siendo 1px real.
 const ICON_SVG = "h-11 w-11";
 
 /** Tres capas apiladas con la boquilla depositando la superior. */
@@ -29,18 +29,47 @@ function LayersIcon() {
       aria-hidden="true"
       focusable="false"
     >
-      {/* boquilla: cuerpo + punta + filamento */}
       <path vectorEffect="non-scaling-stroke" d="M19 6h10v7H19z" />
       <path vectorEffect="non-scaling-stroke" d="M19 13l3 5h4l3-5" />
       <path vectorEffect="non-scaling-stroke" d="M24 18v3" />
-      {/* capa superior, en curso (llega hasta la boquilla) */}
       <path vectorEffect="non-scaling-stroke" d="M11 21h13v4H11z" />
-      {/* capas terminadas */}
       <path vectorEffect="non-scaling-stroke" d="M11 27h26v4H11z" />
       <path vectorEffect="non-scaling-stroke" d="M11 33h26v4H11z" />
-      {/* cama */}
       <path vectorEffect="non-scaling-stroke" strokeOpacity={0.5} d="M7 41h34" />
     </svg>
+  );
+}
+
+/** Cubo en perspectiva con arista oculta punteada: la pieza modelada. */
+function CubeIcon() {
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      className={ICON_SVG}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1}
+      shapeRendering="geometricPrecision"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path vectorEffect="non-scaling-stroke" d="M24 6l15 8.5v17L24 40 9 31.5v-17z" />
+      <path vectorEffect="non-scaling-stroke" d="M9 14.5L24 23l15-8.5M24 23v17" />
+      <path vectorEffect="non-scaling-stroke" strokeOpacity={0.5} strokeDasharray="2 2" d="M24 6v17" />
+    </svg>
+  );
+}
+
+/** Cubo de vidrio que gira solo (CSS 3D): decoración de la tarjeta de modelado. */
+function SpinCube() {
+  return (
+    <div aria-hidden="true" className="snj-cube-wrap pointer-events-none absolute bottom-8 right-8 hidden sm:block">
+      <div className="snj-cube">
+        {["f", "b", "r", "l", "t", "u"].map((face) => (
+          <span key={face} className={`snj-cube__face snj-cube__face--${face}`} />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -61,12 +90,11 @@ function ArrowIcon() {
   );
 }
 
-/** Tile de 48×48: fondo --srf-4, borde --line-2, radio 12px. Color --tx-5 → --tx-2 en hover (240 ms). */
 function IconTile({ children }: { children: ReactNode }) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-[color:var(--tx-5)] transition-colors duration-[240ms] group-hover:text-[color:var(--tx-2)]"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-[color:var(--tx-4)] transition-colors duration-[240ms] group-hover:text-[color:var(--tx-1)]"
       style={{
         background: "var(--srf-4)",
         borderColor: "var(--line-2)",
@@ -79,32 +107,36 @@ function IconTile({ children }: { children: ReactNode }) {
 }
 
 /* ------------------------------------------------------------------------ */
-/* Datos. `title` coincide EXACTAMENTE con el value fijo del campo servicio   */
-/* del formulario. Un solo servicio: imprimimos lo que ya está modelado.      */
-/* No ofrecemos modelado, en ningún caso.                                    */
+/* Datos. `value` coincide EXACTAMENTE con SERVICE_VALUES del formulario.    */
 /* ------------------------------------------------------------------------ */
 
 type Service = {
-  index: string;
   slug: string;
-  title: "Solo Impresión";
+  value: "Solo impresión" | "Modelado + impresión";
+  title: string;
   description: string;
-  detail: string;
-  /** "Qué necesitamos de vos": derivado del detail y de los campos del formulario. */
-  needs: readonly string[];
+  formats?: readonly string[];
+  cta: string;
   icon: ReactNode;
 };
 
 const services: readonly Service[] = [
   {
-    index: "S-01",
     slug: "solo-impresion",
-    title: "Solo Impresión",
+    value: "Solo impresión",
+    title: "Solo impresión",
     description: "¿Ya tenés el archivo 3D? Lo imprimimos.",
-    detail:
-      "Envianos tu archivo STL o STEP y nos encargamos de la impresión con los mejores materiales disponibles. ¿No tenés archivo? Podés conseguir modelos gratis en MakerWorld, Printables o Thingiverse.",
-    needs: ["Archivo STL o STEP", "Material deseado", "Cantidad"],
+    formats: ["STL", "3MF"],
+    cta: "Quiero imprimir",
     icon: <LayersIcon />,
+  },
+  {
+    slug: "modelado-impresion",
+    value: "Modelado + impresión",
+    title: "Modelado + impresión",
+    description: "¿Tenés una idea, un boceto o una pieza rota? La modelamos y la imprimimos.",
+    cta: "Quiero que la modelen",
+    icon: <CubeIcon />,
   },
 ];
 
@@ -114,21 +146,22 @@ const services: readonly Service[] = [
 
 function ServiceCard({ service }: { service: Service }) {
   const reduced = useReducedMotionSafe();
+  const { setPreset } = useQuote();
   const titleId = `servicio-${service.slug}-title`;
 
-  // El href="#contacto" del Button queda como fallback sin JS (y como navegación nativa
-  // al hash: actualiza la URL y mueve el punto de partida del foco a la sección).
+  // Pre-selecciona el servicio en el formulario y baja a #contacto. El href="#contacto"
+  // queda como fallback sin JS.
   const handleSelect = () => {
+    setPreset({ servicio: service.value });
     document
       .getElementById("contacto")
       ?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
   };
 
   return (
-    // Un solo servicio: panel ancho de dos columnas en vez de una ficha angosta aislada
-    // (una card sola en lo que era una grilla de comparación se veía como un hueco vacío).
-    <Surface as="article" spotlight padding="lg" className="group w-full">
-      <div className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+    <Surface as="article" spotlight padding="lg" className="group h-full w-full">
+      {service.value === "Modelado + impresión" && <SpinCube />}
+      <div className="flex h-full flex-col justify-between gap-10">
         <div className="flex flex-col gap-4">
           <IconTile>{service.icon}</IconTile>
           <h3 id={titleId} className="t-h3 text-balance text-white">
@@ -137,19 +170,31 @@ function ServiceCard({ service }: { service: Service }) {
           <p className="t-body text-pretty" style={{ color: "var(--tx-2)" }}>
             {service.description}
           </p>
+          {service.formats && (
+            <ul className="m-0 flex list-none gap-2 p-0" aria-label="Formatos de archivo aceptados">
+              {service.formats.map((f) => (
+                <li
+                  key={f}
+                  className="rounded-full border px-3 py-1 text-xs font-medium"
+                  style={{ borderColor: "var(--line-2)", color: "var(--tx-2)" }}
+                >
+                  {f}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* aria-describedby → h3: asocia el CTA con el servicio que describe. */}
         <Button
           variant="primary"
-          size="lg"
+          size="md"
           href="#contacto"
           onClick={handleSelect}
           icon={<ArrowIcon />}
           aria-describedby={titleId}
-          className="shrink-0"
+          className="self-start"
         >
-          Solicitar este servicio
+          {service.cta}
         </Button>
       </div>
     </Surface>
@@ -168,15 +213,10 @@ export default function Services() {
         eyebrow="Servicios"
         titleId="servicios-title"
         title="¿Qué necesitás?"
-        lead="Traé tu archivo 3D y lo hacemos."
-        action={
-          <Button variant="ghost" href="#contacto" icon={<ArrowIcon />}>
-            Contar mi proyecto
-          </Button>
-        }
+        lead="Imprimimos tu archivo o lo modelamos desde cero."
       />
 
-      <Stagger className="grid grid-cols-1">
+      <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {services.map((service) => (
           <Reveal key={service.slug} className="flex">
             <ServiceCard service={service} />
