@@ -339,7 +339,7 @@ function StlUpload({ required, file, onFile, error, onError }: StlUploadProps) {
           style={{ color: dragging ? "var(--tx-1)" : "var(--tx-3)", borderColor: dragging ? "var(--line-3)" : undefined }}
         >
           <ClipIcon />
-          {dragging ? "Soltá el archivo acá" : (required ? "Subí o arrastrá tu archivo STL o 3MF — es obligatorio, así vemos la pieza" : "Si ya tenés un STL o 3MF, subilo o arrastralo acá")}
+          {dragging ? "Soltá el archivo acá" : (required ? "Subí o arrastrá tu archivo STL o 3MF" : "Si ya tenés un STL o 3MF, subilo o arrastralo acá")}
         </button>
       ) : (
         <div className="flex flex-col gap-3">
@@ -509,11 +509,9 @@ export default function ContactForm() {
   };
 
   const missing = STEP_REQUIRED[step].filter((n) => form[n].trim() === "");
-  // El archivo STL es obligatorio, pero vive fuera de `form` (ver comentario de stlFile más arriba).
-  const needsFile = form.servicio === SERVICE_VALUES[0];
-  const missingFile = step === 0 && needsFile && !stlFile;
-  const canContinue = missing.length === 0 && !missingFile;
-  const formValid = isFormValid(form) && (!needsFile || Boolean(stlFile));
+  // El archivo STL/3MF es opcional y vive fuera de `form` (ver comentario de stlFile más arriba).
+  const canContinue = missing.length === 0;
+  const formValid = isFormValid(form);
 
   const onFormKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
     if (e.key !== "Enter") return;
@@ -704,7 +702,7 @@ export default function ContactForm() {
                         </div>
 
                         <StlUpload
-                          required={needsFile}
+                          required={false}
                           file={stlFile}
                           onFile={(f) => {
                             setStlFile(f);
@@ -943,7 +941,7 @@ export default function ContactForm() {
                       style={{ color: "var(--tx-5)" }}
                     >
                       {!canContinue
-                        ? `Falta: ${[...missing.map((m) => FIELD_WORD[m]), ...(missingFile ? ["archivo 3D"] : [])].join(", ")}`
+                        ? `Falta: ${[...missing.map((m) => FIELD_WORD[m])].join(", ")}`
                         : ""}
                     </p>
                   </div>
