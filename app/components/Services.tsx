@@ -63,7 +63,7 @@ function CubeIcon() {
 /** Cubo de vidrio que gira solo (CSS 3D): decoración de la tarjeta de modelado. */
 function SpinCube() {
   return (
-    <div aria-hidden="true" className="snj-cube-wrap pointer-events-none absolute bottom-8 right-8 hidden sm:block">
+    <div aria-hidden="true" className="snj-cube-wrap pointer-events-none absolute right-7 top-7 hidden lg:block">
       <div className="snj-cube">
         {["f", "b", "r", "l", "t", "u"].map((face) => (
           <span key={face} className={`snj-cube__face snj-cube__face--${face}`} />
