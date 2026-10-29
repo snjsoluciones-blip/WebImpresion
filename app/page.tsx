@@ -1,12 +1,10 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
-import CapabilitiesMarquee from "./components/CapabilitiesMarquee";
 import Services from "./components/Services";
+import WorkStrip from "./components/WorkStrip";
 import VideoScrollSection from "./components/VideoScrollSection";
 import Gallery from "./components/Gallery";
 import Materials from "./components/Materials";
-import HowItWorks from "./components/HowItWorks";
-import PieceShowcase from "./components/PieceShowcase";
 import Faq from "./components/Faq";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -14,6 +12,7 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import MobileActionBar from "./components/MobileActionBar";
 import { QuoteProvider } from "./components/ui/quote-context";
 import GrainOverlay from "./components/ui/GrainOverlay";
+import CursorGlow from "./components/ui/CursorGlow";
 
 export default function Home() {
   return (
@@ -29,13 +28,11 @@ export default function Home() {
         {/* .no-x usa overflow-x:clip (nunca hidden): hidden rompería el sticky de VideoScrollSection */}
         <main id="contenido" className="no-x">
           <Hero />
-          <CapabilitiesMarquee />
           <Services />
           <VideoScrollSection />
           <Gallery />
+          <WorkStrip />
           <Materials />
-          <HowItWorks />
-          <PieceShowcase />
           <ContactForm />
           <Faq />
         </main>
@@ -43,6 +40,7 @@ export default function Home() {
         <WhatsAppButton />
         <MobileActionBar />
         <GrainOverlay />
+        <CursorGlow />
       </div>
     </QuoteProvider>
   );

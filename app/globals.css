@@ -599,3 +599,286 @@ html:has(.site-root)::-webkit-scrollbar-thumb {
 .site-root details > summary::-webkit-details-marker {
   display: none;
 }
+
+/* ==========================================================================
+   LIQUID GLASS — capa visual estilo iOS/visionOS sobre "Ficha técnica".
+   Solo cambia tokens y pieles dentro de .site-root; no toca /taller-cobalto.
+   ========================================================================== */
+.site-root {
+  /* las superficies sólidas pasan a ser vidrio translúcido */
+  --srf-0: transparent;
+  --srf-1: transparent;
+  --srf-2: rgba(255, 255, 255, 0.04);
+  --srf-3: rgba(255, 255, 255, 0.06);
+  --srf-4: rgba(255, 255, 255, 0.09);
+  --line-1: rgba(255, 255, 255, 0.1);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --line-3: rgba(255, 255, 255, 0.28);
+  --tx-3: rgba(245, 245, 247, 0.66);
+  --tx-4: rgba(245, 245, 247, 0.5);
+  --r-sm: 16px;
+  --r-md: 28px;
+  --r-lg: 36px;
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04));
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 60px rgba(0, 0, 0, 0.32);
+  font-family: -apple-system, "SF Pro Display", var(--font-inter), system-ui, sans-serif;
+  position: relative;
+  isolation: isolate;
+}
+/* luces de color de fondo que el vidrio refracta */
+.site-root::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(40vw 40vw at 24% 22%, rgba(255, 255, 255, 0.3), transparent 65%),
+    radial-gradient(40vw 40vw at 78% 50%, rgba(200, 200, 215, 0.24), transparent 65%),
+    radial-gradient(42vw 42vw at 42% 80%, rgba(255, 255, 255, 0.18), transparent 65%), #08090a;
+}
+html:has(.site-root),
+body:has(.site-root) {
+  background: #08090a;
+}
+
+/* tipografía: sin mayúsculas ni mono, más aire — como Apple */
+.site-root .font-mono-tech {
+  font-family: inherit;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 0.8125rem !important;
+}
+.site-root .t-display,
+.site-root .t-h2,
+.site-root .t-h3,
+.site-root .font-display {
+  font-family: -apple-system, "SF Pro Display", var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.045em;
+}
+.site-root .t-h3 {
+  font-weight: 600;
+}
+.site-root .hairline,
+.site-root .hairline-glow,
+.site-root .hairline-v {
+  opacity: 0.25;
+}
+.site-root .layer-lines,
+.site-root .grid-blueprint {
+  display: none;
+}
+
+/* tarjetas = vidrio */
+.site-root .snj-surface {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--glass-shadow);
+}
+.site-root .snj-surface[data-interactive="true"]:hover {
+  transform: translateY(-4px) scale(1.01);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+}
+
+/* botones */
+.site-root .snj-btn--primary {
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.16);
+}
+.site-root .snj-btn--outline {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-color: var(--line-2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* inputs */
+.site-root .snj-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.site-root .snj-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* header = píldora de vidrio flotante */
+.site-root header[data-glass-header],
+.site-root > header:first-child {
+  background: transparent;
+}
+
+/* ==========================================================================
+   LIQUID GLASS · calidad — borde con brillo especular, aurora que se mueve,
+   barrido de luz y luz que sigue al cursor.
+   ========================================================================== */
+@keyframes snj-aurora {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+  50% { transform: translate3d(3%, -4%, 0) rotate(8deg) scale(1.08); }
+  100% { transform: translate3d(-4%, 3%, 0) rotate(-6deg) scale(1.03); }
+}
+@keyframes snj-sheen-pass {
+  from { transform: translateX(-130%) skewX(-20deg); }
+  to { transform: translateX(260%) skewX(-20deg); }
+}
+.site-root::before {
+  inset: -25%;
+  animation: snj-aurora 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* borde de vidrio: brillo fuerte arriba-izquierda, se apaga y vuelve abajo-derecha */
+.site-root .snj-surface,
+.site-root .snj-btn--outline {
+  border-color: transparent;
+}
+.site-root .snj-surface::before,
+.site-root .snj-btn--outline::before,
+.site-root .glass-edge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.08) 38%,
+    rgba(255, 255, 255, 0.03) 62%,
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* barrido de luz al pasar el cursor, como un reflejo sobre el vidrio */
+.site-root .snj-surface::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  transform: translateX(-130%) skewX(-20deg);
+}
+.site-root .snj-surface:hover::after {
+  opacity: 1;
+  animation: snj-sheen-pass 1100ms var(--ease-out-expo) 1;
+}
+.site-root .snj-surface__spot {
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.16), transparent 62%);
+}
+.site-root .snj-surface {
+  transition:
+    transform 500ms var(--ease-soft-spring),
+    background 300ms var(--ease-mech),
+    box-shadow 300ms var(--ease-mech);
+}
+.site-root .snj-surface[data-interactive="true"]:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+/* botones: resorte y brillo */
+.site-root .snj-btn {
+  transition:
+    transform 420ms var(--ease-soft-spring),
+    background-color var(--dur-1) var(--ease-mech),
+    box-shadow var(--dur-2) var(--ease-mech);
+}
+.site-root .snj-btn:hover:not([aria-disabled="true"]):not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+}
+.site-root .snj-btn--primary:hover:not([aria-disabled="true"]):not(:disabled) {
+  box-shadow: 0 14px 44px rgba(255, 255, 255, 0.28), inset 0 1px 0 #fff;
+}
+
+/* luz suave que sigue al cursor por toda la página */
+.snj-cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.09), transparent 65%);
+  transition: opacity 600ms ease;
+  will-change: transform;
+}
+@media (hover: none) {
+  .snj-cursor-glow { display: none; }
+}
+
+/* entrada de las tarjetas ligada al scroll (Chrome/Safari modernos; el resto no la ve) */
+@keyframes snj-glass-rise {
+  from { opacity: 0.2; translate: 0 48px; scale: 0.94; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .site-root .snj-surface {
+      animation: snj-glass-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+html:has(.site-root) {
+  overflow-x: clip;
+}
+.site-root .grain-fixed {
+  opacity: 0.015 !important;
+}
+
+/* cubo de vidrio que gira (tarjeta de modelado) */
+@keyframes snj-cube-spin {
+  from { transform: rotateX(-24deg) rotateY(0deg); }
+  to { transform: rotateX(-24deg) rotateY(360deg); }
+}
+.snj-cube-wrap {
+  width: 96px;
+  height: 96px;
+  perspective: 600px;
+}
+.snj-cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: snj-cube-spin 14s linear infinite;
+}
+.snj-cube__face {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.08);
+}
+.snj-cube__face--f { transform: translateZ(48px); }
+.snj-cube__face--b { transform: rotateY(180deg) translateZ(48px); }
+.snj-cube__face--r { transform: rotateY(90deg) translateZ(48px); }
+.snj-cube__face--l { transform: rotateY(-90deg) translateZ(48px); }
+.snj-cube__face--t { transform: rotateX(90deg) translateZ(48px); }
+.snj-cube__face--u { transform: rotateX(-90deg) translateZ(48px); }
+@media (prefers-reduced-motion: reduce) {
+  .snj-cube { animation: none; transform: rotateX(-24deg) rotateY(35deg); }
+}

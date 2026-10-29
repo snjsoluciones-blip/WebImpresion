@@ -30,7 +30,7 @@ const FAQ: FaqEntry[] = [
       },
       {
         p: [
-          "Si ya contás con el modelo 3D, alcanza con que nos envíes el archivo STL o STEP y nos encargamos de la impresión.",
+          "Si ya contás con el modelo 3D, alcanza con que nos envíes el archivo STL o 3MF y nos encargamos de la impresión.",
         ],
       },
     ],
@@ -40,7 +40,12 @@ const FAQ: FaqEntry[] = [
     a: [
       {
         p: [
-          "Podés conseguir un modelo gratis en MakerWorld, Printables o Thingiverse y nos lo mandás.",
+          "Lo modelamos nosotros: contanos la idea, mandanos un boceto, fotos o la pieza rota con sus medidas y la diseñamos para después imprimirla.",
+        ],
+      },
+      {
+        p: [
+          "Si preferís uno ya hecho, también podés bajarlo gratis de MakerWorld, Printables o Thingiverse y mandárnoslo.",
         ],
       },
     ],
@@ -117,13 +122,6 @@ const FAQ: FaqEntry[] = [
       {
         p: [
           "El formulario arma el mensaje con tus datos y lo abre en WhatsApp: ahí seguimos la charla y te contesta uno de nosotros.",
-        ],
-      },
-      {
-        p: [
-          "De ahí en adelante son tres pasos: nos compartís tu archivo, confirmamos los detalles y la imprimimos y te la enviamos. Está detallado en ",
-          { text: "cómo funciona", href: "#como-funciona" },
-          ".",
         ],
       },
     ],

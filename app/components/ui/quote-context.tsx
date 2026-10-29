@@ -7,8 +7,10 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
  * lo único que se pre-selecciona es el material. El value es EXACTAMENTE el `value`
  * de los <option> del formulario actual: "PLA" | "PETG" | "ABS" | "TPU" | "No sé, asesorarme"
  */
-export type QuotePreset = { material?: string };
+export type QuotePreset = { material?: string; servicio?: string };
 export type QuoteCtx = { preset: QuotePreset; setPreset: (p: QuotePreset) => void };
+
+export const SERVICE_VALUES = ["Solo impresión", "Modelado + impresión"] as const;
 
 export const MATERIAL_VALUES = ["PLA", "PETG", "ABS", "TPU", "No sé, asesorarme"] as const;
 

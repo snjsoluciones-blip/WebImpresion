@@ -27,7 +27,7 @@ import WhatsAppIcon from "./ui/WhatsAppIcon";
 import { EASE } from "./ui/motion";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 import { useLocalDraft } from "./ui/useLocalDraft";
-import { MATERIAL_VALUES, useQuote } from "./ui/quote-context";
+import { MATERIAL_VALUES, SERVICE_VALUES, useQuote } from "./ui/quote-context";
 import StlViewer from "./ui/StlViewer";
 
 /* =========================================================================
@@ -38,10 +38,11 @@ const WHATSAPP_NUMBER = "541161256413";
 const WHATSAPP_DIRECT_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
   "¡Hola! Vengo de la web de SNJ Soluciones y quiero hacer una consulta."
 )}`;
-const DRAFT_KEY = "snj-cotizacion-v1";
+const DRAFT_KEY = "snj-cotizacion-v2";
 const DESC_MAX = 600;
 
 interface FormState {
+  servicio: string;
   nombre: string;
   email: string;
   telefono: string;
@@ -55,6 +56,7 @@ interface FormState {
 type FieldName = keyof FormState;
 
 const INITIAL: FormState = {
+  servicio: SERVICE_VALUES[0],
   nombre: "",
   email: "",
   telefono: "",
@@ -70,6 +72,7 @@ const STEPS = ["Tu proyecto", "Tus datos", "Revisar y enviar"];
 const STEP_REQUIRED: FieldName[][] = [["descripcion", "medidas"], ["nombre", "email", "telefono"], []];
 
 const FIELD_STEP: Record<FieldName, number> = {
+  servicio: 0,
   descripcion: 0,
   medidas: 0,
   material: 0,
@@ -80,6 +83,7 @@ const FIELD_STEP: Record<FieldName, number> = {
 };
 
 const FIELD_WORD: Record<FieldName, string> = {
+  servicio: "servicio",
   descripcion: "descripción",
   medidas: "medidas",
   material: "material",
@@ -96,9 +100,12 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
    buildWhatsAppUrl() lo consume; la preview del paso 3 lo muestra tal cual.
    ========================================================================= */
 
-function buildMessage(form: FormState) {
+function buildMessage(form: FormState, fileName?: string) {
+  const archivo = fileName ? `
+📎 Archivo: ${fileName} (te lo mando por este chat)` : "";
   return `Hola SNJ Soluciones! 👋 Quiero solicitar una pieza 3D.
 
+🛠 Servicio: ${form.servicio}
 👤 Nombre: ${form.nombre.trim()}
 📧 Email: ${form.email.trim()}
 📱 Teléfono: ${form.telefono.trim()}
@@ -106,13 +113,13 @@ function buildMessage(form: FormState) {
 📝 Descripción: ${form.descripcion.trim()}
 📐 Medidas: ${form.medidas.trim()}
 🧪 Material: ${form.material}
-🔢 Cantidad: ${form.cantidad.trim() || "1"}
+🔢 Cantidad: ${form.cantidad.trim() || "1"}${archivo}
 
 Quedo a disposición para cotizar y coordinar. Gracias!`;
 }
 
-function buildWhatsAppUrl(form: FormState) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form))}`;
+function buildWhatsAppUrl(form: FormState, fileName?: string) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(buildMessage(form, fileName))}`;
 }
 
 function isFormValid(f: FormState) {
@@ -186,7 +193,7 @@ function CheckIcon() {
    ========================================================================= */
 
 type ChipGroupProps = {
-  id: "material";
+  id: "material" | "servicio";
   index: string;
   label: string;
   options: readonly string[];
@@ -278,19 +285,20 @@ function ChipGroup({ id, index, label, options, value, onChange }: ChipGroupProp
    ========================================================================= */
 
 type StlUploadProps = {
+  required: boolean;
   file: File | null;
   onFile: (file: File | null) => void;
   error: string | null;
   onError: (message: string) => void;
 };
 
-function StlUpload({ file, onFile, error, onError }: StlUploadProps) {
+function StlUpload({ required, file, onFile, error, onError }: StlUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const acceptFile = (picked: File | null) => {
-    if (picked && !picked.name.toLowerCase().endsWith(".stl")) {
-      onError("Por ahora solo podemos abrir archivos .stl");
+    if (picked && !/\.(stl|3mf)$/i.test(picked.name)) {
+      onError("Por ahora solo podemos abrir archivos .stl o .3mf");
       return;
     }
     onFile(picked);
@@ -311,9 +319,9 @@ function StlUpload({ file, onFile, error, onError }: StlUploadProps) {
   return (
     <div className="flex flex-col gap-3">
       <span className="inline-flex items-center gap-2">
-        <MonoLabel tone="dim">05 · Modelo 3D</MonoLabel>
-        <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />
-        <span className="sr-only">(obligatorio)</span>
+        <MonoLabel tone="dim">06 · Modelo 3D</MonoLabel>
+        {required && <span aria-hidden="true" className="inline-block h-1 w-1 rounded-full" style={{ background: "rgba(255,255,255,0.4)" }} />}
+        {required ? <span className="sr-only">(obligatorio)</span> : <span className="text-xs" style={{ color: "var(--tx-4)" }}>opcional</span>}
       </span>
 
       {!file ? (
@@ -331,7 +339,7 @@ function StlUpload({ file, onFile, error, onError }: StlUploadProps) {
           style={{ color: dragging ? "var(--tx-1)" : "var(--tx-3)", borderColor: dragging ? "var(--line-3)" : undefined }}
         >
           <ClipIcon />
-          {dragging ? "Soltá el archivo acá" : "Subí o arrastrá tu archivo STL — es obligatorio, así vemos la pieza"}
+          {dragging ? "Soltá el archivo acá" : (required ? "Subí o arrastrá tu archivo STL o 3MF" : "Si ya tenés un STL o 3MF, subilo o arrastralo acá")}
         </button>
       ) : (
         <div className="flex flex-col gap-3">
@@ -377,10 +385,10 @@ function StlUpload({ file, onFile, error, onError }: StlUploadProps) {
         >
           hablanos por WhatsApp
         </a>
-        : con tu archivo te pasamos el precio.
+        : con tu archivo o tu idea te pasamos el precio.
       </p>
 
-      <input ref={inputRef} type="file" accept=".stl" onChange={handlePick} className="hidden" />
+      <input ref={inputRef} type="file" accept=".stl,.3mf" onChange={handlePick} className="hidden" />
     </div>
   );
 }
@@ -453,19 +461,22 @@ export default function ContactForm() {
   // Borrador recuperado: hay algo escrito y el usuario todavía no tocó nada en esta visita.
   const recovered = !touched && !recoveredDismissed && JSON.stringify(form) !== JSON.stringify(INITIAL);
 
-  // Preset que llega desde Materiales ("Cotizar en PETG").
+  // Presets que llegan desde Materiales ("Cotizar en PETG") o Servicios ("Quiero modelado").
   // Diferido (no sincrónico en el efecto) para no encadenar renders.
   useEffect(() => {
-    if (!preset.material || !(MATERIAL_VALUES as readonly string[]).includes(preset.material)) return;
-    const material = preset.material;
+    const material =
+      preset.material && (MATERIAL_VALUES as readonly string[]).includes(preset.material) ? preset.material : null;
+    const servicio =
+      preset.servicio && (SERVICE_VALUES as readonly string[]).includes(preset.servicio) ? preset.servicio : null;
+    if (!material && !servicio) return;
     const id = window.setTimeout(() => {
       setTouched(true);
-      setForm((p) => ({ ...p, material }));
+      setForm((p) => ({ ...p, ...(material ? { material } : {}), ...(servicio ? { servicio } : {}) }));
       setDirection(-1);
       setStep(0);
     }, 0);
     return () => window.clearTimeout(id);
-  }, [preset.material, setForm]);
+  }, [preset.material, preset.servicio, setForm]);
 
   const go = useCallback(
     (to: number, focus: string | null = null) => {
@@ -492,16 +503,15 @@ export default function ContactForm() {
     setErrors((p) => (p[name] === message ? p : { ...p, [name]: message }));
   };
 
-  const setChip = (name: "material") => (v: string) => {
+  const setChip = (name: "material" | "servicio") => (v: string) => {
     setTouched(true);
     setForm((p) => ({ ...p, [name]: v }));
   };
 
   const missing = STEP_REQUIRED[step].filter((n) => form[n].trim() === "");
-  // El archivo STL es obligatorio, pero vive fuera de `form` (ver comentario de stlFile más arriba).
-  const missingFile = step === 0 && !stlFile;
-  const canContinue = missing.length === 0 && !missingFile;
-  const formValid = isFormValid(form) && Boolean(stlFile);
+  // El archivo STL/3MF es opcional y vive fuera de `form` (ver comentario de stlFile más arriba).
+  const canContinue = missing.length === 0;
+  const formValid = isFormValid(form);
 
   const onFormKeyDown = (e: KeyboardEvent<HTMLFormElement>) => {
     if (e.key !== "Enter") return;
@@ -620,10 +630,19 @@ export default function ContactForm() {
                     {/* ---------- Paso 1: tu proyecto ---------- */}
                     {step === 0 && (
                       <div className="flex flex-col gap-7">
+                        <ChipGroup
+                          id="servicio"
+                          index="01"
+                          label="¿Qué necesitás?"
+                          options={SERVICE_VALUES}
+                          value={form.servicio}
+                          onChange={setChip("servicio")}
+                        />
+
                         <div className="snj-field">
                           <Field
                             id="descripcion"
-                            index="01"
+                            index="02"
                             label="Descripción detallada de la pieza"
                             required
                             counter={{ current: form.descripcion.length, max: DESC_MAX }}
@@ -645,7 +664,7 @@ export default function ContactForm() {
                         </div>
 
                         <div className="snj-field">
-                          <Field id="medidas" index="02" label="Medidas aproximadas" required error={errors.medidas}>
+                          <Field id="medidas" index="03" label="Medidas aproximadas" required error={errors.medidas}>
                             <input
                               type="text"
                               name="medidas"
@@ -661,7 +680,7 @@ export default function ContactForm() {
 
                         <ChipGroup
                           id="material"
-                          index="03"
+                          index="04"
                           label="Material preferido"
                           options={MATERIAL_VALUES}
                           value={form.material}
@@ -669,7 +688,7 @@ export default function ContactForm() {
                         />
 
                         <div className="snj-field max-w-[10rem]">
-                          <Field id="cantidad" index="04" label="Cantidad">
+                          <Field id="cantidad" index="05" label="Cantidad">
                             <input
                               type="number"
                               inputMode="numeric"
@@ -683,6 +702,7 @@ export default function ContactForm() {
                         </div>
 
                         <StlUpload
+                          required={false}
                           file={stlFile}
                           onFile={(f) => {
                             setStlFile(f);
@@ -698,7 +718,7 @@ export default function ContactForm() {
                     {step === 1 && (
                       <div className="flex flex-col gap-7">
                         <div className="snj-field">
-                          <Field id="nombre" index="06" label="Nombre" required error={errors.nombre}>
+                          <Field id="nombre" index="07" label="Nombre" required error={errors.nombre}>
                             <input
                               type="text"
                               name="nombre"
@@ -715,7 +735,7 @@ export default function ContactForm() {
 
                         <div className="grid gap-7 sm:grid-cols-2">
                           <div className="snj-field">
-                            <Field id="email" index="07" label="Email" required error={errors.email}>
+                            <Field id="email" index="08" label="Email" required error={errors.email}>
                               <input
                                 type="email"
                                 name="email"
@@ -731,7 +751,7 @@ export default function ContactForm() {
                             </Field>
                           </div>
                           <div className="snj-field">
-                            <Field id="telefono" index="08" label="Teléfono / WhatsApp" required error={errors.telefono}>
+                            <Field id="telefono" index="09" label="Teléfono / WhatsApp" required error={errors.telefono}>
                               <input
                                 type="tel"
                                 name="telefono"
@@ -825,7 +845,7 @@ export default function ContactForm() {
                             className="font-mono-tech whitespace-pre-line px-4 pb-4 text-[12px] leading-relaxed"
                             style={{ color: "var(--tx-4)" }}
                           >
-                            {buildMessage(form)}
+                            {buildMessage(form, stlFile?.name)}
                           </div>
                         </details>
 
@@ -921,7 +941,7 @@ export default function ContactForm() {
                       style={{ color: "var(--tx-5)" }}
                     >
                       {!canContinue
-                        ? `Falta: ${[...missing.map((m) => FIELD_WORD[m]), ...(missingFile ? ["archivo 3D"] : [])].join(", ")}`
+                        ? `Falta: ${[...missing.map((m) => FIELD_WORD[m])].join(", ")}`
                         : ""}
                     </p>
                   </div>

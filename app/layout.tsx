@@ -23,7 +23,7 @@ const localBusinessJsonLd = {
   "@id": "https://snjsoluciones.com.ar/#negocio",
   name: "SNJ Soluciones",
   description:
-    "Servicio de impresión de modelos 3D bajo demanda: subís tu archivo 3D y te lo imprimimos en PLA, PETG, ABS o TPU, con envíos a todo el país.",
+    "Impresión y modelado 3D bajo demanda: subís tu archivo STL o 3MF (o lo modelamos desde tu idea) y lo imprimimos en PLA, PETG, ABS o TPU, con envíos a todo el país.",
   url: "https://snjsoluciones.com.ar",
   telephone: "+5491161256413",
   email: "snjsoluciones@gmail.com",
@@ -43,6 +43,7 @@ const localBusinessJsonLd = {
   areaServed: ["Pacheco", "Zona Norte GBA", "Buenos Aires", "CABA", "Argentina"],
   knowsAbout: [
     "Impresión de modelos 3D",
+    "Modelado 3D",
     "Impresión 3D bajo demanda",
     "Impresión 3D",
     "Prototipado rápido",
@@ -56,13 +57,13 @@ const localBusinessJsonLd = {
 export const metadata: Metadata = {
   metadataBase: new URL("https://snjsoluciones.com.ar"),
   title: "Impresión de Modelos 3D en Argentina | SNJ Soluciones",
-  description: "Subí tu archivo 3D y te lo imprimimos en PLA, PETG, ABS o TPU. Impresión 3D bajo demanda con envíos a todo el país, desde General Pacheco, Buenos Aires. Presupuesto rápido por WhatsApp.",
-  keywords: "impresión de modelos 3D, imprimir modelo 3D, impresión 3D bajo demanda, subir archivo STL para imprimir, impresión 3D Argentina, impresión 3D Buenos Aires, impresión 3D Pacheco, impresión 3D Tigre, impresión 3D zona norte, servicio de impresión 3D, repuestos 3D, PLA, PETG, ABS, TPU",
+  description: "Subí tu archivo STL o 3MF, o pedinos que lo modelemos, y lo imprimimos en PLA, PETG, ABS o TPU. Impresión y modelado 3D bajo demanda con envíos a todo el país, desde General Pacheco, Buenos Aires. Presupuesto rápido por WhatsApp.",
+  keywords: "impresión de modelos 3D, modelado 3D, diseño 3D a medida, imprimir modelo 3D, impresión 3D bajo demanda, subir archivo STL para imprimir, impresión 3D Argentina, impresión 3D Buenos Aires, impresión 3D Pacheco, impresión 3D Tigre, impresión 3D zona norte, servicio de impresión 3D, repuestos 3D, PLA, PETG, ABS, TPU",
   authors: [{ name: "SNJ Soluciones" }],
   creator: "SNJ Soluciones",
   openGraph: {
     title: "Impresión de Modelos 3D en Argentina | SNJ Soluciones",
-    description: "Subí tu archivo 3D y te lo imprimimos en PLA, PETG, ABS o TPU. Envíos a todo el país. Presupuesto rápido por WhatsApp.",
+    description: "Imprimimos tu archivo STL o 3MF, o lo modelamos desde tu idea, en PLA, PETG, ABS o TPU. Envíos a todo el país. Presupuesto rápido por WhatsApp.",
     url: "https://snjsoluciones.com.ar",
     siteName: "SNJ Soluciones",
     locale: "es_AR",
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Impresión de Modelos 3D en Argentina | SNJ Soluciones",
-    description: "Subí tu archivo 3D y te lo imprimimos en PLA, PETG, ABS o TPU. Envíos a todo el país. Presupuesto rápido por WhatsApp.",
+    description: "Imprimimos tu archivo STL o 3MF, o lo modelamos desde tu idea, en PLA, PETG, ABS o TPU. Envíos a todo el país. Presupuesto rápido por WhatsApp.",
     images: ["/og.png"],
   },
   robots: {

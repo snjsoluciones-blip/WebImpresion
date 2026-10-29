@@ -46,7 +46,6 @@ const navLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios", id: "servicios" },
   { label: "Galería", href: "#galeria", id: "galeria" },
   { label: "Materiales", href: "#materiales", id: "materiales" },
-  { label: "Proceso", href: "#como-funciona", id: "como-funciona" },
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];
 
@@ -55,7 +54,6 @@ const mobileLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios", id: "servicios" },
   { label: "Galería", href: "#galeria", id: "galeria" },
   { label: "Materiales", href: "#materiales", id: "materiales" },
-  { label: "Proceso", href: "#como-funciona", id: "como-funciona" },
   { label: "FAQ", href: "#faq", id: "faq" },
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];
@@ -188,26 +186,22 @@ export default function Header() {
       className="fixed inset-x-0 top-0 z-50"
       style={{ height: "var(--header-h)" }}
     >
-      {/* Vidrio oscuro: aparece al scrollear (>40px) y se apaga con el menú abierto */}
+      {/* Píldora de vidrio flotante: aparece al scrollear (>40px) y se apaga con el menú abierto */}
       <div
         aria-hidden="true"
-        className="absolute inset-0"
+        className="glass-edge absolute"
         style={{
-          background: "rgba(8,8,8,0.72)",
-          backdropFilter: "blur(16px) saturate(140%)",
-          WebkitBackdropFilter: "blur(16px) saturate(140%)",
+          inset: "10px clamp(8px, 2vw, 24px)",
+          borderRadius: 999,
+          background: "linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05))",
+          border: "1px solid rgba(255,255,255,0.18)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 18px 50px rgba(0,0,0,0.35)",
+          backdropFilter: "blur(28px) saturate(180%)",
+          WebkitBackdropFilter: "blur(28px) saturate(180%)",
           opacity: chromeVisible ? 1 : 0,
           transition: "opacity var(--dur-2) var(--ease-mech)",
         }}
       />
-      {/* Hairline inferior en lugar del border-bottom que cortaba en seco */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 bottom-0"
-        style={{ opacity: chromeVisible ? 1 : 0, transition: "opacity var(--dur-2) var(--ease-mech)" }}
-      >
-        <Hairline />
-      </div>
 
       {/* Riel: siempre por encima del overlay del menú (z-70) para que logo y hamburger sigan visibles */}
       <div className="shell relative z-[80] flex h-full items-center justify-between gap-4">

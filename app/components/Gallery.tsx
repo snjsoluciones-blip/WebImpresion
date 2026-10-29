@@ -5,11 +5,8 @@ import Section from "./ui/Section";
 import SectionHeading from "./ui/SectionHeading";
 import MediaFrame from "./ui/MediaFrame";
 import TiltCard from "./ui/TiltCard";
-import SpecTable, { type SpecRow } from "./ui/SpecTable";
 import Lightbox from "./ui/Lightbox";
 import Stagger from "./ui/Stagger";
-import MonoLabel from "./ui/MonoLabel";
-import Hairline from "./ui/Hairline";
 import { usePointerFine } from "./ui/usePointerFine";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 
@@ -24,7 +21,7 @@ interface GalleryItem {
   /** Rótulo mono que aparece en hover sobre la foto. Solo datos ya publicados. */
   label: string;
   /** Ficha técnica: tomada literalmente de la descripción publicada. */
-  specs: SpecRow[];
+  specs: { k: string; v: string }[];
   /** Segunda foto en paralelo (díptico), p. ej. otra unidad de la misma serie o el proceso de impresión. */
   pairSrc?: string;
   pairAlt?: string;
@@ -116,6 +113,9 @@ const items: GalleryItem[] = [
     pairRatio: "0.6",
   },
 ];
+
+/** Solo la primera oración: la ficha completa queda en el lightbox. */
+const firstSentence = (t: string) => t.split(/(?<=\.)\s/)[0];
 
 /* Capa extra de scanlines que se suma a la de MediaFrame (.04) en hover → ~.06 total. */
 const HOVER_LINES: CSSProperties = {
@@ -245,13 +245,12 @@ export default function Gallery() {
         eyebrow="Portfolio"
         titleId="galeria-title"
         title="Trabajos que ya salieron de la impresora"
-        lead="Cinco casos reales: automovilismo, telemetría y personalizados."
+        lead="Casos reales."
       />
 
-      <ol role="list" className="m-0 flex list-none flex-col p-0" style={{ rowGap: "clamp(5rem, 3rem + 6vw, 9rem)" }}>
+      <ol role="list" className="m-0 flex list-none flex-col p-0" style={{ rowGap: "clamp(4rem, 2.5rem + 5vw, 7rem)" }}>
         {items.map((item, i) => {
           const flip = i % 2 === 1;
-          const n = String(i + 1).padStart(2, "0");
           return (
             <li key={item.title} className="lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-6">
               {/* Media: 7 columnas, alternando lado. Con pairSrc: dos fotos lado a lado (díptico). */}
@@ -299,34 +298,8 @@ export default function Gallery() {
               {/* Ficha: 4 columnas, del lado opuesto */}
               <div className={`mt-5 lg:col-span-4 lg:row-start-1 lg:mt-0 ${flip ? "lg:col-start-1" : "lg:col-start-9"}`}>
                 <Stagger wrap start={0.1} step={0.08}>
-                  <div>
-                    {/* Número de caso: fuera de la foto, detrás del título */}
-                    <span
-                      aria-hidden="true"
-                      className="font-display block select-none font-bold leading-none tracking-[-0.04em]"
-                      style={{
-                        fontSize: "clamp(4rem, 3rem + 4vw, 7rem)",
-                        color: "rgba(255,255,255,0.055)",
-                        marginBottom: "-0.35em",
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      {n}
-                    </span>
-                    <div className="relative">
-                      <MonoLabel rule className="mb-3">
-                        Caso {n} · {item.category}
-                      </MonoLabel>
-                      <h3 className="t-h3 m-0 text-white">{item.title}</h3>
-                    </div>
-                  </div>
-
-                  <p className="t-body m-0 mt-4 max-w-[46ch]">{item.desc}</p>
-
-                  <div className="mt-6">
-                    <Hairline />
-                    <SpecTable rows={item.specs} dense className="mt-1" />
-                  </div>
+                  <h3 className="t-h3 m-0 text-white">{item.title}</h3>
+                  <p className="t-body m-0 mt-3 max-w-[40ch]">{firstSentence(item.desc)}</p>
                 </Stagger>
               </div>
             </li>
