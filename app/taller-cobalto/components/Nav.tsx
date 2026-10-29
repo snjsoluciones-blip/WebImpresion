@@ -4,9 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BASE } from "../lib/rutas";
 import { useAuth } from "../lib/auth";
+import { useConsultasNuevas } from "../lib/consultas";
 
 const LINKS = [
   { href: BASE, label: "Tablero" },
+  { href: `${BASE}/consultas`, label: "Consultas" },
   { href: `${BASE}/clientes`, label: "Clientes" },
   { href: `${BASE}/calendario`, label: "Calendario" },
   { href: `${BASE}/cuentas`, label: "Cuentas" },
@@ -16,6 +18,7 @@ const LINKS = [
 export default function Nav() {
   const pathname = usePathname();
   const { usuario, logout } = useAuth();
+  const nuevas = useConsultasNuevas(pathname);
 
   return (
     <header className="border-b border-white/10">
@@ -32,6 +35,16 @@ export default function Nav() {
                 }`}
               >
                 {l.label}
+                {l.label === "Consultas" && nuevas > 0 && (
+                  <span
+                    className={`ml-1.5 inline-flex min-w-5 h-5 items-center justify-center rounded-full px-1.5 text-xs font-medium ${
+                      active ? "bg-black text-white" : "bg-amber-400 text-black"
+                    }`}
+                    aria-label={`${nuevas} consultas nuevas`}
+                  >
+                    {nuevas}
+                  </span>
+                )}
               </Link>
             );
           })}

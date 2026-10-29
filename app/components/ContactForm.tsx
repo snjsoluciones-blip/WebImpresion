@@ -28,6 +28,7 @@ import { EASE } from "./ui/motion";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 import { useLocalDraft } from "./ui/useLocalDraft";
 import { MATERIAL_VALUES, SERVICE_VALUES, useQuote } from "./ui/quote-context";
+import { guardarConsulta } from "../lib/consultas";
 import StlViewer from "./ui/StlViewer";
 
 /* =========================================================================
@@ -450,6 +451,7 @@ export default function ContactForm() {
   const [touched, setTouched] = useState(false);
   const [recoveredDismissed, setRecoveredDismissed] = useState(false);
   const [sent, setSent] = useState(false);
+  const guardadaRef = useRef(false);
   const [errors, setErrors] = useState<Partial<Record<FieldName, string | null>>>({});
 
   // Archivo STL: vive fuera de `form`/useLocalDraft a propósito — un File no se puede
@@ -525,6 +527,7 @@ export default function ContactForm() {
     clearDraft();
     setErrors({});
     setSent(false);
+    guardadaRef.current = false;
     setTouched(false);
     setRecoveredDismissed(true);
     go(0);
@@ -534,6 +537,14 @@ export default function ContactForm() {
   // por si la pestaña no se abrió y hay que tocar de nuevo.
   const handleSent = () => {
     setSent(true);
+    // Además de abrir WhatsApp, la consulta queda guardada en la gestión (con el archivo, si lo hay).
+    // Corre en segundo plano y nunca frena ni rompe el WhatsApp. Una sola vez por pedido.
+    if (!guardadaRef.current) {
+      guardadaRef.current = true;
+      guardarConsulta(form, stlFile).then((ok) => {
+        if (!ok) guardadaRef.current = false;
+      });
+    }
     try {
       window.localStorage.removeItem(DRAFT_KEY);
     } catch {
