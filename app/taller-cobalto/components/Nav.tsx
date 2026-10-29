@@ -7,6 +7,7 @@ import { useAuth } from "../lib/auth";
 
 const LINKS = [
   { href: BASE, label: "Tablero" },
+  { href: `${BASE}/clientes`, label: "Clientes" },
   { href: `${BASE}/calendario`, label: "Calendario" },
   { href: `${BASE}/cuentas`, label: "Cuentas" },
   { href: `${BASE}/papelera`, label: "Papelera" },

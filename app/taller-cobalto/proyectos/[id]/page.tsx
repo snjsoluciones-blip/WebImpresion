@@ -15,6 +15,7 @@ import {
 } from "../../lib/calc";
 import PrintLoader from "../../components/PrintLoader";
 import { BASE } from "../../lib/rutas";
+import ClienteSelect from "../../components/ClienteSelect";
 
 export default function ProyectoDetalle() {
   const { id } = useParams<{ id: string }>();
@@ -184,11 +185,10 @@ export default function ProyectoDetalle() {
               className="text-xl font-medium bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 flex-1"
             />
           </div>
-          <input
+          <ClienteSelect
             value={proyecto.cliente}
-            onChange={(e) => updateProyecto(proyecto.id, (p) => ({ ...p, cliente: e.target.value }))}
-            placeholder="Cliente"
-            className="text-sm text-white/50 bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 mt-1"
+            onChange={(cliente) => updateProyecto(proyecto.id, (p) => ({ ...p, cliente }))}
+            className="text-sm text-white/60 bg-transparent outline-none border-b border-transparent hover:border-white/20 focus:border-white/40 mt-1"
           />
         </div>
         {proyecto.eliminadoEn ? (

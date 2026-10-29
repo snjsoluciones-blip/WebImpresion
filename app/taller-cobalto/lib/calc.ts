@@ -1,4 +1,4 @@
-import { Proyecto, Socio, SOCIOS, EstadoProyecto } from "./types";
+import { Proyecto, Socio, SOCIOS, EstadoProyecto, claveCliente } from "./types";
 
 export function totalGastos(p: Proyecto): number {
   return p.gastos.reduce((acc, g) => acc + g.precio * g.cantidad, 0);
@@ -71,4 +71,30 @@ export function formatCurrency(n: number): string {
     currency: "ARS",
     maximumFractionDigits: 0,
   }).format(Math.round(n));
+}
+
+export interface StatsCliente {
+  /** Proyectos confirmados que nos encargó. */
+  encargados: number;
+  /** De esos, los que ya le entregamos. */
+  entregados: number;
+  /** Ganancia (ingresos - gastos) de los proyectos que ya pagó. */
+  ganancia: number;
+  /** Plata que nos debe: lo que se le cobra en los proyectos confirmados que todavía no pagó. */
+  debe: number;
+}
+
+export function proyectosDeCliente(proyectos: Proyecto[], nombre: string): Proyecto[] {
+  const clave = claveCliente(nombre);
+  return proyectos.filter((p) => !p.eliminadoEn && p.confirmado && claveCliente(p.cliente) === clave);
+}
+
+export function statsCliente(proyectos: Proyecto[], nombre: string): StatsCliente {
+  const suyos = proyectosDeCliente(proyectos, nombre);
+  return {
+    encargados: suyos.length,
+    entregados: suyos.filter((p) => p.entregado).length,
+    ganancia: suyos.filter((p) => p.pagado).reduce((acc, p) => acc + ganancia(p), 0),
+    debe: suyos.filter((p) => !p.pagado).reduce((acc, p) => acc + totalIngresos(p), 0),
+  };
 }

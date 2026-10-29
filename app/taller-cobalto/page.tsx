@@ -7,6 +7,7 @@ import { useStore, newId } from "./lib/store";
 import { estadoProyecto, ganancia, gananciaTotal, porCobrar, formatCurrency } from "./lib/calc";
 import { EstadoProyecto, Proyecto } from "./lib/types";
 import { BASE } from "./lib/rutas";
+import ClienteSelect from "./components/ClienteSelect";
 
 const FILTROS: (EstadoProyecto | "Todos")[] = [
   "Todos",
@@ -112,11 +113,10 @@ export default function Tablero() {
               placeholder="Nombre del proyecto"
               className="flex-1 rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
             />
-            <input
+            <ClienteSelect
               value={cliente}
-              onChange={(e) => setCliente(e.target.value)}
-              placeholder="Cliente"
-              className="flex-1 rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
+              onChange={setCliente}
+              className="w-full rounded-md bg-white/5 border border-white/10 px-3 py-2 outline-none focus:border-white/30"
             />
             <button type="submit" className="px-4 py-2 rounded-md bg-white text-black text-sm font-medium whitespace-nowrap">
               Crear

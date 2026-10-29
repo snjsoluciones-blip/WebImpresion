@@ -53,10 +53,21 @@ export interface Presupuesto {
   eliminadoEn: string; // ISO cuando se mandó a la papelera, "" si no
 }
 
+export interface Cliente {
+  id: string;
+  nombre: string;
+  telefono: string;
+  otroContacto: string; // email, Instagram, otro teléfono, etc.
+}
+
 export interface DB {
   proyectos: Proyecto[];
   presupuestos: Presupuesto[];
+  clientes: Cliente[];
 }
+
+/** Clave para comparar nombres de cliente sin importar mayúsculas ni espacios de más. */
+export const claveCliente = (nombre: string) => nombre.trim().toLowerCase();
 
 export type EstadoProyecto = "En proceso" | "Pagado sin entregar" | "Entregado" | "Cobrado";
 
@@ -84,5 +95,29 @@ export function normalizeDB(raw: Partial<DB> | null | undefined): DB {
     ...pr,
     eliminadoEn: pr.eliminadoEn ?? "",
   }));
-  return { proyectos, presupuestos };
+
+  // Primera vez con la base de clientes: se arma a partir de los nombres que ya estaban
+  // escritos en proyectos y presupuestos, para no empezar con la lista vacía.
+  let clientes: Cliente[];
+  if (raw?.clientes) {
+    clientes = raw.clientes.map((c) => ({
+      id: c.id,
+      nombre: c.nombre ?? "",
+      telefono: c.telefono ?? "",
+      otroContacto: c.otroContacto ?? "",
+    }));
+  } else {
+    const vistos = new Map<string, string>();
+    for (const nombre of [...proyectos.map((p) => p.cliente), ...presupuestos.map((p) => p.cliente)]) {
+      const limpio = (nombre ?? "").trim();
+      if (limpio && !vistos.has(claveCliente(limpio))) vistos.set(claveCliente(limpio), limpio);
+    }
+    clientes = [...vistos.values()].map((nombre, i) => ({
+      id: `cli-${i}-${claveCliente(nombre).replace(/\W+/g, "-")}`,
+      nombre,
+      telefono: "",
+      otroContacto: "",
+    }));
+  }
+  return { proyectos, presupuestos, clientes };
 }

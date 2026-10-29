@@ -1,4 +1,4 @@
-import { DB, Proyecto, Socio, SOCIOS } from "./types";
+import { DB, Proyecto, Socio, SOCIOS, claveCliente } from "./types";
 import {
   totalGastos,
   totalIngresos,
@@ -122,7 +122,17 @@ export function aplicarAcciones(
     });
   }
 
-  return { ...db, proyectos };
+  // Si el mensaje trajo un cliente que todavía no está en la base de clientes, se agrega.
+  const clientes = [...db.clientes];
+  for (const acc of acciones) {
+    if (acc.tipo !== "crear_proyecto") continue;
+    const nombre = (acc.cliente ?? "").trim();
+    if (nombre && !clientes.some((c) => claveCliente(c.nombre) === claveCliente(nombre))) {
+      clientes.push({ id: newId(), nombre, telefono: "", otroContacto: "" });
+    }
+  }
+
+  return { ...db, proyectos, clientes };
 }
 
 // Resumen compacto del estado actual para que la IA responda preguntas y ubique proyectos.
