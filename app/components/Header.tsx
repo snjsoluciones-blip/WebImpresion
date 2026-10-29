@@ -46,7 +46,6 @@ const navLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios", id: "servicios" },
   { label: "Galería", href: "#galeria", id: "galeria" },
   { label: "Materiales", href: "#materiales", id: "materiales" },
-  { label: "Proceso", href: "#como-funciona", id: "como-funciona" },
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];
 
@@ -55,7 +54,6 @@ const mobileLinks: NavLink[] = [
   { label: "Servicios", href: "#servicios", id: "servicios" },
   { label: "Galería", href: "#galeria", id: "galeria" },
   { label: "Materiales", href: "#materiales", id: "materiales" },
-  { label: "Proceso", href: "#como-funciona", id: "como-funciona" },
   { label: "FAQ", href: "#faq", id: "faq" },
   { label: "Contacto", href: "#contacto", id: "contacto" },
 ];

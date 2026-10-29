@@ -119,13 +119,6 @@ const FAQ: FaqEntry[] = [
           "El formulario arma el mensaje con tus datos y lo abre en WhatsApp: ahí seguimos la charla y te contesta uno de nosotros.",
         ],
       },
-      {
-        p: [
-          "De ahí en adelante son tres pasos: nos compartís tu archivo, confirmamos los detalles y la imprimimos y te la enviamos. Está detallado en ",
-          { text: "cómo funciona", href: "#como-funciona" },
-          ".",
-        ],
-      },
     ],
   },
 ];

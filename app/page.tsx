@@ -4,7 +4,6 @@ import Services from "./components/Services";
 import VideoScrollSection from "./components/VideoScrollSection";
 import Gallery from "./components/Gallery";
 import Materials from "./components/Materials";
-import HowItWorks from "./components/HowItWorks";
 import Faq from "./components/Faq";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -32,7 +31,6 @@ export default function Home() {
           <VideoScrollSection />
           <Gallery />
           <Materials />
-          <HowItWorks />
           <ContactForm />
           <Faq />
         </main>
