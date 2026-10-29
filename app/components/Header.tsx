@@ -191,7 +191,7 @@ export default function Header() {
       {/* Píldora de vidrio flotante: aparece al scrollear (>40px) y se apaga con el menú abierto */}
       <div
         aria-hidden="true"
-        className="absolute"
+        className="glass-edge absolute"
         style={{
           inset: "10px clamp(8px, 2vw, 24px)",
           borderRadius: 999,

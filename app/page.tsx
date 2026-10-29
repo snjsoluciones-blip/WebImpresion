@@ -12,6 +12,7 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import MobileActionBar from "./components/MobileActionBar";
 import { QuoteProvider } from "./components/ui/quote-context";
 import GrainOverlay from "./components/ui/GrainOverlay";
+import CursorGlow from "./components/ui/CursorGlow";
 
 export default function Home() {
   return (
@@ -39,6 +40,7 @@ export default function Home() {
         <WhatsAppButton />
         <MobileActionBar />
         <GrainOverlay />
+        <CursorGlow />
       </div>
     </QuoteProvider>
   );

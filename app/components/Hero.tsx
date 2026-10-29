@@ -147,6 +147,11 @@ export default function Hero() {
   const reduced = useReducedMotionSafe();
   const saveData = useSyncExternalStore(subscribeNoop, getSaveData, getSaveDataServer);
   const sectionRef = useRef<HTMLElement | null>(null);
+  // Al bajar, el contenido sube más lento, se achica y se apaga: profundidad tipo Apple.
+  const { scrollY } = useScroll();
+  const contentY = useTransform(scrollY, [0, 600], [0, reduced ? 0 : -90]);
+  const contentOpacity = useTransform(scrollY, [0, 520], [1, reduced ? 1 : 0.1]);
+  const contentScale = useTransform(scrollY, [0, 600], [1, reduced ? 1 : 0.94]);
 
   // Con reduced-motion o saveData el <video> no se monta en absoluto (spec §39).
   const showVideo = !reduced && !saveData;
@@ -194,13 +199,15 @@ export default function Hero() {
       />
 
       {/* ---- Contenido: grilla editorial de 12 columnas (spec §33) ---- */}
-      <div className="shell relative z-20 pb-24 pt-[calc(var(--header-h)+2.5rem)] lg:pb-[180px] lg:pt-[calc(var(--header-h)+3rem)]">
+      <motion.div
+        style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
+        className="shell relative z-20 pb-24 pt-[calc(var(--header-h)+2.5rem)] lg:pb-[180px] lg:pt-[calc(var(--header-h)+3rem)]">
         <div className="mx-auto flex max-w-4xl flex-col items-center gap-y-8 text-center">
           {/* Eyebrow + titular · col 1-7 */}
           <div>
             <Reveal y={12} blur={false}>
               <span
-                className="inline-flex items-center rounded-full px-4 py-2 text-[13px]"
+                className="snj-float glass-edge relative inline-flex items-center rounded-full px-4 py-2 text-[13px]"
                 style={{
                   color: "var(--tx-2)",
                   background: "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04))",
@@ -267,7 +274,7 @@ export default function Hero() {
 
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Indicador de scroll (spec §41): no se monta con reduced-motion */}
       {!reduced && <ScrollCue />}

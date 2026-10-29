@@ -79,30 +79,6 @@ function maxTempOf(material: Material): number | null {
   return null;
 }
 
-/** Textura monocromática por material, ≤4% de opacidad, dibujada por CSS. */
-const TEXTURE: Record<MaterialName, CSSProperties> = {
-  // líneas de capa finas (detalle alto)
-  PLA: {
-    backgroundImage:
-      "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 2px)",
-  },
-  // líneas de capa más gruesas
-  PETG: {
-    backgroundImage:
-      "repeating-linear-gradient(180deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 5px)",
-  },
-  // trama cruzada a 45°
-  ABS: {
-    backgroundImage:
-      "repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 9px), repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 9px)",
-  },
-  // ondas (elasticidad)
-  TPU: {
-    backgroundImage:
-      "repeating-radial-gradient(circle at 100% 0%, rgba(255,255,255,0.04) 0 1px, transparent 1px 12px)",
-  },
-};
-const TEXTURE_MASK = "linear-gradient(180deg, #000 15%, transparent 92%)";
 const MONO_LABEL = "font-mono-tech text-[11px] uppercase leading-none tracking-[0.16em]";
 
 function ArrowIcon() {
@@ -204,13 +180,6 @@ function MaterialCard({
 }) {
   return (
     <Surface spotlight padding="md" className="w-full">
-      {/* Textura de material a sangre: -inset = padding de Surface (p-6 / md:p-7). */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-6 md:-inset-7"
-        style={{ ...TEXTURE[material.name], WebkitMaskImage: TEXTURE_MASK, maskImage: TEXTURE_MASK }}
-      />
-
       <div className="relative flex flex-1 flex-col gap-5">
         <div>
           <h3 className="font-display text-[1.75rem] leading-none font-bold tracking-[-0.03em] text-white">
