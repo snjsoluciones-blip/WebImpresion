@@ -635,13 +635,13 @@ html:has(.site-root)::-webkit-scrollbar-thumb {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(48vw 48vw at 8% 4%, rgba(47, 107, 255, 0.34), transparent 65%),
-    radial-gradient(44vw 44vw at 96% 38%, rgba(138, 61, 255, 0.28), transparent 65%),
-    radial-gradient(46vw 46vw at 30% 104%, rgba(255, 122, 47, 0.2), transparent 65%), #06070b;
+    radial-gradient(48vw 48vw at 8% 4%, rgba(255, 255, 255, 0.16), transparent 65%),
+    radial-gradient(44vw 44vw at 96% 38%, rgba(190, 190, 200, 0.12), transparent 65%),
+    radial-gradient(46vw 46vw at 30% 104%, rgba(255, 255, 255, 0.09), transparent 65%), #08090a;
 }
 html:has(.site-root),
 body:has(.site-root) {
-  background: #06070b;
+  background: #08090a;
 }
 
 /* tipografía: sin mayúsculas ni mono, más aire — como Apple */
