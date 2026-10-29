@@ -52,24 +52,11 @@ const NAV_LINKS: FooterLinkItem[] = [
   { label: "Contacto", href: "#contacto" },
 ];
 
-const SERVICE_LINKS: FooterLinkItem[] = [
-  { label: "Solo Impresión", href: "#servicios" },
-  { label: "Series cortas", href: "#contacto" },
-  { label: "Repuestos y prototipos", href: "#contacto" },
-];
-
-const MATERIAL_LINKS: FooterLinkItem[] = [
-  { label: "PLA", href: "#materiales" },
-  { label: "PETG", href: "#materiales" },
-  { label: "ABS", href: "#materiales" },
-  { label: "TPU", href: "#materiales" },
-];
-
 // Coincide con el areaServed del JSON-LD de layout.tsx (que no se toca).
 const COVERAGE = ["General Pacheco", "Tigre", "Zona Norte GBA", "CABA"];
 
 // §101 — texto decorativo de la franja inferior.
-const STRIP_TEXT = ["PLA", "PETG", "ABS", "TPU", "BAMBU LAB P2S", "GENERAL PACHECO"].join(" — ");
+const STRIP_TEXT = ["PLA", "PETG", "ABS", "TPU", "GENERAL PACHECO"].join(" — ");
 const STRIP_MASK = "linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)";
 
 /* ---------------------------------------------------------------------------------------- */
@@ -313,20 +300,6 @@ export default function Footer() {
             listClassName="grid grid-cols-2 gap-x-6 md:flex md:flex-col"
           />
 
-          <Hairline className="col-span-2 md:hidden" />
-
-          <FooterColumn
-            id="footer-services-title"
-            title="Servicios"
-            links={SERVICE_LINKS}
-            className="col-span-1 md:col-span-2 md:pl-5 lg:pl-8"
-          />
-          <FooterColumn
-            id="footer-materials-title"
-            title="Materiales"
-            links={MATERIAL_LINKS}
-            className="col-span-1 md:col-span-2 md:col-start-11 md:pl-5 lg:pl-8"
-          />
         </div>
       </div>
 

@@ -5,15 +5,10 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Button,
   ChromeText,
-  Hairline,
   LayerLines,
   LayerText,
   MagneticButton,
-  MonoLabel,
   Reveal,
-  SpecTable,
-  Stagger,
-  Tag,
   useReducedMotionSafe,
 } from "./ui";
 
@@ -22,20 +17,6 @@ import {
 // (el ÚNICO sweep de toda la web), eyebrow mono con las coordenadas reales del JSON-LD,
 // ficha lateral con 4 datos reales, video de fondo en grises pausado fuera de viewport
 // (no se monta con reduced-motion ni con saveData) e indicador de scroll sin animate-bounce.
-
-/* ---------- Datos reales (mismos que layout.tsx / resto de la web) ---------- */
-
-// Coordenadas del JSON-LD de layout.tsx (latitude -34.4522, longitude -58.6469).
-const COORDS = "−34.4522 / −58.6469";
-
-const SPEC_ROWS: { k: string; v: string }[] = [
-  { k: "Materiales", v: "PLA · PETG · ABS · TPU" },
-  { k: "Servicios", v: "Solo Impresión" },
-  { k: "Zona", v: "Pacheco · Tigre · Zona Norte · CABA" },
-];
-
-// Micro-pruebas: solo hechos ya publicados, ninguna promesa de plazo.
-const PROOFS = ["Respondemos por WhatsApp", "Series cortas sin perder consistencia"];
 
 /* ---------- navigator.connection.saveData, SSR-safe y sin setState en efectos ---------- */
 
@@ -193,7 +174,7 @@ export default function Hero() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[3]"
-        style={{ background: "radial-gradient(120% 90% at 50% 40%, transparent 35%, rgba(10,10,10,.85) 100%)" }}
+        style={{ background: "radial-gradient(120% 90% at 50% 40%, transparent 35%, rgba(6,7,11,.8) 100%)" }}
       />
 
       {/* Cierre: el video muere exactamente donde arranca TrustStrip */}
@@ -201,7 +182,7 @@ export default function Hero() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[4]"
         style={{
-          background: "linear-gradient(180deg, rgba(10,10,10,.35) 0%, rgba(10,10,10,.72) 55%, #0a0a0a 100%)",
+          background: "linear-gradient(180deg, rgba(6,7,11,.3) 0%, rgba(6,7,11,.62) 55%, rgba(6,7,11,0) 100%)",
         }}
       />
 
@@ -209,30 +190,28 @@ export default function Hero() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[5]"
-        style={{ background: "linear-gradient(180deg, rgba(10,10,10,.9), transparent 22%)" }}
+        style={{ background: "linear-gradient(180deg, rgba(6,7,11,.8), transparent 22%)" }}
       />
 
       {/* ---- Contenido: grilla editorial de 12 columnas (spec §33) ---- */}
       <div className="shell relative z-20 pb-24 pt-[calc(var(--header-h)+2.5rem)] lg:pb-[180px] lg:pt-[calc(var(--header-h)+3rem)]">
-        <div className="grid grid-cols-1 gap-y-8 lg:grid-cols-12 lg:gap-x-6">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-y-8 text-center">
           {/* Eyebrow + titular · col 1-7 */}
-          <div className="lg:col-span-7 lg:row-start-1 lg:self-end">
+          <div>
             <Reveal y={12} blur={false}>
-              {/* Eyebrow con coordenadas reales + chip de zona (spec §35) */}
-              <MonoLabel as="div" className="max-w-full flex-wrap">
-                <span className="whitespace-nowrap">
-                  General Pacheco
-                  <span className="hidden min-[400px]:inline"> · Buenos Aires</span>
-                </span>
-                {/* Hairline de 40px (24px bajo 400px para que la fila entre en 375px) */}
-                <div aria-hidden="true" className="w-6 shrink-0 min-[400px]:w-10">
-                  <Hairline />
-                </div>
-                <span className="whitespace-nowrap tracking-[0.1em]">{COORDS}</span>
-                <span className="hidden md:inline-flex">
-                  <Tag>Zona Norte · CABA</Tag>
-                </span>
-              </MonoLabel>
+              <span
+                className="inline-flex items-center rounded-full px-4 py-2 text-[13px]"
+                style={{
+                  color: "var(--tx-2)",
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04))",
+                  border: "1px solid var(--line-2)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.3)",
+                  backdropFilter: "blur(20px) saturate(180%)",
+                  WebkitBackdropFilter: "blur(20px) saturate(180%)",
+                }}
+              >
+                General Pacheco · Buenos Aires
+              </span>
             </Reveal>
 
             {/* h1 único de la web: línea 1 blanco puro, línea 2 cromo con sweep (spec §34) */}
@@ -249,39 +228,18 @@ export default function Hero() {
             </h1>
           </div>
 
-          {/* Ficha técnica lateral · col 9-12, alineada al baseline del h1 (spec §38) */}
-          <aside
-            aria-label="Ficha técnica del taller"
-            className="hidden lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:block lg:self-end"
-          >
-            <Reveal delay={0.45} y={16}>
-              <div className="flex items-center justify-between gap-4 pb-3">
-                <MonoLabel rule>Ficha técnica</MonoLabel>
-                <MonoLabel>SNJ Soluciones</MonoLabel>
-              </div>
-              <Hairline />
-            </Reveal>
-            {/* Una SpecTable por fila para poder escalonarlas 70 ms (400 ms después del h1) */}
-            <Stagger wrap start={0.5} step={0.07}>
-              {SPEC_ROWS.map((row) => (
-                <SpecTable key={row.k} rows={[row]} />
-              ))}
-            </Stagger>
-            <Hairline />
-          </aside>
-
           {/* Subtítulo + CTAs + micro-pruebas · col 1-7 */}
-          <div className="lg:col-span-7 lg:row-start-2">
+          <div className="flex flex-col items-center">
             <Reveal delay={0.35}>
-              <p className="t-lead" style={{ maxWidth: "42ch" }}>
-                Fabricación de repuestos, matricería y series cortas en Pacheco, Buenos Aires. Alta precisión y
-                resistencia para los desafíos de tu empresa.
+              <p className="t-lead mx-auto" style={{ maxWidth: "34ch" }}>
+                Repuestos, matricería y series cortas.
+                Alta precisión, desde Pacheco.
               </p>
             </Reveal>
 
             {/* CTAs con jerarquía real (spec §36): apilados a ancho completo bajo sm, en fila desde sm */}
             <Reveal delay={0.45}>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
                 <MagneticButton strength={0.15} radius={40} className="flex w-full sm:inline-flex sm:w-auto">
                   <Button
                     variant="primary"
@@ -307,27 +265,6 @@ export default function Hero() {
               </div>
             </Reveal>
 
-            {/* Fila de micro-pruebas (spec §37) */}
-            <Reveal delay={0.55} y={12}>
-              <ul
-                role="list"
-                className="font-mono-tech mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 text-[12px] leading-none"
-                style={{ color: "var(--tx-4)" }}
-              >
-                {PROOFS.map((proof, i) => (
-                  <li key={proof} className="flex items-center gap-3">
-                    {i > 0 && (
-                      <span
-                        aria-hidden="true"
-                        className="inline-block h-[3px] w-[3px] shrink-0 rounded-full"
-                        style={{ background: "var(--tx-5)" }}
-                      />
-                    )}
-                    {proof}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
           </div>
         </div>
       </div>

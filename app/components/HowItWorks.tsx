@@ -3,15 +3,11 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import {
-  Button,
   DUR,
   EASE,
-  Hairline,
-  MonoLabel,
   Reveal,
   Section,
   SectionHeading,
-  WhatsAppIcon,
   staggerDelay,
   useReducedMotionSafe,
 } from "./ui";
@@ -41,10 +37,6 @@ const steps = [
   },
 ] as const;
 
-// Mismo número y mismo mensaje que el botón flotante de WhatsApp y la MobileActionBar.
-const WHATSAPP_URL = `https://wa.me/541161256413?text=${encodeURIComponent(
-  "¡Hola! Vengo de la web de SNJ Soluciones y quiero hacer una consulta."
-)}`;
 
 /** Color de la línea de progreso y del borde de los nodos ya superados. */
 const LIT = "rgba(255,255,255,0.45)";
@@ -259,18 +251,6 @@ export default function HowItWorks() {
                   <p className="mt-1.5 max-w-[30ch] text-sm leading-relaxed" style={{ color: "var(--tx-3)" }}>
                     {step.desc}
                   </p>
-                  {/* text-sm: el 30ch se resuelve a 14px, igual que la descripción de arriba */}
-                  <Hairline className="mt-4 max-w-[30ch] text-sm" />
-                  <p
-                    className="font-mono-tech mt-3 text-[11px] uppercase leading-none tracking-[0.18em]"
-                    style={{
-                      color: isLit ? "var(--tx-4)" : "var(--tx-5)",
-                      transition: "color var(--dur-2) var(--ease-mech)",
-                    }}
-                  >
-                    <span aria-hidden="true">{step.number} → </span>
-                    {step.deliverable}
-                  </p>
                 </div>
               </Reveal>
             );
@@ -278,52 +258,6 @@ export default function HowItWorks() {
         </ol>
       </div>
 
-      {/* Cierre del proceso: card horizontal con CTA de WhatsApp */}
-      <div style={{ marginTop: "clamp(3rem, 2rem + 3vw, 5rem)" }}>
-        <Reveal delay={0.1}>
-          <div
-            className="relative overflow-hidden rounded-[var(--r-md)]"
-            style={{ background: "var(--srf-4)", border: "1px solid var(--line-1)" }}
-          >
-            <Hairline className="absolute left-0 right-0 top-0" />
-            <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between md:px-8">
-              <div className="flex items-start gap-4">
-                <span
-                  aria-hidden="true"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--r-sm)]"
-                  style={{
-                    background: "var(--srf-3)",
-                    border: "1px solid var(--line-2)",
-                    color: "var(--tx-2)",
-                  }}
-                >
-                  <WhatsAppIcon className="h-[18px] w-[18px]" />
-                </span>
-                <div>
-                  <MonoLabel as="p">Durante todo el proceso</MonoLabel>
-                  <p
-                    className="mt-2 max-w-[48ch] text-[15px] leading-relaxed"
-                    style={{ color: "var(--tx-2)" }}
-                  >
-                    Todo el ida y vuelta se hace por WhatsApp — nos escribís, te respondemos.
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="whatsapp"
-                size="sm"
-                external
-                href={WHATSAPP_URL}
-                icon={<WhatsAppIcon className="h-4 w-4" />}
-                iconPosition="left"
-                className="w-full shrink-0 sm:w-auto"
-              >
-                Abrir WhatsApp
-              </Button>
-            </div>
-          </div>
-        </Reveal>
-      </div>
     </Section>
   );
 }

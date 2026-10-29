@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import MonoLabel from "./MonoLabel";
-import Hairline from "./Hairline";
 import LayerText from "./LayerText";
 import Reveal from "./Reveal";
 
@@ -27,13 +26,15 @@ export type SectionHeadingProps = {
  * h2.t-h2 con LayerText, lead con Reveal (.15s) y slot de acción a la derecha en md+.
  */
 export default function SectionHeading({
-  index,
   eyebrow,
   title,
   lead,
   titleId,
-  align = "left",
-  action,
+  align = "center",
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  index: _index,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  action: _action,
   className = "",
 }: SectionHeadingProps) {
   const center = align === "center";
@@ -42,15 +43,11 @@ export default function SectionHeading({
       className={`${center ? "text-center" : ""} ${className}`}
       style={{ marginBottom: "clamp(3rem, 2rem + 3vw, 5.5rem)" }}
     >
-      <div className={`mb-6 flex items-center gap-4 ${center ? "justify-center" : ""}`}>
-        <MonoLabel>
-          {index ? `${index} / ` : ""}
-          {eyebrow}
-        </MonoLabel>
-        <Hairline animate className={center ? "max-w-24" : "flex-1"} />
+      <div className={`mb-5 ${center ? "flex justify-center" : ""}`}>
+        <MonoLabel tone="bright">{eyebrow}</MonoLabel>
       </div>
 
-      <div className={`md:flex md:items-end md:justify-between md:gap-8 ${center ? "md:flex-col md:items-center" : ""}`}>
+      <div className={center ? "flex flex-col items-center" : "md:flex md:items-end md:justify-between md:gap-8"}>
         <div className={center ? "flex flex-col items-center" : ""}>
           <h2 id={titleId} className="t-h2 text-white">
             {typeof title === "string" ? <LayerText lines={[title]} by="word" /> : title}
@@ -61,7 +58,6 @@ export default function SectionHeading({
             </Reveal>
           )}
         </div>
-        {action && <div className="mt-6 shrink-0 md:mt-0">{action}</div>}
       </div>
     </div>
   );

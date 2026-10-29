@@ -5,8 +5,6 @@ import Section from "./ui/Section";
 import SectionHeading from "./ui/SectionHeading";
 import Surface from "./ui/Surface";
 import Button from "./ui/Button";
-import MonoLabel from "./ui/MonoLabel";
-import Hairline from "./ui/Hairline";
 import Reveal from "./ui/Reveal";
 import Stagger from "./ui/Stagger";
 import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
@@ -59,25 +57,6 @@ function ArrowIcon() {
       focusable="false"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 8h10M9 4l4 4-4 4" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      viewBox="0 0 12 12"
-      width={12}
-      height={12}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1}
-      className="shrink-0"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <rect x={0.5} y={0.5} width={11} height={11} rx={2} strokeOpacity={0.5} />
-      <path strokeLinecap="square" d="M3 6.2l2.2 2.2L9 4.2" />
     </svg>
   );
 }
@@ -136,7 +115,6 @@ const services: readonly Service[] = [
 function ServiceCard({ service }: { service: Service }) {
   const reduced = useReducedMotionSafe();
   const titleId = `servicio-${service.slug}-title`;
-  const needsId = `servicio-${service.slug}-necesitamos`;
 
   // El href="#contacto" del Button queda como fallback sin JS (y como navegación nativa
   // al hash: actualiza la URL y mueve el punto de partida del foco a la sección).
@@ -149,63 +127,30 @@ function ServiceCard({ service }: { service: Service }) {
   return (
     // Un solo servicio: panel ancho de dos columnas en vez de una ficha angosta aislada
     // (una card sola en lo que era una grilla de comparación se veía como un hueco vacío).
-    <Surface as="article" spotlight corners padding="lg" className="group w-full">
-      <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
-        {/* Columna izquierda: índice + ícono, título y descripción */}
-        <div className="flex flex-1 flex-col gap-4 lg:max-w-md">
-          <div className="flex items-center justify-between gap-3">
-            <MonoLabel>{service.index}</MonoLabel>
-            <IconTile>{service.icon}</IconTile>
-          </div>
+    <Surface as="article" spotlight padding="lg" className="group w-full">
+      <div className="flex flex-col items-start gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+        <div className="flex flex-col gap-4">
+          <IconTile>{service.icon}</IconTile>
           <h3 id={titleId} className="t-h3 text-balance text-white">
             {service.title}
           </h3>
           <p className="t-body text-pretty" style={{ color: "var(--tx-2)" }}>
             {service.description}
           </p>
-          <p className="text-pretty text-sm leading-relaxed" style={{ color: "var(--tx-3)" }}>
-            {service.detail}
-          </p>
         </div>
 
-        <Hairline orientation="v" className="hidden lg:block" />
-        <Hairline className="lg:hidden" />
-
-        {/* Columna derecha: qué necesitamos de vos + CTA */}
-        <div className="flex flex-1 flex-col justify-between gap-6 lg:max-w-sm">
-          <div>
-            <p id={needsId}>
-              <MonoLabel>Qué necesitamos de vos</MonoLabel>
-            </p>
-            <ul aria-labelledby={needsId} className="mt-3 flex flex-col gap-2">
-              {service.needs.map((need) => (
-                <li
-                  key={need}
-                  className="font-mono-tech flex items-center gap-2 text-[12px] leading-snug"
-                  style={{ color: "var(--tx-3)" }}
-                >
-                  <span style={{ color: "var(--tx-4)" }} className="flex">
-                    <CheckIcon />
-                  </span>
-                  {need}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* aria-describedby → h3: asocia el CTA con el servicio que describe. */}
-          <Button
-            variant="ghost"
-            size="sm"
-            href="#contacto"
-            onClick={handleSelect}
-            icon={<ArrowIcon />}
-            aria-describedby={titleId}
-            className="self-start"
-          >
-            Solicitar este servicio
-          </Button>
-        </div>
+        {/* aria-describedby → h3: asocia el CTA con el servicio que describe. */}
+        <Button
+          variant="primary"
+          size="lg"
+          href="#contacto"
+          onClick={handleSelect}
+          icon={<ArrowIcon />}
+          aria-describedby={titleId}
+          className="shrink-0"
+        >
+          Solicitar este servicio
+        </Button>
       </div>
     </Surface>
   );
