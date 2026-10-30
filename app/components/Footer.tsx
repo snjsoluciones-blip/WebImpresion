@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { SERVICIOS } from "../servicios/data";
 import {
   Button,
   ChromeText,
@@ -50,6 +51,8 @@ const NAV_LINKS: FooterLinkItem[] = [
   { label: "FAQ", href: "#faq" },
   { label: "Contacto", href: "#contacto" },
 ];
+
+const SERVICE_PAGES: FooterLinkItem[] = SERVICIOS.map((s) => ({ label: s.nombre, href: `/servicios/${s.slug}` }));
 
 // Coincide con el areaServed del JSON-LD de layout.tsx (que no se toca).
 const COVERAGE = ["General Pacheco", "Tigre", "Zona Norte GBA", "CABA"];
@@ -297,6 +300,13 @@ export default function Footer() {
             links={NAV_LINKS}
             className="col-span-2 md:col-span-3 md:pl-5 lg:pl-8"
             listClassName="grid grid-cols-2 gap-x-6 md:flex md:flex-col"
+          />
+
+          <FooterColumn
+            id="footer-pages-title"
+            title="Lo que hacemos"
+            links={SERVICE_PAGES}
+            className="col-span-2 md:col-span-4 md:pl-5 lg:pl-8"
           />
 
         </div>
