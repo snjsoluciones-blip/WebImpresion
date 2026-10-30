@@ -20,15 +20,15 @@ const mono = JetBrains_Mono({
 const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "@id": "https://snjsoluciones.com.ar/#negocio",
+  "@id": "https://www.snjsoluciones.com.ar/#negocio",
   name: "SNJ Soluciones",
   description:
     "Impresión y modelado 3D bajo demanda: subís tu archivo STL o 3MF (o lo modelamos desde tu idea) y lo imprimimos en PLA, PETG, ABS o TPU, con envíos a todo el país.",
-  url: "https://snjsoluciones.com.ar",
+  url: "https://www.snjsoluciones.com.ar",
   telephone: "+5491161256413",
   email: "snjsoluciones@gmail.com",
-  image: "https://snjsoluciones.com.ar/icon.png",
-  logo: "https://snjsoluciones.com.ar/icon.png",
+  image: "https://www.snjsoluciones.com.ar/icon.png",
+  logo: "https://www.snjsoluciones.com.ar/icon.png",
   address: {
     "@type": "PostalAddress",
     addressLocality: "General Pacheco",
@@ -40,7 +40,24 @@ const localBusinessJsonLd = {
     latitude: -34.4522,
     longitude: -58.6469,
   },
-  areaServed: ["Pacheco", "Zona Norte GBA", "Buenos Aires", "CABA", "Argentina"],
+  areaServed: ["Pacheco", "Tigre", "Zona Norte GBA", "Buenos Aires", "CABA", "Argentina"],
+  openingHoursSpecification: {
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    opens: "00:00",
+    closes: "23:59",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Servicios",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Impresión 3D de archivos STL y 3MF" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Modelado 3D a medida" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Soportes y estuches para automovilismo" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Trofeos personalizados" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Llaveros personalizados con logo" } },
+    ],
+  },
   knowsAbout: [
     "Impresión de modelos 3D",
     "Modelado 3D",
@@ -55,7 +72,7 @@ const localBusinessJsonLd = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://snjsoluciones.com.ar"),
+  metadataBase: new URL("https://www.snjsoluciones.com.ar"),
   title: "Impresión de Modelos 3D en Argentina | SNJ Soluciones",
   description: "Subí tu archivo STL o 3MF, o pedinos que lo modelemos, y lo imprimimos en PLA, PETG, ABS o TPU. Impresión y modelado 3D bajo demanda con envíos a todo el país, desde General Pacheco, Buenos Aires. Presupuesto rápido por WhatsApp.",
   keywords: "impresión de modelos 3D, modelado 3D, diseño 3D a medida, imprimir modelo 3D, impresión 3D bajo demanda, subir archivo STL para imprimir, impresión 3D Argentina, impresión 3D Buenos Aires, impresión 3D Pacheco, impresión 3D Tigre, impresión 3D zona norte, servicio de impresión 3D, repuestos 3D, PLA, PETG, ABS, TPU",
@@ -64,7 +81,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Impresión de Modelos 3D en Argentina | SNJ Soluciones",
     description: "Imprimimos tu archivo STL o 3MF, o lo modelamos desde tu idea, en PLA, PETG, ABS o TPU. Envíos a todo el país. Presupuesto rápido por WhatsApp.",
-    url: "https://snjsoluciones.com.ar",
+    url: "https://www.snjsoluciones.com.ar",
     siteName: "SNJ Soluciones",
     locale: "es_AR",
     type: "website",
@@ -92,7 +109,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://snjsoluciones.com.ar",
+    canonical: "https://www.snjsoluciones.com.ar",
   },
 };
 

@@ -2,7 +2,7 @@
 // Regla: SOLO hechos ya publicados en la web (trabajos reales, materiales, formatos, zona).
 // Nada de precios, plazos genéricos ni promesas que no estén respaldadas.
 
-export const SITE = "https://snjsoluciones.com.ar";
+export const SITE = "https://www.snjsoluciones.com.ar";
 
 export interface ServicioPage {
   slug: string;
