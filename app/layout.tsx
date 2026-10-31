@@ -41,6 +41,7 @@ const localBusinessJsonLd = {
     longitude: -58.6469,
   },
   areaServed: ["Pacheco", "Tigre", "Zona Norte GBA", "Buenos Aires", "CABA", "Argentina"],
+  sameAs: ["https://www.instagram.com/snjsoluciones"],
   openingHoursSpecification: {
     "@type": "OpeningHoursSpecification",
     dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],

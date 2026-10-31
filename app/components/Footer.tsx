@@ -251,6 +251,9 @@ export default function Footer() {
                 WhatsApp: +54 9 11 6125 6413
               </FooterLink>
               <FooterLink href={`mailto:${EMAIL}`}>{EMAIL}</FooterLink>
+              <FooterLink href="https://www.instagram.com/snjsoluciones" external>
+                Instagram: @snjsoluciones
+              </FooterLink>
             </address>
 
             {/* §98 — zona de cobertura + último punto de conversión */}
