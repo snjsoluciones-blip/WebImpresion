@@ -153,8 +153,24 @@ export default function Hero() {
   const contentOpacity = useTransform(scrollY, [0, 520], [1, reduced ? 1 : 0.1]);
   const contentScale = useTransform(scrollY, [0, 600], [1, reduced ? 1 : 0.94]);
 
-  // Con reduced-motion o saveData el <video> no se monta en absoluto (spec §39).
-  const showVideo = !reduced && !saveData;
+  // Con reduced-motion o saveData el <video> no se monta en absoluto (spec §39). Además solo se pide
+  // cuando la página ya cargó y en pantallas anchas: en celular son 1,5 MB que frenan la carga
+  // y que casi no se ven bajo el texto.
+  const [videoReady, setVideoReady] = useState(false);
+  useEffect(() => {
+    if (!window.matchMedia("(min-width: 768px)").matches) return;
+    let timer = 0;
+    const arrancar = () => {
+      timer = window.setTimeout(() => setVideoReady(true), 1200);
+    };
+    if (document.readyState === "complete") arrancar();
+    else window.addEventListener("load", arrancar, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("load", arrancar);
+    };
+  }, []);
+  const showVideo = !reduced && !saveData && videoReady;
 
   return (
     <section
@@ -228,7 +244,7 @@ export default function Hero() {
                 lines={[
                   "Impresión 3D",
                   <ChromeText key="industrial" sweep>
-                    Industrial
+                    a medida
                   </ChromeText>,
                 ]}
               />
@@ -237,12 +253,13 @@ export default function Hero() {
 
           {/* Subtítulo + CTAs + micro-pruebas · col 1-7 */}
           <div className="flex flex-col items-center">
-            <Reveal delay={0.35}>
+            {/* Sin fade: el texto principal tiene que pintarse de entrada (mide como LCP). Solo sube. */}
+            <div className="snj-rise">
               <p className="t-lead mx-auto" style={{ maxWidth: "40ch" }}>
                 Modelado e impresión 3D de repuestos, matricería y series cortas.
                 Alta precisión, desde Pacheco.
               </p>
-            </Reveal>
+            </div>
 
             {/* CTAs con jerarquía real (spec §36): apilados a ancho completo bajo sm, en fila desde sm */}
             <Reveal delay={0.45}>

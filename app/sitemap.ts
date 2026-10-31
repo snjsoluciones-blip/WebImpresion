@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { SERVICIOS, SITE } from "./servicios/data";
+import { GUIAS } from "./guias/data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -14,6 +15,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    {
+      url: `${SITE}/guias`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    ...GUIAS.map((g) => ({
+      url: `${SITE}/guias/${g.slug}`,
+      lastModified: new Date(g.fecha),
+      changeFrequency: "yearly" as const,
+      priority: 0.6,
     })),
   ];
 }

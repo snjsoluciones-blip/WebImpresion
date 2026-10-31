@@ -882,3 +882,12 @@ html:has(.site-root) {
 @media (prefers-reduced-motion: reduce) {
   .snj-cube { animation: none; transform: rotateX(-24deg) rotateY(35deg); }
 }
+
+/* sube sin cambiar la opacidad: el texto está visible desde el primer pintado */
+@keyframes snj-rise-in {
+  from { transform: translateY(14px); }
+  to { transform: translateY(0); }
+}
+.snj-rise {
+  animation: snj-rise-in 700ms var(--ease-out-expo) 150ms both;
+}

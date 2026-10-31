@@ -68,6 +68,50 @@ export const SERVICIOS: ServicioPage[] = [
     relacionadas: ["imprimir-archivo-stl", "modelado-3d-a-medida", "repuestos-3d-autos-de-carrera"],
   },
   {
+    slug: "impresion-3d-zona-norte",
+    nombre: "Impresión 3D en Zona Norte",
+    title: "Impresión 3D en Zona Norte: Tigre, San Isidro, Pilar, Escobar y CABA",
+    description:
+      "Impresión y modelado 3D para Zona Norte del Gran Buenos Aires: Tigre, San Fernando, San Isidro, Vicente López, Escobar, Pilar y CABA. Taller en General Pacheco.",
+    h1: "Impresión 3D en Zona Norte del Gran Buenos Aires",
+    lead: "Desde nuestro taller en General Pacheco atendemos Tigre, San Fernando, San Isidro, Vicente López, Escobar, Pilar y CABA.",
+    imagen: {
+      src: "/images/float-estuche-valen.jpg",
+      alt: "Estuche a medida impreso en 3D, hecho en nuestro taller de General Pacheco",
+    },
+    secciones: [
+      {
+        h2: "Zonas que atendemos",
+        parrafos: [
+          "Estamos en General Pacheco y trabajamos con clientes de Tigre, San Fernando, San Isidro, Vicente López, Escobar, Pilar y la Ciudad de Buenos Aires. Además hacemos envíos a todo el país.",
+        ],
+      },
+      {
+        h2: "Qué hacemos",
+        parrafos: [
+          "Imprimimos tu archivo STL o 3MF en PLA, PETG, ABS o TPU, y si todavía no tenés el modelo, lo modelamos a medida. Hicimos trofeos para campeonatos, soportes y estuches para automovilismo, llaveros con logo y repuestos.",
+        ],
+      },
+      {
+        h2: "Cómo pedirlo",
+        parrafos: [
+          "Subí tu archivo en el formulario de la web o escribinos por WhatsApp contando qué necesitás y en qué localidad estás. Te pasamos el presupuesto y coordinamos la entrega.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "¿Atienden en Pilar, Escobar o San Isidro?",
+        a: "Sí. Atendemos Tigre, San Fernando, San Isidro, Vicente López, Escobar, Pilar y CABA, y enviamos a todo el país.",
+      },
+      {
+        q: "¿Cómo coordino la entrega?",
+        a: "Escribinos por WhatsApp con tu localidad y lo coordinamos junto con el presupuesto.",
+      },
+    ],
+    relacionadas: ["impresion-3d-pacheco", "imprimir-archivo-stl", "modelado-3d-a-medida"],
+  },
+  {
     slug: "imprimir-archivo-stl",
     nombre: "Imprimir tu archivo STL o 3MF",
     title: "Imprimir un archivo STL o 3MF en Argentina | SNJ Soluciones",
@@ -76,7 +120,7 @@ export const SERVICIOS: ServicioPage[] = [
     h1: "Imprimí tu archivo STL o 3MF",
     lead: "Ya tenés el modelo 3D: nosotros lo imprimimos. Subís el archivo, lo ves en 3D en la web y te pasamos el precio.",
     imagen: {
-      src: "/images/gear.png",
+      src: "/images/gear.jpg",
       alt: "Engranaje impreso en 3D a partir de un archivo del cliente",
     },
     secciones: [

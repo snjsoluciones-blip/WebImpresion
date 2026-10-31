@@ -29,7 +29,17 @@ import { useReducedMotionSafe } from "./ui/useReducedMotionSafe";
 import { useLocalDraft } from "./ui/useLocalDraft";
 import { MATERIAL_VALUES, SERVICE_VALUES, useQuote } from "./ui/quote-context";
 import { guardarConsulta } from "../lib/consultas";
-import StlViewer from "./ui/StlViewer";
+import dynamic from "next/dynamic";
+
+// three.js pesa bastante: solo se baja cuando alguien sube un archivo para verlo en 3D.
+const StlViewer = dynamic(() => import("./ui/StlViewer"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center text-sm" style={{ color: "var(--tx-4)" }}>
+      Cargando visor 3D…
+    </div>
+  ),
+});
 
 /* =========================================================================
    Datos de contacto reales — intactos.

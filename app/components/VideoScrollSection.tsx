@@ -233,7 +233,7 @@ function ScrubChapters({ onFail }: { onFail: () => void }) {
         <video
           ref={videoRef}
           src="/videos/gear.mp4"
-          poster="/images/gear.png"
+          poster="/images/gear.jpg"
           className="absolute inset-0 h-full w-full object-cover"
           style={VIDEO_STYLE}
           muted
@@ -338,7 +338,7 @@ function StaticChapters({ loop }: { loop: boolean }) {
         <video
           ref={videoRef}
           src="/videos/gear.mp4"
-          poster="/images/gear.png"
+          poster="/images/gear.jpg"
           className="absolute inset-0 h-full w-full object-cover"
           style={VIDEO_STYLE}
           muted

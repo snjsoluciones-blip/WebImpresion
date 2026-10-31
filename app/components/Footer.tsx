@@ -52,7 +52,10 @@ const NAV_LINKS: FooterLinkItem[] = [
   { label: "Contacto", href: "#contacto" },
 ];
 
-const SERVICE_PAGES: FooterLinkItem[] = SERVICIOS.map((s) => ({ label: s.nombre, href: `/servicios/${s.slug}` }));
+const SERVICE_PAGES: FooterLinkItem[] = [
+  ...SERVICIOS.map((s) => ({ label: s.nombre, href: `/servicios/${s.slug}` })),
+  { label: "Guías de impresión 3D", href: "/guias" },
+];
 
 // Coincide con el areaServed del JSON-LD de layout.tsx (que no se toca).
 const COVERAGE = ["General Pacheco", "Tigre", "Zona Norte GBA", "CABA"];
