@@ -1,3 +1,337 @@
+/* =========================================================
+   SNJ Gestión — estética iPhone "Liquid Glass" (misma que Mis Finanzas)
+   Todo va dentro de .gestion-root: no toca la web pública.
+   Las pantallas siguen usando sus clases de Tailwind; acá se las "viste"
+   de vidrio por selectores, sin tener que reescribir cada página.
+   ========================================================= */
+
+.gestion-root {
+  --rebote: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --suave: cubic-bezier(0.22, 1, 0.36, 1);
+  --resorte: cubic-bezier(0.3, 1.25, 0.5, 1);
+  --fuente: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+  --fuente-num: ui-rounded, "SF Pro Rounded", -apple-system, system-ui, sans-serif;
+
+  --texto-suave: rgb(235 235 245 / 0.6);
+  --relleno: rgb(120 120 128 / 0.24);
+  --relleno-2: rgb(120 120 128 / 0.36);
+  --vidrio: rgb(255 255 255 / 0.075);
+  --vidrio-borde: rgb(255 255 255 / 0.16);
+  --vidrio-sombra: 0 10px 34px rgb(0 0 0 / 0.45);
+  --reflejo: rgb(255 255 255 / 0.28);
+  --acento: #0a84ff;
+  --verde: #30d158;
+  --rojo: #ff453a;
+  --aurora-1: rgb(10 132 255 / 0.34);
+  --aurora-2: rgb(191 90 242 / 0.26);
+  --aurora-3: rgb(48 209 88 / 0.18);
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  color: #fff;
+  font-family: var(--fuente);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
+}
+html:has(.gestion-root),
+body:has(.gestion-root) {
+  background: #000;
+  overscroll-behavior-y: none;
+}
+
+/* ---------- Fondo: manchas de color que el vidrio refracta ---------- */
+.g-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.g-aurora span {
+  position: absolute;
+  width: 75vmax;
+  height: 75vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+.g-aurora span:nth-child(1) { background: var(--aurora-1); top: -32vmax; left: -22vmax; animation: g-flotar1 24s ease-in-out infinite alternate; }
+.g-aurora span:nth-child(2) { background: var(--aurora-2); top: 22vh; right: -38vmax; animation: g-flotar2 30s ease-in-out infinite alternate; }
+.g-aurora span:nth-child(3) { background: var(--aurora-3); bottom: -42vmax; left: -12vmax; animation: g-flotar3 34s ease-in-out infinite alternate; }
+@keyframes g-flotar1 { to { transform: translate(18vmax, 12vmax) scale(1.15); } }
+@keyframes g-flotar2 { to { transform: translate(-16vmax, 10vmax) scale(0.9); } }
+@keyframes g-flotar3 { to { transform: translate(14vmax, -14vmax) scale(1.1); } }
+
+/* ---------- Vidrio líquido: tarjetas, métricas y paneles ---------- */
+.gestion-root [class~="bg-white/[0.03]"],
+.gestion-root [class~="bg-white/[0.04]"],
+.gestion-root .g-vidrio {
+  position: relative;
+  overflow: hidden;
+  background: var(--vidrio);
+  border: 0.5px solid var(--vidrio-borde);
+  backdrop-filter: blur(28px) saturate(185%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%);
+  box-shadow: var(--vidrio-sombra), inset 0 1px 0 var(--reflejo), inset 0 -0.5px 0 rgb(255 255 255 / 0.12);
+  transition: transform 0.5s var(--rebote), box-shadow 0.3s ease;
+}
+/* reflejo especular arriba, como el vidrio de iOS 26 */
+.gestion-root [class~="bg-white/[0.03]"]::before,
+.gestion-root [class~="bg-white/[0.04]"]::before,
+.gestion-root .g-vidrio::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.2), transparent 38%, transparent 70%, rgb(255 255 255 / 0.05));
+  mix-blend-mode: soft-light;
+}
+/* barrido de luz lento que cruza el vidrio */
+.gestion-root [class~="bg-white/[0.04]"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: g-barrido 9s ease-in-out infinite;
+}
+@keyframes g-barrido {
+  0% { transform: translateX(-130%) skewX(-18deg); }
+  22%, 100% { transform: translateX(330%) skewX(-18deg); }
+}
+.gestion-root [class~="bg-white/[0.04]"]:hover {
+  transform: translateY(-3px) scale(1.01);
+}
+
+/* listas y tablas (caja con borde y esquinas redondeadas): también de vidrio */
+.gestion-root div[class~="border-white/10"][class~="rounded-lg"] {
+  background: var(--vidrio);
+  backdrop-filter: blur(28px) saturate(185%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%);
+  box-shadow: var(--vidrio-sombra), inset 0 1px 0 var(--reflejo);
+}
+.gestion-root div[class~="border-dashed"][class~="rounded-lg"] { background: rgb(255 255 255 / 0.03); }
+.gestion-root div[class~="overflow-x-auto"][class~="rounded-lg"] { overflow-y: hidden; }
+
+/* formas: más redondas, como iOS */
+.gestion-root [class~="rounded-lg"] { border-radius: 22px; }
+.gestion-root [class~="rounded-xl"] { border-radius: 30px; }
+.gestion-root input[class~="rounded-md"],
+.gestion-root select[class~="rounded-md"],
+.gestion-root textarea[class~="rounded-md"] { border-radius: 14px; }
+.gestion-root button[class~="rounded-md"],
+.gestion-root a[class~="rounded-md"] { border-radius: 999px; }
+
+/* bordes sutiles */
+.gestion-root [class~="border-white/10"] { border-color: var(--vidrio-borde); border-width: 0.5px; }
+.gestion-root [class~="border-white/5"] { border-color: rgb(255 255 255 / 0.07); }
+.gestion-root [class~="border-white/15"] { border-color: rgb(255 255 255 / 0.2); }
+
+/* ---------- Botones ---------- */
+.gestion-root button,
+.gestion-root a { -webkit-tap-highlight-color: transparent; }
+.gestion-root button { cursor: pointer; transition: transform 0.4s var(--rebote), background-color 0.2s ease, box-shadow 0.3s ease, color 0.2s ease; }
+.gestion-root button:active:not(:disabled) { transform: scale(0.95); }
+.gestion-root button:disabled { cursor: not-allowed; }
+
+/* primario: antes blanco, ahora azul iOS con brillo */
+.gestion-root button[class~="bg-white"],
+.gestion-root a[class~="bg-white"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--acento) 82%, #fff), var(--acento));
+  color: #fff;
+  border: 0.5px solid rgb(255 255 255 / 0.45);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--acento) 40%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.5);
+  font-weight: 600;
+}
+.gestion-root button[class~="bg-white"]:hover:not(:disabled),
+.gestion-root a[class~="bg-white"]:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--acento) 55%, transparent), inset 0 1px 0 rgb(255 255 255 / 0.55);
+}
+/* secundario: vidrio gris */
+.gestion-root button[class~="bg-white/10"],
+.gestion-root a[class~="bg-white/10"] {
+  background: var(--relleno);
+  border: 0.5px solid rgb(255 255 255 / 0.1);
+}
+.gestion-root button[class~="bg-white/10"]:hover:not(:disabled) { background: var(--relleno-2); }
+.gestion-root button[class~="bg-white/20"] { background: var(--relleno-2); }
+.gestion-root button[class~="bg-emerald-500/90"] {
+  background: linear-gradient(180deg, #4be07a, var(--verde));
+  box-shadow: 0 8px 22px rgb(48 209 88 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.45);
+}
+
+/* ---------- Campos ---------- */
+.gestion-root input,
+.gestion-root select,
+.gestion-root textarea {
+  transition: border-color 0.2s ease, box-shadow 0.25s ease, background-color 0.2s ease;
+}
+.gestion-root input[class~="bg-white/5"],
+.gestion-root select[class~="bg-white/5"],
+.gestion-root textarea[class~="bg-white/5"],
+.gestion-root .input {
+  background: var(--relleno);
+  border: 0.5px solid rgb(255 255 255 / 0.12);
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.gestion-root input:focus,
+.gestion-root select:focus,
+.gestion-root textarea:focus {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--acento) 25%, transparent);
+  background: var(--relleno-2);
+}
+.gestion-root select option { color: #000; }
+
+/* ---------- Números y textos ---------- */
+.gestion-root [class~="text-2xl"],
+.gestion-root [class~="text-xl"] {
+  font-family: var(--fuente-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.gestion-root ::selection { background: color-mix(in srgb, var(--acento) 45%, transparent); }
+
+/* ---------- Encabezado con título grande ---------- */
+.g-encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 22px) 16px 4px;
+}
+.g-titulo {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  animation: g-entra 0.6s var(--suave) both;
+}
+.g-fecha { margin: 2px 0 0; color: var(--texto-suave); font-size: 15px; animation: g-entra 0.6s var(--suave) 0.05s both; }
+.g-usuario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 5px 5px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+.g-usuario button {
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 14px;
+  background: var(--relleno);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.g-usuario button:hover { background: var(--relleno-2); }
+
+/* ---------- Barra de pestañas flotante de vidrio ---------- */
+.g-tabs {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 10px);
+  transform: translateX(-50%);
+  width: min(calc(100% - 20px), 600px);
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgb(28 28 30 / 0.72);
+  border: 0.5px solid var(--vidrio-borde);
+  backdrop-filter: blur(28px) saturate(185%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%);
+  box-shadow: var(--vidrio-sombra), inset 0 1px 0 var(--reflejo), inset 0 -0.5px 0 rgb(255 255 255 / 0.12);
+  animation: g-sube 0.7s var(--resorte) 0.1s both;
+}
+.g-tab {
+  position: relative;
+  flex: 1;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 999px;
+  color: rgb(255 255 255 / 0.85);
+  font-size: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease, transform 0.4s var(--rebote);
+}
+.g-tab:active { transform: scale(1.12); }
+.g-tab svg { position: relative; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.g-tab[aria-current="page"] { color: var(--acento); }
+.g-tab[aria-current="page"] svg { animation: g-saltito 0.45s var(--rebote); }
+.g-tab-texto {
+  position: relative;
+  display: block;
+  max-height: 14px;
+  overflow: hidden;
+  transition: max-height 0.35s var(--suave), opacity 0.25s ease;
+}
+.g-tab:not([aria-current="page"]) .g-tab-texto { max-height: 0; opacity: 0; }
+.g-burbuja {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), inset 0 -0.5px 0 rgb(255 255 255 / 0.08), 0 4px 16px rgb(0 0 0 / 0.35);
+}
+.g-insignia {
+  position: absolute;
+  top: 5px;
+  right: calc(50% - 22px);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rojo);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgb(255 69 58 / 0.5);
+  animation: g-saltito 0.5s var(--rebote);
+}
+@keyframes g-saltito { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes g-sube { from { transform: translateX(-50%) translateY(90px); opacity: 0; } to { transform: translateX(-50%); opacity: 1; } }
+@keyframes g-entra { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Pantalla de entrada ---------- */
+.g-login { animation: g-aparece 0.7s var(--suave) both; }
+@keyframes g-aparece { from { opacity: 0; transform: translateY(18px) scale(0.96); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* ---------- Respetar "reducir movimiento" ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .gestion-root *,
+  .gestion-root *::before,
+  .gestion-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Compatibilidad: clase .input que ya existía ---------- */
 .input {
   border-radius: 0.375rem;
   background: rgba(255, 255, 255, 0.05);
@@ -7,7 +341,6 @@
   outline: none;
   color: inherit;
 }
-
 .input:focus {
   border-color: rgba(255, 255, 255, 0.3);
 }

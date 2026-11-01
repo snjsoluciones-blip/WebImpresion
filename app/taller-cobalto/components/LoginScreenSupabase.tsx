@@ -23,7 +23,7 @@ export default function LoginScreenSupabase() {
     <div className="min-h-screen flex items-center justify-center px-4">
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-sm border border-white/10 rounded-xl p-8 bg-white/[0.03]"
+        className="w-full max-w-sm g-login border border-white/10 rounded-xl p-8 bg-white/[0.03]"
       >
         <h1 className="text-xl font-medium mb-1">SNJ Gestión</h1>
         <p className="text-sm text-white/50 mb-6">Ingresá con tu cuenta</p>
