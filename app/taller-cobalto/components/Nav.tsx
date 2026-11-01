@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { BASE } from "../lib/rutas";
 import { useAuth } from "../lib/auth";
+import ColorPicker from "./ColorPicker";
 import { useConsultasNuevas } from "../lib/consultas";
 
 // Íconos de trazo fino, en la misma línea que los de iOS.
@@ -111,9 +112,12 @@ export default function Nav() {
           <h1 className="g-titulo">{tituloDe(pathname)}</h1>
           <p className="g-fecha">{hoy}</p>
         </div>
-        <div className="g-usuario g-vidrio">
-          <span>{usuario}</span>
-          <button onClick={logout}>Salir</button>
+        <div className="flex items-center gap-2">
+          <ColorPicker />
+          <div className="g-usuario g-vidrio">
+            <span>{usuario}</span>
+            <button onClick={logout}>Salir</button>
+          </div>
         </div>
       </header>
 
