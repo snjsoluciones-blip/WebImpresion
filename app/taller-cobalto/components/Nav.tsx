@@ -33,18 +33,6 @@ const ICONOS: Record<string, ReactNode> = {
       <path d="M18 14.2A6.5 6.5 0 0 1 21.5 20" />
     </svg>
   ),
-  calendario: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="3.5" y="5" width="17" height="15.5" rx="3" />
-      <path d="M3.5 10h17M8 3v4M16 3v4" />
-    </svg>
-  ),
-  cuentas: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5H12z" />
-      <path d="M14.5 3.7A8.5 8.5 0 0 1 20.3 9.5h-5.8z" />
-    </svg>
-  ),
   papelera: (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l.8 12a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-12" />
@@ -57,8 +45,6 @@ const TABS = [
   { href: BASE, label: "Tablero", icono: "tablero" },
   { href: `${BASE}/consultas`, label: "Consultas", icono: "consultas" },
   { href: `${BASE}/clientes`, label: "Clientes", icono: "clientes" },
-  { href: `${BASE}/calendario`, label: "Calendario", icono: "calendario" },
-  { href: `${BASE}/cuentas`, label: "Cuentas", icono: "cuentas" },
   { href: `${BASE}/papelera`, label: "Papelera", icono: "papelera" },
 ];
 
@@ -74,10 +60,6 @@ function tituloDe(pathname: string): string {
       return "Consultas";
     case "clientes":
       return "Clientes";
-    case "calendario":
-      return "Calendario";
-    case "cuentas":
-      return "Cuentas";
     case "papelera":
       return "Papelera";
     case "presupuestos":
