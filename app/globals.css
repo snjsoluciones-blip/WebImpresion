@@ -61,7 +61,7 @@ body {
   --r-full: 999px;
   --shell: 1240px;
   --gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2rem);
-  --pad-y: clamp(5rem, 3.5rem + 7vw, 10rem);
+  --pad-y: clamp(3.25rem, 1.9rem + 7vw, 10rem);
   --header-h: 72px;
   --glow-1: rgba(255, 255, 255, 0.07);
   /* movimiento */

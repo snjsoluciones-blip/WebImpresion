@@ -91,6 +91,9 @@ export default function WhatsAppButton() {
     ? "group-hover:max-w-[132px] group-hover:opacity-100 group-focus-visible:max-w-[132px] group-focus-visible:opacity-100"
     : "";
 
+  // En el teléfono ya está el botón de WhatsApp en la barra de abajo: este círculo sobra y tapa textos.
+  if (!mdUp) return null;
+
   return (
     <div
       className={`fixed z-40 ${shown ? "" : "pointer-events-none"}`}
