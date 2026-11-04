@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { BASE } from "../lib/rutas";
 import { useAuth } from "../lib/auth";
 import ColorPicker from "./ColorPicker";
-import { useConsultasNuevas } from "../lib/consultas";
 
 // Íconos de trazo fino, en la misma línea que los de iOS.
 const ICONOS: Record<string, ReactNode> = {
@@ -17,12 +16,6 @@ const ICONOS: Record<string, ReactNode> = {
       <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
       <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
       <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
-    </svg>
-  ),
-  consultas: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3.5 13.5 6 5.5a2 2 0 0 1 1.9-1.4h8.2A2 2 0 0 1 18 5.5l2.5 8" />
-      <path d="M3.5 13.5V18a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4.5h-5l-1.2 2.2h-5.6L8.5 13.5z" />
     </svg>
   ),
   clientes: (
@@ -43,7 +36,6 @@ const ICONOS: Record<string, ReactNode> = {
 
 const TABS = [
   { href: BASE, label: "Tablero", icono: "tablero" },
-  { href: `${BASE}/consultas`, label: "Consultas", icono: "consultas" },
   { href: `${BASE}/clientes`, label: "Clientes", icono: "clientes" },
   { href: `${BASE}/papelera`, label: "Papelera", icono: "papelera" },
 ];
@@ -56,8 +48,6 @@ function tituloDe(pathname: string): string {
       return "Tablero";
     case "proyectos":
       return "Proyecto";
-    case "consultas":
-      return "Consultas";
     case "clientes":
       return "Clientes";
     case "papelera":
@@ -82,7 +72,6 @@ function pestañaActiva(pathname: string): string {
 export default function Nav() {
   const pathname = usePathname();
   const { usuario, logout } = useAuth();
-  const nuevas = useConsultasNuevas(pathname);
   const activa = pestañaActiva(pathname);
   const fecha = new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
   const hoy = fecha.charAt(0).toUpperCase() + fecha.slice(1);
@@ -117,11 +106,6 @@ export default function Nav() {
               )}
               {ICONOS[t.icono]}
               <span className="g-tab-texto">{t.label}</span>
-              {t.label === "Consultas" && nuevas > 0 && (
-                <span className="g-insignia" aria-label={`${nuevas} consultas nuevas`}>
-                  {nuevas}
-                </span>
-              )}
             </Link>
           );
         })}
