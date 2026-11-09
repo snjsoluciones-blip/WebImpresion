@@ -418,6 +418,56 @@ export const SERVICIOS: ServicioPage[] = [
     ],
     relacionadas: ["llaveros-personalizados-3d", "trofeos-personalizados-3d", "modelado-3d-a-medida"],
   },
+  {
+    slug: "regalos-empresariales-fin-de-anio",
+    nombre: "Regalos de fin de año para empresas",
+    title: "Regalos empresariales de fin de año impresos en 3D | SNJ",
+    description:
+      "Regalos de fin de año para clientes y empleados: llaveros con tu logo, llaveros con chip NFC y piezas con tu marca, impresos en 3D por cantidad en General Pacheco.",
+    h1: "Regalos de fin de año con tu marca",
+    lead: "Un regalo para clientes y equipo que se usa todos los días y lleva tu marca: llaveros con logo, con chip NFC y piezas a medida.",
+    imagen: {
+      src: "/images/llavero-no-lo-presto-detalle.jpg",
+      alt: "Llavero bicolor impreso en 3D con letras en relieve, ejemplo de regalo empresarial con marca",
+    },
+    secciones: [
+      {
+        h2: "Para clientes y empleados",
+        parrafos: [
+          "Un llavero con el logo de tu empresa o local es un regalo útil que se lleva todos los días, y hace que tu marca quede presente todo el año.",
+        ],
+      },
+      {
+        h2: "Llaveros con chip NFC",
+        parrafos: [
+          "Podemos sumar un chip NFC adentro: al acercarlo al celular abre tu Instagram, tu WhatsApp o tu web. Un regalo que además sirve para que te vuelvan a contactar.",
+        ],
+      },
+      {
+        h2: "Por cantidad",
+        parrafos: [
+          "Ya hicimos tandas de 100 llaveros para un local de ropa y de 500 llaveros con el logo de MC Racing. Diseñamos a partir de tu logo o tu frase y te mostramos un primer modelo antes de producir.",
+        ],
+      },
+      {
+        h2: "Pedilo con tiempo",
+        parrafos: [
+          "Las fiestas se vienen encima: escribinos con la cantidad y la fecha en que los necesitás, y te pasamos el precio y los tiempos por WhatsApp.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        q: "¿Se pueden hacer con el logo de mi empresa?",
+        a: "Sí. Mandanos el logo o la frase y lo diseñamos nosotros. Antes de producir la tanda te mostramos un primer modelo.",
+      },
+      {
+        q: "¿Hacen envíos?",
+        a: "Estamos en General Pacheco, coordinamos entregas en Zona Norte y enviamos a todo el país.",
+      },
+    ],
+    relacionadas: ["merchandising-empresas-y-locales", "llaveros-personalizados-3d", "trofeos-personalizados-3d"],
+  },
 ];
 
 export const getServicio = (slug: string) => SERVICIOS.find((s) => s.slug === slug);
