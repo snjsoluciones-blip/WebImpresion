@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const display = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["500", "700"],
+// Tipografías guardadas en el proyecto (app/fonts, subconjunto latin de Google Fonts):
+// así el build no depende de bajarlas de Google, que a veces falla en Vercel.
+const inter = localFont({
+  src: "./fonts/Inter.woff2",
+  weight: "100 900",
+  variable: "--font-inter",
+  display: "swap",
+});
+const display = localFont({
+  src: "./fonts/SpaceGrotesk.woff2",
+  weight: "300 700",
   variable: "--font-display",
   display: "swap",
 });
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const mono = localFont({
+  src: "./fonts/JetBrainsMono.woff2",
+  weight: "100 800",
   variable: "--font-mono",
   display: "swap",
 });
